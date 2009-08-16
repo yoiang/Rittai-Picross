@@ -1,0 +1,21 @@
+- speed up puzzle creation or speed up block removal from instanced per face
+
+- fix xyz orders
+
+- reorienting face numbers
+- dim completed rows' faces
+- determine what faces don't need to be marked
+
+- good camera
+- mousewheel zoom
+
+- autozoom on load to fit puzzle
+
+- peering through puzzle
+
+- dragging paint
+- dragging destroy?
+
+- auto destroy 0 row option!!!!
+
+- why doesn't One.rittai work?

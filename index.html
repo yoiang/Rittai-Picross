@@ -1,0 +1,93 @@
+<!@page contentType="text/html" pageEncoding="UTF-8">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>
+立体ピクロス
+</title>
+<script type="text/javascript" src="o3djs/base.js"></script>
+<script type="text/javascript" src="Game.js"></script>
+<script type="text/javascript" src="InputState.js"></script>
+<script type="text/javascript" src="GameInput.js"></script>
+<script type="text/javascript" src="Cube.js"></script>
+<script type="text/javascript" src="Puzzle.js"></script>
+<script type="text/javascript" src="OrbitTool.js"></script>
+<script type="text/javascript" src="ResourceLoading.js"></script>
+<script type="text/javascript" src="DebugOverlay.js"></script>
+<script type="text/javascript">
+o3djs.require('o3djs.util');
+o3djs.require('o3djs.math');
+o3djs.require('o3djs.rendergraph');
+o3djs.require('o3djs.io');
+o3djs.require('o3djs.effect');
+o3djs.require('o3djs.camera');
+o3djs.require('o3djs.picking');
+o3djs.require('o3djs.shape');
+o3djs.require('o3djs.canvas');
+
+window.onload = init;
+window.onunload = uninit;
+
+var gGame = null;
+
+var gDebugOverlay = null;
+
+function renderCallback(renderEvent)
+{
+    gGame.mClock += renderEvent.elapsedTime * gGame.mTimeMult;
+/*    if ( gDebugOverlay )
+    {
+        gDebugOverlay.update( gGame );
+    }*/
+}
+
+
+function init() {
+    o3djs.util.makeClients(initStep2);
+}
+
+function initStep2(clientElements)
+{
+    gGame = new Game( clientElements );
+
+    //gDebugOverlay = new DebugOverlay( gGame );
+
+    loadTextures(gGame);
+}
+
+function initStep3()
+{
+    fillPuzzleList();
+
+    gGame.mClient.setRenderCallback(renderCallback);
+
+    gGame.mFinishedInit = true;
+}
+
+function uninit() {
+    if (gGame && gGame.mClient)
+    {
+        gGame.mClient.cleanup();
+    }
+}
+</script>
+</head>
+<body>
+    <div style="width: 100%; text-align: center;">
+        立体ピクロス
+        <div id="o3d" style="width: 600px; height: 600px; margin-left: auto; margin-right: auto;"></div>
+        <form name="puzzleSelectForm">
+            <span id="puzzleSelectDiv"></span> <input type="text" id="url" size="60"> <input type="button" id="updateButton" onclick="PuzzleManualSelect();" value="Load Puzzle"><br/>
+        </form>
+        <br/>
+        <span style="font-size: small">based on a game by HAL Laboratory / Nintendo, show your support and buy the game or request that Nintendo publish it outside of Japan!</span><br/>
+        <br/>
+        Drag Mouse : rotate puzzle<br/>
+        Hold W, Click Mouse : paint block<br/>
+        Hold X, Click Mouse : destroy block<br/>
+        D : toggle debug mode<br/>
+    </div>
+</body>
+</html>
