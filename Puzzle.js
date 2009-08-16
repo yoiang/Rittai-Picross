@@ -7,10 +7,14 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     this.mBlocks = null;
     this.mMax = null;
 
+    this.mTreeInfo = null;
+
     this.fillPuzzle = function(Game, BlocksDefinition)
     {
         this.mBlocks = [];
         this.mMax = [];
+
+        gTransformToCube = [];
 
         if ( this.mMax[ 0 ] == undefined || this.mBlocks.length > this.mMax[ 0 ] )
         {
@@ -54,6 +58,9 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                 }
             }
         }
+
+        this.mTreeInfo = o3djs.picking.createTransformInfo(Game.mClient.root, null);
+        this.mTreeInfo.update();
     }
     this.fillPuzzle(Game, BlocksDefinition);
 
@@ -140,6 +147,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                 this.mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] = null;
                 this.mSpaceBlocks--;
                 this.updateWon(Game);
+
+                this.mTreeInfo.update();
             }
         }
     }

@@ -44,35 +44,31 @@ function GameInput()
 
 function pickShape( Game, Event )
 {
-    var worldRay = o3djs.picking.clientPositionToWorldRay(
+    var Ray = o3djs.picking.clientPositionToWorldRay(
         Event.x,
         Event.y,
         Game.mViewInfo.drawContext,
         Game.mClient.width,
         Game.mClient.height);
 
-    var TreeInfo = o3djs.picking.createTransformInfo(Game.mClient.root, null);
-    TreeInfo.update();
-
-    var PickInfo = TreeInfo.pick(worldRay);
-    return PickInfo;
+    return Game.mPuzzle.mTreeInfo.pick(Ray);
 }
 
 function pickCube( Game, Event )
 {
     var PickInfo = pickShape( Game, Event );
     if ( PickInfo )
-        return findCubeFromShape( PickInfo.shapeInfo.shape );
+        return findCubeFromTransform( PickInfo.shapeInfo.parent.parent.transform );//PickInfo.shapeInfo.shape );
     return null;
 }
 
-function findCubeFromShape( Shape )
+function findCubeFromTransform( Shape )
 {
-    for( var travShapeToCube = 0; travShapeToCube < gShapeToCube.length; travShapeToCube ++)
+    for( var travTransformToCube = 0; travTransformToCube < gTransformToCube.length; travTransformToCube ++)
     {
-        if ( gShapeToCube[ travShapeToCube ][ 0 ] == Shape )
+        if ( gTransformToCube[ travTransformToCube ][ 0 ] == Shape )
         {
-            return gShapeToCube[ travShapeToCube ][ 1 ];
+            return gTransformToCube[ travTransformToCube ][ 1 ];
         }
     }
     return null;
