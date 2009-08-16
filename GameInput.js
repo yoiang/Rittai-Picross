@@ -44,18 +44,14 @@ function GameInput()
 
 function pickShape( Game, Event )
 {
-    var worldRay = o3djs.picking.clientPositionToWorldRay(
+    var Ray = o3djs.picking.clientPositionToWorldRay(
         Event.x,
         Event.y,
         Game.mViewInfo.drawContext,
         Game.mClient.width,
         Game.mClient.height);
 
-    var TreeInfo = o3djs.picking.createTransformInfo(Game.mClient.root, null);
-    TreeInfo.update();
-
-    var PickInfo = TreeInfo.pick(worldRay);
-    return PickInfo;
+    return Game.mPuzzle.mTreeInfo.pick(Ray);
 }
 
 function pickCube( Game, Event )
