@@ -328,6 +328,10 @@ function CubeMaterial( Game )
     this.mNumberTexSampler = null;
     this.mSymbolTexSampler = null;
 
+    this.mPaintedColorParam = null;
+    this.mDebugSolidColorParam = null;
+    this.mDebugSpaceColorParam = null;
+
     this.init = function(Game)
     {
         this.mMaterial = Game.mPack.createObject('Material');
@@ -370,6 +374,13 @@ function CubeMaterial( Game )
         // TODO: handle better yo
         this.mNumberTexSampler.texture = gNumberTexture;
         this.mSymbolTexSampler.texture = gSymbolTexture;
+
+        this.mPaintedColorParam = this.mMaterial.getParam('PaintedColor');
+        this.mPaintedColorParam.value = [ 0.0, 0.0, 1.0, 1.0 ]; // move to puzzle file
+        this.mDebugSolidColorParam = this.mMaterial.getParam('DebugSolidColor');
+        this.mDebugSolidColorParam.value = [ 0.8, 1.0, 0.8, 1.0 ]; // move to puzzle file?
+        this.mDebugSpaceColorParam = this.mMaterial.getParam('DebugSpaceColor');
+        this.mDebugSpaceColorParam.value = [ 1.0, 0.8, 0.8, 1.0 ]; // move to puzzle file?
     }
     this.init(Game);
 
@@ -423,5 +434,18 @@ function CubeMaterial( Game )
     this.setSymbolsTexture = function( Value )
     {
         this.mSymbolTexSampler.texture = Value;
+    }
+
+    this.setPaintedColor = function( Value )
+    {
+        this.mPaintedColorParam.value = Value;    
+    }
+    this.setDebugSolidColor = function( Value )
+    {
+        this.mDebugSolidColorParam.value = Value;    
+    }
+    this.setDebugSpaceColor = function( Value )
+    {
+        this.mDebugSpaceColorParam.value = Value;    
     }
 }

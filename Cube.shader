@@ -12,6 +12,10 @@ bool Debug;
 sampler NumberTexSampler;
 sampler SymbolTexSampler;
 
+float4 PaintedColor;
+float4 DebugSolidColor;
+float4 DebugSpaceColor;
+
 struct VertexShaderInput
 {
     float4 position : POSITION;
@@ -36,59 +40,56 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
+    float2 NumberTex = float2( input.tex.x / 11.0 + float(Number) / 11.0, input.tex.y );
+    float4 Color = tex2D(NumberTexSampler, NumberTex);
+
     if ( NonadjacentSpaces == 1 )
     {
         float2 SymbolTex = float2( input.tex.x / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
 
-        if ( SymbolColor.x < 0.2 && SymbolColor.y < 0.2 && SymbolColor.z < 0.2 )
+        if ( SymbolColor.x != 1.0 && SymbolColor.y != 1.0 && SymbolColor.z != 1.0 )
         {
-            return SymbolColor;
+            Color = Color * SymbolColor;
         }
     } else if ( NonadjacentSpaces > 1 )
     {
         float2 SymbolTex = float2( input.tex.x / 11.0 + 1.0 / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
 
-        if ( SymbolColor.x < 0.2 && SymbolColor.y < 0.2 && SymbolColor.z < 0.2 )
+        if ( SymbolColor.x != 1.0 && SymbolColor.y != 1.0 && SymbolColor.z != 1.0 )
         {
-            return SymbolColor;
+            Color = Color * SymbolColor;
         }
     }
 
-    float2 NumberTex = float2( input.tex.x / 11.0 + float(Number) / 11.0, input.tex.y );
-
     if ( FailedBreak )
     {
-        int x = NumberTex * 10.0;
-        int y = NumberTex * 10.0;
-        if ( x * y % 5 == 0 )
+        float2 SymbolTex = float2( input.tex.x / 11.0 + 2.0 / 11.0, input.tex.y );
+        float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
+
+        if ( SymbolColor.x != 1.0 && SymbolColor.y != 1.0 && SymbolColor.z != 1.0 )
         {
-            return float4(0,0,0,1);
+        	Color = Color * PaintedColor * SymbolColor;
+        } else
+        {
+	        Color = Color * PaintedColor;
         }
-        float4 colorMult;
-        colorMult = float4(0, 0, 1, 1);
-        return tex2D(NumberTexSampler, NumberTex) * colorMult;
     } else if ( Painted )
     {
-        float4 colorMult;
-        colorMult = float4(0, 0, 1, 1);
-        return tex2D(NumberTexSampler, NumberTex) * colorMult;
+        Color = Color * PaintedColor;
     } else if ( Debug )
     {
         float4 colorMult;
         if ( Solid )
         {
-            colorMult = float4(0.8, 1, 0.8, 1);
+            Color = Color * DebugSolidColor;
         } else
         {
-            colorMult = float4(1, 0.8, 0.8, 1);
+            Color = Color * DebugSpaceColor;
         }
-        return tex2D(NumberTexSampler, NumberTex) * colorMult;
-    } else
-    {
-        return tex2D(NumberTexSampler, NumberTex);
     }
+    return Color;
 }
 
 // #o3d VertexShaderEntryPoint vertexShaderFunction
