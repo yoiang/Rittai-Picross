@@ -105,6 +105,11 @@ function InputState( Game )
     {
         this.mNotify[ this.mNotify.length ] = add;
     }
+
+    this.isKeyDown = function( KeyCode )
+    {
+        return this.mKeyDown[ KeyCode ] == true;
+    }
 }
 
 document.onkeydown = function(e) {

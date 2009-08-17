@@ -43,10 +43,10 @@ function renderCallback(renderEvent)
         gGame.mDebugOverlay.update( gGame );
     }
 
-    if (gIngameOverlay)
-        {
-            gIngameOverlay.update( gGame );
-        }
+    if (gGame.mIngameOverlay)
+    {
+        gGame.mIngameOverlay.update( gGame );
+    }
 }
 
 
@@ -62,9 +62,7 @@ function initStep2(clientElements)
 }
 
 function initStep3()
-{
-    gIngameOverlay = new IngameOverlay( gGame );
-    
+{    
     fillPuzzleList();
 
     gGame.mClient.setRenderCallback(renderCallback);

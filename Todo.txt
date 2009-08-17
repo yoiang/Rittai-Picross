@@ -1,5 +1,12 @@
 - speed up puzzle creation or speed up block removal from instanced per face
 
+- optimize IngameOverlay
+    - quads should be sized to only area where UI elements are located rather than whole screen
+    OR
+    - seperate quad for each UI element
+
+    - additional add IngameOverlay to InputState notify list for keydown and up notifications?
+
 - fix xyz orders
 
 - reorienting face numbers

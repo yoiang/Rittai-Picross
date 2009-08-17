@@ -2,13 +2,19 @@ var gNumberTexture = null;
 var gNumberTextureException = null;
 var gSymbolTexture = null;
 var gSymbolTextureException = null;
+var gIndicatorPaintTexture = null;
+var gIndicatorPaintTextureException = null;
+var gIndicatorBreakTexture = null;
+var gIndicatorBreakTextureException = null;
 
 var gXMLHttp = null;
 
 function loadTextures(Game)
 {
-    o3djs.io.loadTexture(Game.mPack, Game.mPath + 'images/numbers.png', this.loadTextureNumbersCallback);
-    o3djs.io.loadTexture(Game.mPack, Game.mPath + 'images/symbols.png', this.loadTextureSymbolsCallback);
+    o3djs.io.loadTexture(Game.mPack, Game.mPath + 'images/numbers.png', loadTextureNumbersCallback);
+    o3djs.io.loadTexture(Game.mPack, Game.mPath + 'images/symbols.png', loadTextureSymbolsCallback);
+    o3djs.io.loadTexture(Game.mPack, Game.mPath + 'images/indicator_paint.png', loadTextureIndicatorPaintCallback);
+    o3djs.io.loadTexture(Game.mPack, Game.mPath + 'images/indicator_break.png', loadTextureIndicatorBreakCallback);
 }
 
 function loadTextureNumbersCallback( texture, exception )
@@ -25,9 +31,23 @@ function loadTextureSymbolsCallback( texture, exception )
     checkAllTexturesLoaded();
 }
 
+function loadTextureIndicatorPaintCallback( texture, exception )
+{
+    gIndicatorPaintTexture = texture;
+    gIndicatorPaintTextureException = exception;
+    checkAllTexturesLoaded();
+}
+
+function loadTextureIndicatorBreakCallback( texture, exception )
+{
+    gIndicatorBreakTexture = texture;
+    gIndicatorBreakTextureException = exception;
+    checkAllTexturesLoaded();
+}
+
 function checkAllTexturesLoaded()
 {
-    if ( gNumberTexture && gSymbolTexture )
+    if ( gNumberTexture && gSymbolTexture && gIndicatorPaintTexture && gIndicatorBreakTexture )
     {
         initStep3();
     }

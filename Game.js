@@ -13,6 +13,7 @@ function Game( ClientElements )
     this.mClock = 0;
     this.mTimeMult = 1;
 
+    this.mIngameOverlay = null;
     this.mDebugOverlay = null;
 
     this.initView = function()
@@ -38,8 +39,12 @@ function Game( ClientElements )
 
         this.mCamera = new TargetCamera();
         this.mCamera.update( this );
+
+        this.mIngameOverlay = new IngameOverlay( this );
     }
     this.initView();
+
+
 
     this.mPuzzle = null;
     this.createPuzzle = function( Blocks, AllowedFails )
