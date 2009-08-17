@@ -35,7 +35,7 @@ function checkAllTexturesLoaded()
 
 function loadPuzzle( URL )
 {
-    if ( URL == '' )
+    if ( URL == '' || URL == 'Select Puzzle' )
     {
       return;
     }
@@ -119,7 +119,7 @@ function fillPuzzleList()
 
 //TODO: can I request a file list???
   var Options = '<select id="puzzleSelect" name="puzzleSelect" onChange="selectPuzzle()">';
-  Options += generatePuzzleOption( '' );
+  Options += generatePuzzleOption( 'Select Puzzle' );
   for( var travPuzzleNames = 0; travPuzzleNames < PuzzleNames.length; travPuzzleNames ++ )
   {
       Options += generatePuzzleOption( PuzzleNames[ travPuzzleNames ] );
