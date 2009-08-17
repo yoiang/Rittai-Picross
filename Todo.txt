@@ -18,4 +18,4 @@
 
 - auto destroy 0 row option!!!!
 
-- why doesn't One.rittai work?
+- why doesn't ray intersection with One.rittai work? (also check Won and Failed at load)

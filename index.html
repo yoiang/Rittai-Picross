@@ -16,6 +16,7 @@
 <script type="text/javascript" src="OrbitTool.js"></script>
 <script type="text/javascript" src="ResourceLoading.js"></script>
 <script type="text/javascript" src="DebugOverlay.js"></script>
+<script type="text/javascript" src="IngameOverlay.js"></script>
 <script type="text/javascript">
 o3djs.require('o3djs.util');
 o3djs.require('o3djs.math');
@@ -32,15 +33,20 @@ window.onunload = uninit;
 
 var gGame = null;
 
-var gDebugOverlay = null;
+var gIngameOverlay = null;
 
 function renderCallback(renderEvent)
 {
     gGame.mClock += renderEvent.elapsedTime * gGame.mTimeMult;
-/*    if ( gDebugOverlay )
+    if ( gGame.mDebugOverlay )
     {
-        gDebugOverlay.update( gGame );
-    }*/
+        gGame.mDebugOverlay.update( gGame );
+    }
+
+    if (gIngameOverlay)
+        {
+            gIngameOverlay.update( gGame );
+        }
 }
 
 
@@ -52,13 +58,13 @@ function initStep2(clientElements)
 {
     gGame = new Game( clientElements );
 
-    //gDebugOverlay = new DebugOverlay( gGame );
-
     loadTextures(gGame);
 }
 
 function initStep3()
 {
+    gIngameOverlay = new IngameOverlay( gGame );
+    
     fillPuzzleList();
 
     gGame.mClient.setRenderCallback(renderCallback);

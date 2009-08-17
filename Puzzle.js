@@ -7,7 +7,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     this.mBlocks = null;
     this.mMax = null;
 
-	this.mTreeInfo = null;
+    this.mTreeInfo = null;
 	
     this.fillPuzzle = function(Game, BlocksDefinition)
     {
@@ -156,6 +156,21 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
         triedMe.setFailedBreak( true );
         this.mAllowedFails --;
         this.updateFailed(Game);
+    }
+
+    this.getSolidBlocks = function()
+    {
+        return this.mSolidBlocks;
+    }
+
+    this.getSpaceBlocks = function()
+    {
+        return this.mSpaceBlocks;
+    }
+
+    this.getAllowedFails = function ()
+    {
+        return this.mAllowedFails;
     }
 
     this.getFailed = function( )

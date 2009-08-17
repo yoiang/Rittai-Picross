@@ -13,7 +13,8 @@ function Game( ClientElements )
     this.mClock = 0;
     this.mTimeMult = 1;
 
-    this.mViewInfo = null;
+    this.mDebugOverlay = null;
+
     this.initView = function()
     {
         // Create the render graph for a view
@@ -87,6 +88,15 @@ function Game( ClientElements )
         this.mDebug = !this.mDebug;
         if ( this.mPuzzle )
             this.mPuzzle.setDebug( this.mDebug );
+
+        if ( this.mDebug )
+        {
+            this.mDebugOverlay = new DebugOverlay( this );
+        } else
+        {
+            this.mDebugOverlay.destroy( this );
+            this.mDebugOverlay = null;
+        }
     }
 }
 
