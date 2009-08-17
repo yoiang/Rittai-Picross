@@ -119,6 +119,15 @@ function TargetCamera( ) {
 }
 
 TargetCamera.prototype.update = function( Game ) {
+    if ( this.eye.rotH < 44.5 )
+    {
+        this.eye.rotH = 44.5;
+    }
+    if ( this.eye.rotH > 46.6 )
+    {
+        this.eye.rotH = 46.6;
+    }
+
     var target = [this.target.x, this.target.y, this.target.z];
 
     this.eye.x = this.target.x + Math.cos(this.eye.rotZ) * this.eye.distanceFromTarget * Math.sin(this.eye.rotH);
