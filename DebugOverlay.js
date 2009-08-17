@@ -38,18 +38,32 @@ function DebugOverlay( Game )
 
         if (Game.mPuzzle != null)
         {
-            //            this.mCanvasPaint.setOutline(0, [0, 0, 0, 1]);
             this.mCanvasPaint.textAlign = Game.mO3d.CanvasPaint.LEFT;
             this.mCanvasPaint.textSize = 10;
             this.mCanvasPaint.textTypeface = 'Arial';
             this.mCanvasPaint.shader = null;
-            this.mCanvasPaint.color = [1, 0, 0, 1];
-            this.mDisplayQuad.canvas.drawText('Space Blocks Left:' + Game.mPuzzle.getSpaceBlocks().toString(), 10, 15, this.mCanvasPaint);
-            this.mDisplayQuad.canvas.drawText('Solid Blocks:' + Game.mPuzzle.getSolidBlocks().toString(), 10, 28, this.mCanvasPaint);
-            this.mDisplayQuad.canvas.drawText('Remaining Fails:' + Game.mPuzzle.getAllowedFails().toString(), 10, 41, this.mCanvasPaint);
-        }
 
+            this.mCanvasPaint.setOutline(0, [0, 0, 0, 0]);
+
+            var Y = 15;
+            this.mCanvasPaint.color = [1, 0, 0, 1];
+            this.drawText('Space Blocks Left:' + Game.mPuzzle.getSpaceBlocks().toString(), 10, Y);
+            this.drawText('Solid Blocks:' + Game.mPuzzle.getSolidBlocks().toString(), 10, Y += 13);
+            this.drawText('Remaining Fails:' + Game.mPuzzle.getAllowedFails().toString(), 10, Y += 13);
+
+            this.mCanvasPaint.color = [1, 0.5, 0, 1];
+            this.drawText('Camera', 10, Y += 13, this.mCanvasPaint);
+            var EyeString = 'Eye - rotZ: ' + Game.mCamera.eye.rotZ + ' rotH: ' + Game.mCamera.eye.rotH + ' dFT: ' + Game.mCamera.eye.distanceFromTarget;
+                EyeString += ' (X, Y, Z): ( ' + Game.mCamera.eye.x + ', ' + Game.mCamera.eye.y + ', ' + Game.mCamera.eye.z + ' )';
+            this.drawText(EyeString, 20, Y += 13);
+            this.drawText('Target (X, Y, Z): ( ' + Game.mCamera.target.x + ', ' + Game.mCamera.target.y + ', ' + Game.mCamera.target.z + ' )', 20, Y += 13);
+        }
         this.mDisplayQuad.updateTexture();
+    }
+
+    this.drawText = function( Text, X, Y )
+    {
+        this.mDisplayQuad.canvas.drawText(Text, X, Y, this.mCanvasPaint);
     }
 
     this.destroy = function( Game )
