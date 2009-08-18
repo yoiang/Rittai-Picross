@@ -12,7 +12,7 @@ function IngameOverlay( Game )
         this.mViewInfo.clearBuffer.clearColorFlag = false;
         this.mViewInfo.zOrderedState.getStateParam('CullMode').value = Game.mO3d.State.CULL_NONE;
 
-        this.mViewInfo.drawContext.projection = Game.mMath.matrix4.orthographic(
+        this.mViewInfo.drawContext.projection = o3djs.math.matrix4.orthographic(
             0,
             Game.mClient.width,
             Game.mClient.height,
@@ -20,7 +20,7 @@ function IngameOverlay( Game )
             0.001,
             1000);
 
-        this.mViewInfo.drawContext.view = Game.mMath.matrix4.lookAt(
+        this.mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(
             [0, 0, 1],   // eye
             [0, 0, 0],   // target
             [0, 1, 0]); // up

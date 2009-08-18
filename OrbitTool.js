@@ -68,7 +68,7 @@ OrbitTool.prototype.handleMouseMove = function(Game, e) {
 
         this.camera.eye.rotZ -= dX / 100;
         this.camera.eye.rotH -= dY / 100;
-        this.camera.eye.rotH = peg(this.camera.eye.rotH, 0.1, Game.mMath.PI - 0.1);
+        this.camera.eye.rotH = peg(this.camera.eye.rotH, 0.1, o3djs.math.PI - 0.1);
         //      document.getElementById('output').innerHTML = this.camera.eye.rotH;
         this.camera.update( Game );
     }

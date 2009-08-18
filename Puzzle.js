@@ -191,7 +191,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     {
         if ( this.getLost() )
         {
-            Game.mViewInfo.clearBuffer.clearColor = [1, 0, 0, 1];
+            Game.mCamera.mViewInfo.clearBuffer.clearColor = [1, 0, 0, 1];
         }
     }
 
@@ -204,7 +204,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     {
         if ( !this.getLost( ) && this.getWon() )
         {
-            Game.mViewInfo.clearBuffer.clearColor = [0.5, 0.5, 1, 1];
+            Game.mCamera.mViewInfo.clearBuffer.clearColor = [0.5, 0.5, 1, 1];
         }
     }
 
@@ -291,7 +291,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
         var Ray = o3djs.picking.clientPositionToWorldRay(
             Event.x,
             Event.y,
-            Game.mViewInfo.drawContext,
+            Game.mCamera.mViewInfo.drawContext,
             Game.mClient.width,
             Game.mClient.height);
 

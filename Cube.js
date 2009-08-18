@@ -35,7 +35,7 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
 
         mTransform.parent = ParentTransform;
 
-        mTransform.localMatrix = Game.mMath.matrix4.mul(mTransform.localMatrix, Game.mMath.matrix4.translation([mPuzzleLocX,mPuzzleLocY,mPuzzleLocZ]));
+        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation([mPuzzleLocX,mPuzzleLocY,mPuzzleLocZ]));
     };
     this.createShape( Game, ParentTransform );
 
@@ -347,7 +347,7 @@ function CubeMaterial( Game )
     {
         mMaterial = Game.mPack.createObject('Material');
         
-        mMaterial.drawList = Game.mViewInfo.performanceDrawList;
+        mMaterial.drawList = Game.mCamera.mViewInfo.performanceDrawList;
 
         mEffect = Game.mPack.createObject('Effect');
         o3djs.effect.loadEffect( mEffect, 'Cube.shader');
