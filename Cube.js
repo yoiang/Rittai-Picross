@@ -83,22 +83,6 @@ function Cube( Game, Puzzle, Solid, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
         }
     }
 
-    this.tryBreak = function( Game )
-    {
-        if ( this.mPainted || this.mFailedBreak )
-        {
-            return;
-        }
-        
-        if ( this.mSolid )
-        {
-            this.mPuzzle.triedBreakSolid( Game, this );
-        } else
-        {
-            this.mPuzzle.breakSpace( Game, this );
-        }
-    }
-
     this.setFailedBreak = function( Value)
     {
         for( var travFaces = 0; travFaces < 6; travFaces ++ )
@@ -118,6 +102,16 @@ function Cube( Game, Puzzle, Solid, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
         {
             this.mFaces[ travFaces ].getMaterial().setDebug( Value );
         }
+    }
+
+    this.getPainted = function()
+    {
+        return this.mPainted;
+    }
+
+    this.getFailedBreak = function()
+    {
+        return this.mFailedBreak;
     }
 
     this.destroy = function( Game )

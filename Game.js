@@ -65,9 +65,9 @@ function Game( ClientElements )
 
         this.mPuzzle = new Puzzle( this, Blocks, AllowedFails);
 
-        this.mCamera.target.x = this.mPuzzle.mMax[0] / 2.0;
-        this.mCamera.target.y = this.mPuzzle.mMax[1] / 2.0;
-        this.mCamera.target.z = this.mPuzzle.mMax[2] / 2.0;
+        this.mCamera.target.x = this.mPuzzle.getMax()[0] / 2.0;
+        this.mCamera.target.y = this.mPuzzle.getMax()[1] / 2.0;
+        this.mCamera.target.z = this.mPuzzle.getMax()[2] / 2.0;
         this.mCamera.update( this );
     }
 

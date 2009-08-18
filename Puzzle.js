@@ -1,37 +1,38 @@
 function Puzzle(Game, BlocksDefinition, AllowedFails )
 {
-    this.mSolidBlocks = 0;
-    this.mSpaceBlocks = 0;
-    this.mAllowedFails = AllowedFails;
+    var mSolidBlocks = 0;
+    var mSpaceBlocks = 0;
+    var mAllowedFails = AllowedFails;
+    var mRemainingFails = AllowedFails;
     
-    this.mBlocks = null;
-    this.mMax = null;
+    var mBlocks = null;
+    var mMax = null;
 
-    this.mTreeInfo = null;
+    var mTreeInfo = null;
 	
     this.fillPuzzle = function(Game, BlocksDefinition)
     {
-        this.mBlocks = [];
-        this.mMax = [];
+        mBlocks = [];
+        mMax = [];
 
-        if ( this.mMax[ 0 ] == undefined || this.mBlocks.length > this.mMax[ 0 ] )
+        if ( mMax[ 0 ] == undefined || mBlocks.length > mMax[ 0 ] )
         {
-            this.mMax[ 0 ] = BlocksDefinition.length;
+            mMax[ 0 ] = BlocksDefinition.length;
         }
 
         for( var travX = 0; travX < BlocksDefinition.length; travX ++)
         {
-            this.mBlocks[travX] = [];
-            if ( this.mMax[ 1 ] == undefined || BlocksDefinition[travX].length > this.mMax[ 1 ] )
+            mBlocks[travX] = [];
+            if ( mMax[ 1 ] == undefined || BlocksDefinition[travX].length > mMax[ 1 ] )
             {
-                this.mMax[ 1 ] = BlocksDefinition[travX].length;
+                mMax[ 1 ] = BlocksDefinition[travX].length;
             }
             for( var travY = 0; travY < BlocksDefinition[travX].length; travY ++)
             {
-                this.mBlocks[travX][travY] = [];
-                if ( this.mMax[ 2 ] == undefined || BlocksDefinition[travX].length > this.mMax[ 2 ] )
+                mBlocks[travX][travY] = [];
+                if ( mMax[ 2 ] == undefined || BlocksDefinition[travX].length > mMax[ 2 ] )
                 {
-                    this.mMax[ 2 ] = BlocksDefinition[travX][travY].length;
+                    mMax[ 2 ] = BlocksDefinition[travX][travY].length;
                 }
                 for( var travZ = 0; travZ < BlocksDefinition[travX][travY].length; travZ++)
                 {
@@ -39,11 +40,11 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                     if ( BlocksDefinition[travX][travY][travZ] == 1)
                     {
                         addCube = new Cube(Game, this, true, travX, travY, travZ );
-                        this.mSolidBlocks++;
+                        mSolidBlocks++;
                     } else
                     {
                         addCube = new Cube(Game, this, false, travX, travY, travZ );
-                        this.mSpaceBlocks++;
+                        mSpaceBlocks++;
                     }
                     addCube.mTransform.localMatrix = Game.mMath.matrix4.mul(addCube.mTransform.localMatrix, Game.mMath.matrix4.translation([travX,travY,travZ]));
 
@@ -52,28 +53,28 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                         addCube.setDebug(true);
                     }
 
-                    this.mBlocks[travX][travY][travZ] = addCube;
+                    mBlocks[travX][travY][travZ] = addCube;
                 }
             }
         }
 		
-		this.mTreeInfo = o3djs.picking.createTransformInfo(Game.mClient.root, null);
-		this.mTreeInfo.update();
-	}
+        mTreeInfo = o3djs.picking.createTransformInfo(Game.mClient.root, null);
+        mTreeInfo.update();
+    }
     this.fillPuzzle(Game, BlocksDefinition);
 
     this.setFaces = function( Game )
     {
-        if ( this.mBlocks )
+        if ( mBlocks )
         {
             var SolidCountX = [];
             var SolidCountY = [];
             var SolidCountZ = [];
-            for( var travX = 0; travX < this.mBlocks.length; travX ++)
+            for( var travX = 0; travX < mBlocks.length; travX ++)
             {
-                for( var travY = 0; travY < this.mBlocks[travX].length; travY ++)
+                for( var travY = 0; travY < mBlocks[travX].length; travY ++)
                 {
-                    for( var travZ = 0; travZ < this.mBlocks[travX][travY].length; travZ ++)
+                    for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                     {
                         if ( SolidCountX[travY] == undefined )
                         {
@@ -100,7 +101,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                         {
                             SolidCountZ[travX][travY] = [];
                         }
-                        if ( this.mBlocks[travX][travY][travZ].getSolid() )
+                        if ( mBlocks[travX][travY][travZ].getSolid() )
                         {
                             SolidCountX[travY][travZ][ SolidCountX[travY][travZ].length ] = 1;
                             SolidCountY[travX][travZ][ SolidCountY[travX][travZ].length ] = 1;
@@ -116,17 +117,17 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
             }
 
 
-            for( travX = 0; travX < this.mBlocks.length; travX ++)
+            for( travX = 0; travX < mBlocks.length; travX ++)
             {
-                for( travY = 0; travY < this.mBlocks[travX].length; travY ++)
+                for( travY = 0; travY < mBlocks[travX].length; travY ++)
                 {
-                    for( travZ = 0; travZ < this.mBlocks[travX][travY].length; travZ ++)
+                    for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                     {
-                        this.mBlocks[travX][travY][travZ].setRows(Game,
-                                        new RowInfo(SolidCountX[travY][travZ]),
-                                        new RowInfo(SolidCountY[travX][travZ]),
-                                        new RowInfo(SolidCountZ[travX][travY])
-                                    );
+                        mBlocks[travX][travY][travZ].setRows(Game,
+                            new RowInfo(SolidCountX[travY][travZ]),
+                            new RowInfo(SolidCountY[travX][travZ]),
+                            new RowInfo(SolidCountZ[travX][travY])
+                            );
                     }
                 }
             }
@@ -138,15 +139,15 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     {
         if ( breakMe )
         {
-            if ( this.mBlocks && this.mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] == breakMe )
+            if ( mBlocks && mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] == breakMe )
             {
                 breakMe.destroy( Game );
 
-                this.mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] = null;
-                this.mSpaceBlocks--;
+                mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] = null;
+                mSpaceBlocks--;
                 this.updateWon(Game);
 				
-				this.mTreeInfo.update();
+                mTreeInfo.update();
             }
         }
     }
@@ -154,33 +155,38 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     this.triedBreakSolid = function( Game, triedMe )
     {
         triedMe.setFailedBreak( true );
-        this.mAllowedFails --;
-        this.updateFailed(Game);
+        mRemainingFails --;
+        this.updateLost(Game);
     }
 
     this.getSolidBlocks = function()
     {
-        return this.mSolidBlocks;
+        return mSolidBlocks;
     }
 
     this.getSpaceBlocks = function()
     {
-        return this.mSpaceBlocks;
+        return mSpaceBlocks;
     }
 
     this.getAllowedFails = function ()
     {
-        return this.mAllowedFails;
+        return mAllowedFails;
     }
 
-    this.getFailed = function( )
+    this.getRemainingFails = function ()
     {
-        return this.mAllowedFails == 0;
+        return mRemainingFails;
     }
 
-    this.updateFailed = function( Game )
+    this.getLost = function( )
     {
-        if ( this.getFailed() )
+        return this.getRemainingFails() == 0;
+    }
+
+    this.updateLost = function( Game )
+    {
+        if ( this.getLost() )
         {
             Game.mViewInfo.clearBuffer.clearColor = [1, 0, 0, 1];
         }
@@ -188,12 +194,12 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
 
     this.getWon = function( )
     {
-        return this.mSpaceBlocks == 0;
+        return this.getSpaceBlocks() == 0;
     }
 
     this.updateWon = function( Game )
     {
-        if ( !this.getFailed( ) && this.getWon() )
+        if ( !this.getLost( ) && this.getWon() )
         {
             Game.mViewInfo.clearBuffer.clearColor = [0.5, 0.5, 1, 1];
         }
@@ -201,16 +207,16 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
 
     this.destroy = function( Game )
     {
-        for( var travX = 0; travX < this.mBlocks.length; travX ++)
+        for( var travX = 0; travX < mBlocks.length; travX ++)
         {
-            for( var travY = 0; travY < this.mBlocks[travX].length; travY ++)
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
             {
-                for( var travZ = 0; travZ < this.mBlocks[travX][travY].length; travZ ++)
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                 {
-                    if ( this.mBlocks[travX][travY][travZ] )
+                    if ( mBlocks[travX][travY][travZ] )
                     {
-                        this.mBlocks[travX][travY][travZ].destroy( Game );
-                        this.mBlocks[travX][travY][travZ] = null;
+                        mBlocks[travX][travY][travZ].destroy( Game );
+                        mBlocks[travX][travY][travZ] = null;
                     }
                 }
             }
@@ -219,18 +225,84 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
 
     this.setDebug = function( Value )
     {
-        for( var travX = 0; travX < this.mBlocks.length; travX ++)
+        for( var travX = 0; travX < mBlocks.length; travX ++)
         {
-            for( var travY = 0; travY < this.mBlocks[travX].length; travY ++)
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
             {
-                for( var travZ = 0; travZ < this.mBlocks[travX][travY].length; travZ ++)
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                 {
-                    if ( this.mBlocks[travX][travY][travZ] )
+                    if ( mBlocks[travX][travY][travZ] )
                     {
-                        this.mBlocks[travX][travY][travZ].setDebug(Value);
+                        mBlocks[travX][travY][travZ].setDebug(Value);
                     }
                 }
             }
         }
+    }
+
+    this.getMax = function()
+    {
+        return mMax;
+    }
+
+    this.tryPaint = function( Game, Event )
+    {
+        var pickedCube = this.pickCube( Game, Event );
+        if ( pickedCube != null )
+        {
+            pickedCube.togglePainted( Game );
+        }
+    }
+
+    this.tryBreak = function( Game, Event )
+    {
+        pickedCube = this.pickCube( Game, Event );
+        if ( pickedCube != null )
+        {
+            if ( pickedCube.getPainted() || pickedCube.getFailedBreak() )
+            {
+                return;
+            }
+
+            if ( pickedCube.getSolid() )
+            {
+                this.triedBreakSolid( Game, pickedCube );
+            } else
+            {
+                this.breakSpace( Game, pickedCube );
+            }
+        }
+    }
+
+    this.pickShape = function( Game, Event )
+    {
+        var Ray = o3djs.picking.clientPositionToWorldRay(
+            Event.x,
+            Event.y,
+            Game.mViewInfo.drawContext,
+            Game.mClient.width,
+            Game.mClient.height);
+
+        return mTreeInfo.pick(Ray);
+    }
+
+    this.findCubeFromShape = function( Shape )
+    {
+        for( var travShapeToCube = 0; travShapeToCube < gShapeToCube.length; travShapeToCube ++)
+        {
+            if ( gShapeToCube[ travShapeToCube ][ 0 ] == Shape )
+            {
+                return gShapeToCube[ travShapeToCube ][ 1 ];
+            }
+        }
+        return null;
+    }
+
+    this.pickCube = function( Game, Event )
+    {
+        var PickInfo = this.pickShape( Game, Event );
+        if ( PickInfo )
+            return this.findCubeFromShape( PickInfo.shapeInfo.shape );
+        return null;
     }
 }
