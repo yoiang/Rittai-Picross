@@ -12,7 +12,7 @@ function DebugOverlay( Game )
         this.mViewInfo.clearBuffer.clearColorFlag = false;
         this.mViewInfo.zOrderedState.getStateParam('CullMode').value = Game.mO3d.State.CULL_NONE;
 
-        this.mViewInfo.drawContext.projection = Game.mMath.matrix4.orthographic(
+        this.mViewInfo.drawContext.projection = o3djs.math.matrix4.orthographic(
             0,
             Game.mClient.width,
             Game.mClient.height,
@@ -20,7 +20,7 @@ function DebugOverlay( Game )
             0.001,
             1000);
 
-        this.mViewInfo.drawContext.view = Game.mMath.matrix4.lookAt(
+        this.mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(
             [0, 0, 1],   // eye
             [0, 0, 0],   // target
             [0, 1, 0]); // up
@@ -53,10 +53,10 @@ function DebugOverlay( Game )
 
             this.mCanvasPaint.color = [1, 0.5, 0, 1];
             this.drawText('Camera', 10, Y += 13, this.mCanvasPaint);
-            var EyeString = 'Eye - rotZ: ' + Game.mCamera.eye.rotZ + ' rotH: ' + Game.mCamera.eye.rotH + ' dFT: ' + Game.mCamera.eye.distanceFromTarget;
-                EyeString += ' (X, Y, Z): ( ' + Game.mCamera.eye.x + ', ' + Game.mCamera.eye.y + ', ' + Game.mCamera.eye.z + ' )';
+            var EyeString = 'Eye - rotZ: ' + Game.mCamera.getEye().rotZ + ' rotH: ' + Game.mCamera.getEye().rotH + ' dFT: ' + Game.mCamera.getEye().distanceFromTarget;
+                EyeString += ' (X, Y, Z): ( ' + Game.mCamera.getEye().x + ', ' + Game.mCamera.getEye().y + ', ' + Game.mCamera.getEye().z + ' )';
             this.drawText(EyeString, 20, Y += 13);
-            this.drawText('Target (X, Y, Z): ( ' + Game.mCamera.target.x + ', ' + Game.mCamera.target.y + ', ' + Game.mCamera.target.z + ' )', 20, Y += 13);
+            this.drawText('Target (X, Y, Z): ( ' + Game.mCamera.getTarget().x + ', ' + Game.mCamera.getTarget().y + ', ' + Game.mCamera.getTarget().z + ' )', 20, Y += 13);
         }
         this.mDisplayQuad.updateTexture();
     }
