@@ -46,7 +46,6 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                         addCube = new Cube(Game, this, false, travX, travY, travZ );
                         mSpaceBlocks++;
                     }
-                    addCube.mTransform.localMatrix = Game.mMath.matrix4.mul(addCube.mTransform.localMatrix, Game.mMath.matrix4.translation([travX,travY,travZ]));
 
                     if ( Game.mDebug )
                     {
@@ -139,11 +138,11 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     {
         if ( breakMe )
         {
-            if ( mBlocks && mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] == breakMe )
+            if ( mBlocks && mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] == breakMe )
             {
                 breakMe.destroy( Game );
 
-                mBlocks[breakMe.mPuzzleLocX][breakMe.mPuzzleLocY][breakMe.mPuzzleLocZ] = null;
+                mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] = null;
                 mSpaceBlocks--;
                 this.updateWon(Game);
 				
