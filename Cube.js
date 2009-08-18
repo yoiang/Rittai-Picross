@@ -223,10 +223,10 @@ function Face( Game, Shape, FIndex )
             var VerticesBuffer = Game.mPack.createObject('VertexBuffer');
             gVerticesArray[0] = VerticesBuffer.createField('FloatField', 3);
             VerticesBuffer.set([
-                0, 0, 1,
-                1, 0, 1,
                 1, 1, 1,
-                0, 1, 1 ]);
+                0, 1, 1,
+                0, 0, 1,
+                1, 0, 1]);
 
             VerticesBuffer = Game.mPack.createObject('VertexBuffer');
             gVerticesArray[1] = VerticesBuffer.createField('FloatField', 3);
@@ -255,18 +255,20 @@ function Face( Game, Shape, FIndex )
             VerticesBuffer = Game.mPack.createObject('VertexBuffer');
             gVerticesArray[4] = VerticesBuffer.createField('FloatField', 3);
             VerticesBuffer.set([
-                1, 0, 1,
-                1, 0, 0,
                 1, 1, 0,
-                1, 1,  1 ]);
+                1, 1, 1,
+                1, 0, 1,
+                1, 0, 0
+                 ]);
 
             VerticesBuffer = Game.mPack.createObject('VertexBuffer');
             gVerticesArray[5] = VerticesBuffer.createField('FloatField', 3);
             VerticesBuffer.set([
-                0, 0, 0,
-                0, 0, 1,
                 0, 1, 1,
-                0, 1, 0 ]);
+                0, 1, 0,
+                0, 0, 0,
+                0, 0, 1
+                 ]);
         }
         return gVerticesArray[ FIndex ];
     }
