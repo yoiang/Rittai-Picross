@@ -1,4 +1,6 @@
 - speed up puzzle creation or speed up block removal from instanced per face
+    - make g<Blah>ToCube into a Hash (also move into Puzzle?)
+    - look into bounding boxes
 
 - optimize IngameOverlay
     - quads should be sized to only area where UI elements are located rather than whole screen
