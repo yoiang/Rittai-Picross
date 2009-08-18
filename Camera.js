@@ -9,7 +9,7 @@ function TargetCamera( Game )
         distanceFromTarget: 15
     };
     var mTarget = [ 0, 0, 0 ];
-    var mUp = [ 0, 0, 1 ];
+    var mUp = [ 0, -1, 0 ];
 
     var mLastOffset = null;
 
@@ -49,8 +49,8 @@ function TargetCamera( Game )
         }
 
         mEye.x = mTarget[0] + Math.cos(mEye.rotZ) * mEye.distanceFromTarget * Math.sin(mEye.rotH);
-        mEye.y = mTarget[1] + Math.sin(mEye.rotZ) * mEye.distanceFromTarget * Math.sin(mEye.rotH);
-        mEye.z = mTarget[2] + Math.cos(mEye.rotH) * mEye.distanceFromTarget;
+        mEye.y = mTarget[2] + Math.cos(mEye.rotH) * mEye.distanceFromTarget;
+        mEye.z = mTarget[1] + Math.sin(mEye.rotZ) * mEye.distanceFromTarget * Math.sin(mEye.rotH);
 
         var EyeV = [mEye.x, mEye.y, mEye.z];
         mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(EyeV, mTarget, mUp);
@@ -91,7 +91,7 @@ function TargetCamera( Game )
             };
 
             dX = (offset.x - mLastOffset.x);
-            dY = (offset.y - mLastOffset.y);
+            dY = -1 * (offset.y - mLastOffset.y);
             mLastOffset = offset;
 
             mEye.rotZ -= dX / 100;
