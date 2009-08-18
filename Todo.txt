@@ -17,7 +17,6 @@
 - dim completed rows' faces
 - determine what faces don't need to be marked
 
-- good camera
 - mousewheel zoom
 
 - autozoom on load to fit puzzle
@@ -32,3 +31,5 @@
 - why doesn't ray intersection with One.rittai work? (also check Won and Failed at load)
 
 - allow resize of window
+
+- good camera
