@@ -6,9 +6,7 @@ function GameInput()
         {
             return false;
         }
-
         
-        var Cube = null;
         if ( Game.mInputState.mKeyDown[87] )
         {
             Game.mPuzzle.tryPaint( Game, Event );
@@ -18,6 +16,25 @@ function GameInput()
         if ( Game.mInputState.mKeyDown[88] )
         {
             Game.mPuzzle.tryBreak( Game, Event );
+            return true;
+        }
+        return false;
+    }
+
+    this.handleMouseMove = function( Game, Event )
+    {
+        if ( Game.mPuzzle && ( Game.mPuzzle.getLost() || Game.mPuzzle.getWon() ) )
+        {
+            return false;
+        }
+
+        if ( Game.mInputState.mKeyDown[87] )
+        {
+            return true;
+        }
+
+        if ( Game.mInputState.mKeyDown[88] )
+        {
             return true;
         }
         return false;

@@ -110,6 +110,11 @@ function InputState( Game )
     {
         return this.mKeyDown[ KeyCode ] == true;
     }
+
+    this.isMouseDown = function( Button )
+    {
+        return this.mMouseDown[ Button ] == true;
+    }
 }
 
 document.onkeydown = function(e) {
