@@ -17,6 +17,7 @@ function TargetCamera( Game )
     {
         // Create the render graph for a view
         mViewInfo = o3djs.rendergraph.createBasicView( Game.mPack, Game.mClient.root, Game.mClient.renderGraphRoot);
+        mViewInfo.clearBuffer.clearColor = [1, 1, 1, 1];
 
         // Set up a perspective projection.
         mViewInfo.drawContext.projection = o3djs.math.matrix4.perspective(
@@ -25,16 +26,8 @@ function TargetCamera( Game )
             1,                  // Near plane.
             5000);              // Far plane.
 
-        // Set up our view transformation to look towards the world origin where the
-        // cube is located.
-        mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(
-            [0, 0, mEye.distanceFromTarget],
-            mTarget,
-            mUp);
-
-        mViewInfo.clearBuffer.clearColor = [1, 1, 1, 1];
+        this.update();
     }
-    this.init( Game );
 
     this.centerOnPuzzle = function( Puzzle )
     {
@@ -110,6 +103,9 @@ function TargetCamera( Game )
         }
         return false;
     }
+
+
+    this.init( Game );
 }
 
 function peg(value, lower, upper) {
