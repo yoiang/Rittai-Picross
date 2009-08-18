@@ -20,13 +20,11 @@ function Game( ClientElements )
     this.initView = function()
     {
         this.mCamera = new TargetCamera( this );
-        this.mCamera.update( this );
 
         this.mIngameOverlay = new IngameOverlay( this );
 
         this.mClient.render();
     }
-    this.initView();
 
     this.mPuzzle = null;
     this.createPuzzle = function( Blocks, AllowedFails )
@@ -54,7 +52,6 @@ function Game( ClientElements )
         this.mInputState.addNotify( new GameInput(Game) );
         this.mInputState.addNotify( this.mCamera );
     }
-    this.initInput();
 
     this.mFinished = false;  // for selenium testing
     this.mTextureLoadDenied = false; // also for selenium testing

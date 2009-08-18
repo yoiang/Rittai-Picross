@@ -29,8 +29,9 @@ function IngameOverlay( Game )
         this.mDisplayQuad = this.mCanvas.createXYQuad(0, 0, 0, Game.mClient.width, Game.mClient.height, true);
 
         this.mCanvasPaint = Game.mPack.createObject('CanvasPaint');
+
+        this.update( Game );
     }
-    this.init( Game );
 
     this.update = function( Game )
     {
@@ -38,7 +39,7 @@ function IngameOverlay( Game )
 
         var scaleBy = 0.8;
         var PaintDown = false;
-        if ( Game.mInputState.isKeyDown(87))
+        if ( Game.mInputState && Game.mInputState.isKeyDown(87))
         {
             PaintDown = true;
             this.mDisplayQuad.canvas.drawBitmap(
@@ -60,7 +61,7 @@ function IngameOverlay( Game )
             this.mDisplayQuad.canvas.restoreMatrix();
         }
 
-        if ( !PaintDown && Game.mInputState.isKeyDown(88) )
+        if ( !PaintDown && Game.mInputState && Game.mInputState.isKeyDown(88) )
         {
             this.mDisplayQuad.canvas.drawBitmap(
                 gIndicatorBreakTexture,
@@ -94,4 +95,6 @@ function IngameOverlay( Game )
         this.mCanvasPaint = null;
         this.mDisplayQuad = null;
     }
+
+    this.init( Game );
 }

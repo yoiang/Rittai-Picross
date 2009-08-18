@@ -57,7 +57,10 @@ function initStep2(clientElements)
 }
 
 function initStep3()
-{    
+{
+    gGame.initView();
+    gGame.initInput();
+    
     fillPuzzleList();
 
     gGame.mClient.setRenderCallback(renderCallback);

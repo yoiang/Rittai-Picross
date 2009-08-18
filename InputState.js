@@ -3,6 +3,7 @@ function InputState( Game )
     this.mGame = Game;
     this.mKeyDown = [];
     this.mMouseDown = [];
+    this.mNotify = [];
 
     this.registerO3DEvents = function(Game )
     {
@@ -32,7 +33,7 @@ function InputState( Game )
 
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
-            if (this.mNotify[ travNotify ].handleKeyDown )
+            if (this.mNotify[ travNotify ] && this.mNotify[ travNotify ].handleKeyDown )
             {
                 if (this.mNotify[ travNotify ].handleKeyDown(this.mGame, Event, KeyCode))
                     break;
@@ -52,7 +53,7 @@ function InputState( Game )
 
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
-            if (this.mNotify[ travNotify ].handleKeyUp )
+            if (this.mNotify[ travNotify ] && this.mNotify[ travNotify ].handleKeyUp )
             {
                 if (    this.mNotify[ travNotify ].handleKeyUp(this.mGame, Event, KeyCode) )
                     break;
@@ -66,7 +67,7 @@ function InputState( Game )
 
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
-            if (this.mNotify[ travNotify ].handleMouseDown )
+            if (this.mNotify[ travNotify ] && this.mNotify[ travNotify ].handleMouseDown )
             {
                 if (this.mNotify[ travNotify ].handleMouseDown(this.mGame, Event))
                     break;
@@ -80,7 +81,7 @@ function InputState( Game )
 
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
-            if (this.mNotify[ travNotify ].handleMouseUp )
+            if (this.mNotify[ travNotify ] && this.mNotify[ travNotify ].handleMouseUp )
             {
                 if (this.mNotify[ travNotify ].handleMouseUp(this.mGame, Event))
                     break;
@@ -92,7 +93,7 @@ function InputState( Game )
     {
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
-            if (this.mNotify[ travNotify ].handleMouseMove )
+            if (this.mNotify[ travNotify ] && this.mNotify[ travNotify ].handleMouseMove )
             {
                 if (this.mNotify[ travNotify ].handleMouseMove(this.mGame, Event))
                     break;
@@ -100,7 +101,6 @@ function InputState( Game )
         }
     }
     
-    this.mNotify = [];
     this.addNotify = function( add )
     {
         this.mNotify[ this.mNotify.length ] = add;
