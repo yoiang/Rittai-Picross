@@ -66,11 +66,11 @@ OrbitTool.prototype.handleMouseMove = function(Game, e) {
         dY = (offset.y - this.lastOffset.y);
         this.lastOffset = offset;
 
-        this.camera.eye.rotZ -= dX / 100;
-        this.camera.eye.rotH -= dY / 100;
-        this.camera.eye.rotH = peg(this.camera.eye.rotH, 0.1, o3djs.math.PI - 0.1);
-        //      document.getElementById('output').innerHTML = this.camera.eye.rotH;
-        this.camera.update( Game );
+        this.camera.getEye().rotZ -= dX / 100;
+        this.camera.getEye().rotH -= dY / 100;
+        this.camera.getEye().rotH = peg(this.camera.getEye().rotH, 0.1, o3djs.math.PI - 0.1);
+
+        this.camera.update( );
     }
     return false;
 };

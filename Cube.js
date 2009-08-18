@@ -347,7 +347,7 @@ function CubeMaterial( Game )
     {
         mMaterial = Game.mPack.createObject('Material');
         
-        mMaterial.drawList = Game.mCamera.mViewInfo.performanceDrawList;
+        mMaterial.drawList = Game.mCamera.getViewInfo().performanceDrawList;
 
         mEffect = Game.mPack.createObject('Effect');
         o3djs.effect.loadEffect( mEffect, 'Cube.shader');
