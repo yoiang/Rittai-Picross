@@ -4,6 +4,9 @@ function Game( ClientElements )
 
     this.mO3d = this.mO3dElement.o3d;
     this.mClient = this.mO3dElement.client;
+
+    this.mClient.renderMode = this.mO3d.Client.RENDERMODE_ON_DEMAND;
+
     this.mPack = this.mClient.createPack();
 
     this.mCamera = null;
@@ -20,6 +23,8 @@ function Game( ClientElements )
         this.mCamera.update( this );
 
         this.mIngameOverlay = new IngameOverlay( this );
+
+        this.mClient.render();
     }
     this.initView();
 
@@ -34,11 +39,13 @@ function Game( ClientElements )
             this.mPuzzle = null;
         }
 
-        this.mCamera.centerOn([ Blocks.length, Blocks[0].length, Blocks[0][0].length] );
+        this.mCamera.centerOn( this, [ Blocks.length, Blocks[0].length, Blocks[0][0].length] );
 
         this.mPuzzle = new Puzzle( this, Blocks, AllowedFails);
 
-        this.mCamera.centerOnPuzzle( this.mPuzzle );
+        this.mCamera.centerOnPuzzle( this, this.mPuzzle );
+
+        this.mClient.render();
     }
 
     this.mInputState = new InputState( this );

@@ -47,6 +47,13 @@ function GameInput()
             Game.toggleDebug();
             return true;
         }
+        Game.mIngameOverlay.update( Game );
+        return false;
+    }
+
+    this.handleKeyUp = function( Game, Event, KeyCode )
+    {
+        Game.mIngameOverlay.update( Game );
         return false;
     }
 }

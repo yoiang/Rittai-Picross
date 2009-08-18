@@ -233,6 +233,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
         Game.mPack.removeObject(mTransform);
         mTransform.parent = null;
         mTransform = null;
+
+        Game.mClient.render();
     }
 
     this.setDebug = function( Value )
@@ -263,6 +265,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
         if ( pickedCube != null )
         {
             pickedCube.togglePainted( Game );
+
+            Game.mClient.render();
         }
     }
 
@@ -283,6 +287,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
             {
                 this.breakSpace( Game, pickedCube );
             }
+
+            Game.mClient.render();
         }
     }
 

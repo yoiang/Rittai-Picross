@@ -1,4 +1,3 @@
-
 function TargetCamera( Game )
 {
     var mViewInfo = null;
@@ -26,15 +25,15 @@ function TargetCamera( Game )
             1,                  // Near plane.
             5000);              // Far plane.
 
-        this.update();
+        this.update( Game );
     }
 
-    this.centerOnPuzzle = function( Puzzle )
+    this.centerOnPuzzle = function( Game, Puzzle )
     {
-        this.centerOn( Puzzle.getMax() );
+        this.centerOn( Game, Puzzle.getMax() );
     }
 
-    this.centerOn = function( Location )
+    this.centerOn = function( Game, Location )
     {
         mTarget[0] = Location[0] / 2.0;
         mTarget[1] = Location[1] / 2.0;
@@ -44,10 +43,10 @@ function TargetCamera( Game )
         mEye.rotH = 46;
         mEye.distanceFromTarget = 15;
 
-        this.update();
+        this.update( Game );
     }
 
-    this.update = function()
+    this.update = function( Game )
     {
         if ( mEye.rotH < 44.5 )
         {
@@ -64,6 +63,8 @@ function TargetCamera( Game )
 
         var EyeV = [mEye.x, mEye.y, mEye.z];
         mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(EyeV, mTarget, mUp);
+
+        Game.mClient.render();
     }
 
     this.getTarget = function()
@@ -108,7 +109,7 @@ function TargetCamera( Game )
             mEye.rotH -= dY / 100;
             mEye.rotH = peg(mEye.rotH, 0.1, o3djs.math.PI - 0.1);
 
-            this.update( );
+            this.update( Game );
             return true;
         }
         return false;

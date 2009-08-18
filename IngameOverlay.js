@@ -82,6 +82,7 @@ function IngameOverlay( Game )
         }
 
         this.mDisplayQuad.updateTexture();
+        Game.mClient.render();
     }
 
     this.destroy = function( Game )
