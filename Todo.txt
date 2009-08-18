@@ -2,8 +2,6 @@
     - make g<Blah>ToCube into a Hash (also move into Puzzle?)
     - look into bounding boxes
 
-- RENDERMODE_ON_DEMAND
-
 - optimize IngameOverlay
     - quads should be sized to only area where UI elements are located rather than whole screen
     OR
@@ -13,9 +11,9 @@
 
 - fix xyz orders
 
-- reorienting face numbers
+- auto-reorienting face numbers
 - dim completed rows' faces
-- determine what faces don't need to be marked
+- determine what faces don't need to be numbered
 
 - mousewheel zoom
 
