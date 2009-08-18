@@ -54,7 +54,7 @@ function IngameOverlay( Game )
             100);
 
         this.mFailsViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(
-            [0, -99, -2],   // eye
+            [0, -99, 2],   // eye
             [0, -99, 0],   // target
             [0, -1, 0]); // up
 
@@ -67,7 +67,7 @@ function IngameOverlay( Game )
 
         for (travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
         {
-            mAllowedFails[travAllowedFails] = new Cube(Game, this, true, mTransform, travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0 );
+            mAllowedFails[travAllowedFails] = new Cube(Game, this, true, mTransform, travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0, false );
         }
     }
 

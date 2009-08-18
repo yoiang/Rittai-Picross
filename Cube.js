@@ -1,6 +1,6 @@
 var gShapeToCube = []; // associate a shape with a cube
 
-function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
+function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, PuzzleLocZ, AssociateWithShape )
 {
     var mRows = null;
     var mSolid = Solid;
@@ -20,7 +20,10 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
     {
         // Create a Shape object for the mesh.
         mShape = Game.mPack.createObject('Shape');
-        gShapeToCube[ gShapeToCube.length ] = [ mShape, this ];
+        if ( AssociateWithShape )
+        {
+            gShapeToCube[ gShapeToCube.length ] = [ mShape, this ];
+        }
 
         mFaces = [];
         for( var travFaces = 0; travFaces < 6; travFaces ++ )
@@ -37,7 +40,6 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
 
         mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation([mPuzzleLocX,mPuzzleLocY,mPuzzleLocZ]));
     };
-    this.createShape( Game, ParentTransform );
 
     this.setNumbersTexture = function( Value )
     {
@@ -145,6 +147,7 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
         mShape = null;
     }
 
+    this.createShape( Game, ParentTransform, AssociateWithShape );
 }
 
 var gVerticesArray = null;
