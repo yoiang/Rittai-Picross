@@ -43,11 +43,11 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
                     var addCube = null;
                     if ( BlocksDefinition[travX][travY][travZ] == 1)
                     {
-                        addCube = new Cube(Game, this, true, mTransform, travX, travY, travZ );
+                        addCube = new Cube(Game, this, true, mTransform, travX, travY, travZ, true );
                         mSolidBlocks++;
                     } else
                     {
-                        addCube = new Cube(Game, this, false, mTransform, travX, travY, travZ );
+                        addCube = new Cube(Game, this, false, mTransform, travX, travY, travZ, true );
                         mSpaceBlocks++;
                     }
 
@@ -57,6 +57,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
                     }
 
                     mBlocks[travX][travY][travZ] = addCube;
+
+                    Game.mClient.render();
                 }
             }
         }
