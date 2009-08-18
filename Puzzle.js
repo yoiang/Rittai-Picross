@@ -1,4 +1,4 @@
-function Puzzle(Game, BlocksDefinition, AllowedFails )
+function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
 {
     var mSolidBlocks = 0;
     var mSpaceBlocks = 0;
@@ -64,7 +64,6 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
         mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
         mTreeInfo.update();
     }
-    this.fillPuzzle(Game, BlocksDefinition);
 
     this.setFaces = function( Game )
     {
@@ -136,7 +135,6 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
             }
         }
     }
-    this.setFaces(Game);
 
     this.breakSpace = function( Game, breakMe )
     {
@@ -159,6 +157,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     {
         triedMe.setFailedBreak( true );
         mRemainingFails --;
+        Game.mIngameOverlay.updateRemainingFails( Game, this );
         this.updateLost(Game);
     }
 
@@ -323,4 +322,9 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
             return this.findCubeFromShape( PickInfo.shapeInfo.shape );
         return null;
     }
+
+    Camera.centerOn( Game, [ BlocksDefinition.length, BlocksDefinition[0].length, BlocksDefinition[0][0].length] );
+    this.fillPuzzle(Game, BlocksDefinition);
+    this.setFaces(Game);
+    Camera.centerOnPuzzle( Game, this );
 }

@@ -138,9 +138,9 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
             mFaces[ travFaces ].destroy();
         }
 */
+        mTransform.parent = null;
         Game.mPack.removeObject(mShape);
         Game.mPack.removeObject(mTransform);
-        mTransform.parent = null;
         mTransform = null;
         mShape = null;
     }
@@ -395,7 +395,6 @@ function CubeMaterial( Game )
         mDebugSpaceColorParam = mMaterial.getParam('DebugSpaceColor');
         mDebugSpaceColorParam.value = [ 1.0, 0.8, 0.8, 1.0 ]; // move to puzzle file?
     }
-    this.init(Game);
 
     this.getMaterial = function()
     {
@@ -466,4 +465,6 @@ function CubeMaterial( Game )
     {
         mDebugSpaceColorParam.value = Value;
     }
+
+    this.init(Game);
 }

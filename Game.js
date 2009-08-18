@@ -35,14 +35,13 @@ function Game( ClientElements )
         {
             this.mPuzzle.destroy( this );
             this.mPuzzle = null;
+            this.mIngameOverlay.puzzleDestroyed( this );
         }
 
-        this.mCamera.centerOn( this, [ Blocks.length, Blocks[0].length, Blocks[0][0].length] );
+        this.mPuzzle = new Puzzle( this, Blocks, AllowedFails, this.mCamera );
 
-        this.mPuzzle = new Puzzle( this, Blocks, AllowedFails);
-
-        this.mCamera.centerOnPuzzle( this, this.mPuzzle );
-
+        this.mIngameOverlay.finishedCreatePuzzle( this, this.mPuzzle );
+        
         this.mClient.render();
     }
 

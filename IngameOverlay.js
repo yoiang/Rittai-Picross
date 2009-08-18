@@ -1,9 +1,13 @@
 function IngameOverlay( Game )
 {
     this.mViewInfo = null;
+    this.mFailsViewInfo = null;
     this.mCanvas = null;
     this.mCanvasPaint = null;
     this.mDisplayQuad = null;
+
+    var mAllowedFails = null;
+    var mTransform = null;
 
     this.init = function( Game )
     {
@@ -30,7 +34,55 @@ function IngameOverlay( Game )
 
         this.mCanvasPaint = Game.mPack.createObject('CanvasPaint');
 
+
+
+
+        mTransform = Game.mPack.createObject('Transform');
+//        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation([0,0,0]));
+        mTransform.parent = Game.mClient.root;
+
+       this.mFailsViewInfo = o3djs.rendergraph.createExtraView(Game.mCamera.getViewInfo(), [0.0, 0.8, 1.0, 0.2 ], [ 1, 0, 0, 1 ], 10000 ); //createView(Game.mPack, mTransform, Game.mClient.renderGraphRoot);
+        this.mFailsViewInfo.clearBuffer.clearColorFlag = false;
+        this.mFailsViewInfo.zOrderedState.getStateParam('CullMode').value = Game.mO3d.State.CULL_NONE;
+
+        this.mFailsViewInfo.drawContext.projection = o3djs.math.matrix4.orthographic(
+            -10.0,
+            10.0,
+            -2.0,
+            2.0,
+            0.001,
+            100);
+
+        this.mFailsViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(
+            [0, -99, -2],   // eye
+            [0, -99, 0],   // target
+            [0, -1, 0]); // up
+
         this.update( Game );
+    }
+
+    this.finishedCreatePuzzle = function( Game, Puzzle )
+    {        
+        mAllowedFails = [];
+
+        for (travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
+        {
+            mAllowedFails[travAllowedFails] = new Cube(Game, this, true, mTransform, travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0 );
+        }
+    }
+
+    this.updateRemainingFails = function( Game, Puzzle )
+    {
+        for (var travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
+        {
+            if ( travAllowedFails < Puzzle.getRemainingFails() )
+            {
+                mAllowedFails[travAllowedFails].setFailedBreak( false );
+            } else
+            {
+                mAllowedFails[travAllowedFails].setFailedBreak( true );
+            }
+        }
     }
 
     this.update = function( Game )
@@ -51,9 +103,6 @@ function IngameOverlay( Game )
             this.mDisplayQuad.canvas.saveMatrix();
             this.mDisplayQuad.canvas.scale(scaleBy, scaleBy);
 
-            // Note that the coordinates passed to drawBitmap get scaled by the current
-            // canvas drawing matrix and therefore we adjust them by the scale to get
-            // the bitmap to follow the mouse position.
             this.mDisplayQuad.canvas.drawBitmap(
                 gIndicatorPaintTexture,
                 50.0 / scaleBy - gIndicatorPaintTexture.width / 2.0,
@@ -72,9 +121,6 @@ function IngameOverlay( Game )
             this.mDisplayQuad.canvas.saveMatrix();
             this.mDisplayQuad.canvas.scale(scaleBy, scaleBy);
 
-            // Note that the coordinates passed to drawBitmap get scaled by the current
-            // canvas drawing matrix and therefore we adjust them by the scale to get
-            // the bitmap to follow the mouse position.
             this.mDisplayQuad.canvas.drawBitmap(
                 gIndicatorBreakTexture,
                 50.0 / scaleBy - gIndicatorBreakTexture.width / 2.0,
@@ -86,8 +132,28 @@ function IngameOverlay( Game )
         Game.mClient.render();
     }
 
+    this.puzzleDestroyed = function( Game )
+    {
+        if ( mAllowedFails != null )
+        {
+            for(var travAllowedFails = 0; travAllowedFails < mAllowedFails.length; travAllowedFails ++)
+            {
+                mAllowedFails[ travAllowedFails ].destroy( Game );
+                mAllowedFails[ travAllowedFails ] = null;
+            }
+            mAllowedFails = null;
+        }
+        /*if ( mTransform != null )
+        {
+            mTransform.parent = null;
+            Game.mPack.removeObject(mTransform);
+            mTransform = null;
+        }*/
+    }
+
     this.destroy = function( Game )
     {
+        this.puzzleDestroyed( Game );
         this.mViewInfo.destroy();
         Game.mPack.removeObject(this.mCanvasPaint);
         this.mViewInfo = null;
