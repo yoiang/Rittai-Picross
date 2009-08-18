@@ -4,8 +4,8 @@ function TargetCamera( Game )
     var mViewInfo = null;
 
     var mEye = {
-        rotZ: 45,
-        rotH: 45,
+        rotZ: 43.4,
+        rotH: 46,
         distanceFromTarget: 15
     };
     var mTarget = [ 0, 0, 0 ];
@@ -31,9 +31,19 @@ function TargetCamera( Game )
 
     this.centerOnPuzzle = function( Puzzle )
     {
-        mTarget[0] = Puzzle.getMax()[0] / 2.0;
-        mTarget[1] = Puzzle.getMax()[1] / 2.0;
-        mTarget[2] = Puzzle.getMax()[2] / 2.0;
+        this.centerOn( Puzzle.getMax() );
+    }
+
+    this.centerOn = function( Location )
+    {
+        mTarget[0] = Location[0] / 2.0;
+        mTarget[1] = Location[1] / 2.0;
+        mTarget[2] = Location[2] / 2.0;
+
+        mEye.rotZ = 43.4;
+        mEye.rotH = 46;
+        mEye.distanceFromTarget = 15;
+
         this.update();
     }
 

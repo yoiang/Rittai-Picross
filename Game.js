@@ -34,11 +34,7 @@ function Game( ClientElements )
             this.mPuzzle = null;
         }
 
-        // TODO: handle recenter before creation cleaner
-        this.mCamera.getTarget()[0] = Blocks.length / 2.0;
-        this.mCamera.getTarget()[1] = Blocks[0].length / 2.0;
-        this.mCamera.getTarget()[2] = Blocks[0][0].length / 2.0;
-        this.mCamera.update( );
+        this.mCamera.centerOn([ Blocks.length, Blocks[0].length, Blocks[0][0].length] );
 
         this.mPuzzle = new Puzzle( this, Blocks, AllowedFails);
 
