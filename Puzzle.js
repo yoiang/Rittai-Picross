@@ -8,10 +8,14 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
     var mBlocks = null;
     var mMax = null;
 
+    var mTransform = null;
     var mTreeInfo = null;
 	
     this.fillPuzzle = function(Game, BlocksDefinition)
     {
+        mTransform = Game.mPack.createObject('Transform');
+        mTransform.parent = Game.mClient.root;
+
         mBlocks = [];
         mMax = [];
 
@@ -39,11 +43,11 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                     var addCube = null;
                     if ( BlocksDefinition[travX][travY][travZ] == 1)
                     {
-                        addCube = new Cube(Game, this, true, travX, travY, travZ );
+                        addCube = new Cube(Game, this, true, mTransform, travX, travY, travZ );
                         mSolidBlocks++;
                     } else
                     {
-                        addCube = new Cube(Game, this, false, travX, travY, travZ );
+                        addCube = new Cube(Game, this, false, mTransform, travX, travY, travZ );
                         mSpaceBlocks++;
                     }
 
@@ -56,8 +60,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                 }
             }
         }
-		
-        mTreeInfo = o3djs.picking.createTransformInfo(Game.mClient.root, null);
+
+        mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
         mTreeInfo.update();
     }
     this.fillPuzzle(Game, BlocksDefinition);
@@ -204,6 +208,11 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
         }
     }
 
+    this.getTransform = function()
+    {
+        return mTransform;
+    }
+
     this.destroy = function( Game )
     {
         for( var travX = 0; travX < mBlocks.length; travX ++)
@@ -220,6 +229,10 @@ function Puzzle(Game, BlocksDefinition, AllowedFails )
                 }
             }
         }
+
+        Game.mPack.removeObject(mTransform);
+        mTransform.parent = null;
+        mTransform = null;
     }
 
     this.setDebug = function( Value )

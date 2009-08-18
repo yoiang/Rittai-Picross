@@ -1,6 +1,6 @@
 var gShapeToCube = []; // associate a shape with a cube
 
-function Cube( Game, Puzzle, Solid, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
+function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
 {
     var mRows = null;
     var mSolid = Solid;
@@ -15,9 +15,8 @@ function Cube( Game, Puzzle, Solid, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
     var mShape = null;
     var mFaces = null;
     var mTransform = null;
-    var mDrawElement = null;
 
-    this.createShape = function(Game)
+    this.createShape = function(Game, ParentTransform)
     {
         // Create a Shape object for the mesh.
         mShape = Game.mPack.createObject('Shape');
@@ -34,11 +33,11 @@ function Cube( Game, Puzzle, Solid, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
         mTransform = Game.mPack.createObject('Transform');
         mTransform.addShape(mShape);
 
-        mTransform.parent = Game.mClient.root;
+        mTransform.parent = ParentTransform;
 
         mTransform.localMatrix = Game.mMath.matrix4.mul(mTransform.localMatrix, Game.mMath.matrix4.translation([mPuzzleLocX,mPuzzleLocY,mPuzzleLocZ]));
     };
-    this.createShape( Game );
+    this.createShape( Game, ParentTransform );
 
     this.setNumbersTexture = function( Value )
     {
@@ -87,6 +86,7 @@ function Cube( Game, Puzzle, Solid, PuzzleLocX, PuzzleLocY, PuzzleLocZ )
 
     this.setFailedBreak = function( Value)
     {
+        mFailedBreak = true;
         for( var travFaces = 0; travFaces < 6; travFaces ++ )
         {
             mFaces[ travFaces ].getMaterial().setFailedBreak(Value);
