@@ -1,3 +1,7 @@
+// #o3d VertexShaderEntryPoint vertexShaderFunction
+// #o3d PixelShaderEntryPoint pixelShaderFunction
+// #o3d MatrixLoadOrder RowMajor
+
 float4x4 worldViewProjection : WorldViewProjection;
 
 int Number;
@@ -91,7 +95,3 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     }
     return Color;
 }
-
-// #o3d VertexShaderEntryPoint vertexShaderFunction
-// #o3d PixelShaderEntryPoint pixelShaderFunction
-// #o3d MatrixLoadOrder RowMajor
