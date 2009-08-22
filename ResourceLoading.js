@@ -155,6 +155,10 @@ function fillPuzzleList()
     'puzzles/Debug/One.rittai',
     'puzzles/Debug/test.rittai',
     'puzzles/Debug/test2.rittai',
+    '',
+    'puzzles/Tutorial/1 - Break a Block.rittai',
+    'puzzles/Tutorial/2 - Break a Block, Save a Block.rittai',
+    '',
     'puzzles/HollowCube.rittai',
     'puzzles/TakeNote.rittai'
     ];
