@@ -46,17 +46,16 @@ function DebugOverlay( Game )
             this.mCanvasPaint.setOutline(0, [0, 0, 0, 0]);
 
             var Y = 15;
-            this.mCanvasPaint.color = [1, 0, 0, 1];
+            this.mCanvasPaint.color = [1, 0.5, 0, 1];
             this.drawText('Space Blocks Left:' + Game.mPuzzle.getSpaceBlocks().toString(), 10, Y);
             this.drawText('Solid Blocks:' + Game.mPuzzle.getSolidBlocks().toString(), 10, Y += 13);
-            this.drawText('Remaining Fails:' + Game.mPuzzle.getAllowedFails().toString(), 10, Y += 13);
+                this.drawText('Remaining Fails:' + Game.mPuzzle.getAllowedFails().toString(), 10, Y += 13);
 
             this.mCanvasPaint.color = [1, 0.5, 0, 1];
             this.drawText('Camera', 10, Y += 13, this.mCanvasPaint);
-            var EyeString = 'Eye - rotZ: ' + Game.mCamera.getEye().rotZ + ' rotH: ' + Game.mCamera.getEye().rotH + ' dFT: ' + Game.mCamera.getEye().distanceFromTarget;
-                EyeString += ' (X, Y, Z): ( ' + Game.mCamera.getEye().x + ', ' + Game.mCamera.getEye().y + ', ' + Game.mCamera.getEye().z + ' )';
-            this.drawText(EyeString, 20, Y += 13);
-            this.drawText('Target (X, Y, Z): ( ' + Game.mCamera.getTarget().x + ', ' + Game.mCamera.getTarget().y + ', ' + Game.mCamera.getTarget().z + ' )', 20, Y += 13);
+            this.drawText('Eye - rotZ: ' + Game.mCamera.getEye().rotZ + ' rotH: ' + Game.mCamera.getEye().rotH, 20, Y += 13);
+            this.drawText('      dFT: ' + Game.mCamera.getEye().distanceFromTarget + ' (X, Y, Z): ( ' + Game.mCamera.getEye().x + ', ' + Game.mCamera.getEye().y + ', ' + Game.mCamera.getEye().z + ' )', 20, Y += 13);
+            this.drawText('Target (X, Y, Z): ( ' + Game.mCamera.getTarget()[0] + ', ' + Game.mCamera.getTarget()[1] + ', ' + Game.mCamera.getTarget()[2] + ' )', 20, Y += 13);
         }
         this.mDisplayQuad.updateTexture();
     }
