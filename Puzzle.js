@@ -398,6 +398,39 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
         return null;
     }
 
+    this.save = function( Game )
+    {
+        var Output = "";
+        Output += "1\n"; // file version
+        Output += mAllowedFails + "\n";
+        Output += mMax[0] + " " + mMax[1] + " " + mMax[2] + "\n\n";
+        for( travX = 0; travX < mBlocks.length; travX ++)
+        {
+            for( travY = 0; travY < mBlocks[travX].length; travY ++)
+            {
+                for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                {
+                    if ( mBlocks[travX][travY][travZ] != null )
+                    {
+                        if ( mBlocks[ travX ][ travY ][ travZ ].getSolid() )
+                        {
+                            Output += "1 ";
+                        } else
+                        {
+                            Output += "0 ";
+                        }
+                    } else
+                    {
+                        Output += "0 ";
+                    }
+                }
+                Output += "\n";
+            }
+            Output += "\n";
+        }
+        return Output;
+    }
+
     Camera.centerOn( Game, [ BlocksDefinition.length, BlocksDefinition[0].length, BlocksDefinition[0][0].length] );
     this.fillPuzzle(Game, BlocksDefinition);
     this.setFaces(Game);

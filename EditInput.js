@@ -18,6 +18,7 @@ function EditInput()
             Game.mPuzzle.editRemove( Game, Event );
             return true;
         }
+
         return false;
     }
 
@@ -47,10 +48,14 @@ function EditInput()
             Game.toggleDebug();
             return true;
         }
-        if ( KeyCode == 27 )
+        if ( KeyCode == 96 )
         {
             Game.toggleEditMode();
             return true;
+        }
+        if ( KeyCode == 83 )
+        {
+            Game.savePuzzle();
         }
 
 

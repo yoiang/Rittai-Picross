@@ -148,4 +148,14 @@ function Game( ClientElements )
             this.mPuzzle.setEditMode( this, false );
         }
     }
+
+    this.savePuzzle = function()
+    {
+        if ( document.getElementById("Subtitle").innerHTML == "Edit Mode" )
+        {
+            document.getElementById("Subtitle").innerHTML = "Edit Mode - saving...";
+            document.getElementById("EditModePuzzleFile").innerHTML = this.mPuzzle.save( this );
+            document.getElementById("Subtitle").innerHTML = "Edit Mode - saved";
+        }
+    }
 }

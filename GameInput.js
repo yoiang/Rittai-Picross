@@ -47,7 +47,7 @@ function GameInput()
             Game.toggleDebug();
             return true;
         }
-        if ( KeyCode == 27 )
+        if ( KeyCode == 96 )
         {
             Game.toggleEditMode();
             return true;
