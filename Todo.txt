@@ -18,8 +18,6 @@
 
 - mousewheel zoom
 
-- autozoom on load to fit puzzle
-
 - peering through puzzle
 
 - dragging paint
@@ -32,3 +30,10 @@
 - allow resize of window
 
 - good camera
+
+- autozoom on load to fit puzzle
+
+- Tutorial Puzzles, step by step introduction
+
+- can I do a request files in folders to get puzzles available?
+
