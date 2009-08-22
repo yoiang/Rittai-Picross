@@ -100,33 +100,43 @@ function loadPuzzleFinished()
     if (gXMLHttp.readyState==4)
     {
         var Result = gXMLHttp.responseText.toString();
-        Result = Result.replace(/\n/g, " ");
-        Result = Result.replace(/  /g, " ");
-        Values = Result.split(" ");
-        var FailAttempts = Values[0];
-        var X = Values[1];
-        var Y = Values[2];
-        var Z = Values[3];
-        var travValues = 4;
-
-        var BlocksZ = [];
-        for( var travZ = 0; travZ < Z; travZ ++ )
+        var Version = Result[0];
+        if ( Version == "1" )
         {
-            var BlocksY = [];
-            for( var travY = 0; travY < Y; travY ++ )
-            {
-                var BlocksX = [];
-                for( var travX = 0; travX < X; travX ++ )
-                {
-                    BlocksX[ travX ] = Values[ travValues ];
-                    travValues ++;
-                }
-                BlocksY[ travY ] = BlocksX;
-            }
-            BlocksZ[ travZ ] = BlocksY;
+            loadPuzzleVersion1( Result );
         }
-        gGame.createPuzzle( BlocksZ, FailAttempts)
     }
+}
+
+function loadPuzzleVersion1( PuzzleText )
+{
+    Values = PuzzleText.replace(/\n/g, " ");
+    Values = Values.replace(/  /g, " ");
+    Values = Values.split(" ");
+
+    var FailAttempts = Values[1];
+    var X = Values[2];
+    var Y = Values[3];
+    var Z = Values[4];
+    var travValues = 5;
+
+    var BlocksZ = [];
+    for( var travZ = 0; travZ < Z; travZ ++ )
+    {
+        var BlocksY = [];
+        for( var travY = 0; travY < Y; travY ++ )
+        {
+            var BlocksX = [];
+            for( var travX = 0; travX < X; travX ++ )
+            {
+                BlocksX[ travX ] = Values[ travValues ];
+                travValues ++;
+            }
+            BlocksY[ travY ] = BlocksX;
+        }
+        BlocksZ[ travZ ] = BlocksY;
+    }
+    gGame.createPuzzle( BlocksZ, FailAttempts)
 }
 
 function selectPuzzle()
