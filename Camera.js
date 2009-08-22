@@ -95,6 +95,15 @@ function TargetCamera( Game )
     this.handleMouseMove = function(Game, e) {
         if (e.x !== undefined && Game.mInputState.isMouseDown( Game.mO3d.Event.BUTTON_LEFT ) )
         {
+            if ( mLastOffset == null )
+            {
+                mLastOffset =
+                {
+                    x: e.x,
+                    y: e.y
+                };
+                return false;
+            }
             var offset =
             {
                 x: e.x,
