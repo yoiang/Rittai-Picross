@@ -41,7 +41,7 @@ function TargetCamera( Game )
 
         mEye.rotZ = 43.4;
         mEye.rotH = 46;
-        mEye.distanceFromTarget = 15;
+        mEye.distanceFromTarget = o3djs.math.distanceSquared( [0,0,0], [mTarget[0], mTarget[1], mTarget[2]] ) + 5;
 
         this.update( Game );
     }
