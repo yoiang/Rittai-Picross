@@ -142,14 +142,13 @@ function PuzzleManualSelect()
 function fillPuzzleList()
 {
     var PuzzleNames = [
-    'One.rittai',
-    'test.rittai',
-    'test2.rittai',
-    'HollowCube.rittai',
+    'puzzles/Debug/One.rittai',
+    'puzzles/Debug/test.rittai',
+    'puzzles/Debug/test2.rittai',
+    'puzzles/HollowCube.rittai',
     'puzzles/TakeNote.rittai'
     ];
 
-    //TODO: can I request a file list???
     var Options = '<select id="puzzleSelect" name="puzzleSelect" onChange="selectPuzzle()">';
     Options += generatePuzzleOption( 'Select Puzzle' );
     for( var travPuzzleNames = 0; travPuzzleNames < PuzzleNames.length; travPuzzleNames ++ )
