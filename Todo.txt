@@ -1,3 +1,17 @@
+- Tutorial Puzzles, step by step introduction
+
+- peering through puzzle
+
+- dragging paint
+- dragging destroy?
+
+- dim completed rows' faces
+- determine what faces don't need to be numbered
+
+- puzzle maker
+- colors defined in puzzle file
+- puzzle finish colors
+
 - speed up puzzle creation or speed up block removal from instanced per face
     - per cube instancing, pass all faces into shader, determine which face is which in shader w/ orientation, bleh
     - make g<Blah>ToCube into a Hash (also move into Puzzle?)
@@ -10,30 +24,16 @@
 
     - additional add IngameOverlay to InputState notify list for keydown and up notifications?
 
-- fix xyz orders
-
-- auto-reorienting face numbers
-- dim completed rows' faces
-- determine what faces don't need to be numbered
-
-- mousewheel zoom
-
-- peering through puzzle
-
-- dragging paint
-- dragging destroy?
-
 - auto destroy 0 row option!!!!
 
+- mousewheel zoom
+- fix xyz orders
 - why doesn't ray intersection with One.rittai work? (also check Won and Failed at load)
-
 - allow resize of window
-
 - good camera
-
 - autozoom on load to fit puzzle
-
-- Tutorial Puzzles, step by step introduction
-
+- autozoom when puzzle smaller due to rotation or destroyed
+- auto-reorienting face numbers
 - can I do a request files in folders to get puzzles available?
+- puzzle finish animation
 
