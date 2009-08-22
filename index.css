@@ -22,7 +22,7 @@ div.BackgroundInfo
 	font-size: 13px;
 }
 
-div.Instructions
+div#Controls, div#Instructions
 {
 	width: 600px;
 	text-align: justify;	
@@ -54,7 +54,17 @@ span.title, div.title
 }
 
 td.ControlsFunction > span.bold,
-div.Instructions > span.bold
+div#Instructions > span.bold
 {
 	font-weight: bold;
+}
+
+div.hidden
+{
+    display: none;
+}
+
+div.unhidden
+{
+    display: block;
 }
