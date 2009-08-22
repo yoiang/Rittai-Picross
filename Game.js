@@ -17,6 +17,11 @@ function Game( ClientElements )
     this.mIngameOverlay = null;
     this.mDebugOverlay = null;
 
+    var mGameInput = null;
+    var mEditInput = null;
+
+    var mEditMode = false;
+
     this.initView = function()
     {
         this.mCamera = new TargetCamera( this );
@@ -27,9 +32,47 @@ function Game( ClientElements )
     }
 
     this.mPuzzle = null;
+
+    var mWon = false;
+    var mLost = false;
+
+    this.getWon = function()
+    {
+        return mWon;
+    }
+
+    this.setWon = function( Value )
+    {
+        mWon = Value;
+        if ( Value )
+        {
+            this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
+        }
+    }
+
+    this.getLost = function()
+    {
+        return mLost;
+    }
+
+    this.setLost = function( Value )
+    {
+        mLost = Value;
+        if ( Value )
+        {
+            this.mCamera.getViewInfo().clearBuffer.clearColor = [1.0, 0, 0, 1];
+        }
+    }
+
+    this.clearWonLost = function()
+    {
+        mWon = false;
+        mLost = false;
+        this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];        
+    }
+
     this.createPuzzle = function( Blocks, AllowedFails )
     {
-        this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];
 
         if ( this.mPuzzle )
         {
@@ -41,14 +84,20 @@ function Game( ClientElements )
         this.mPuzzle = new Puzzle( this, Blocks, AllowedFails, this.mCamera );
 
         this.mIngameOverlay.finishedCreatePuzzle( this, this.mPuzzle );
-        
+
+        this.clearWonLost();
+
         this.mClient.render();
+
+        document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
     }
 
     this.mInputState = new InputState( this );
     this.initInput = function()
     {
-        this.mInputState.addNotify( new GameInput(Game) );
+        mGameInput = new GameInput(Game);
+        mEditInput = new EditInput(Game);
+        this.mInputState.addNotify( mGameInput );
         this.mInputState.addNotify( this.mCamera );
     }
 
@@ -76,19 +125,27 @@ function Game( ClientElements )
         }
     }
 
-    this.setWon = function( Value )
+    this.toggleEditMode = function()
     {
-        if ( Value )
+        mEditMode = !mEditMode;
+        if ( mEditMode )
         {
-            this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
-        }
-    }
+            this.mInputState.removeNotify( mGameInput );
+            this.mInputState.addNotify( mEditInput );
 
-    this.setLost = function( Value )
-    {
-        if ( Value )
+            document.getElementById("Subtitle").innerHTML = "Edit Mode";
+
+            this.clearWonLost();
+
+            this.mPuzzle.setEditMode( this, true );
+        } else
         {
-            this.mCamera.getViewInfo().clearBuffer.clearColor = [1.0, 0, 0, 1];
+            this.mInputState.removeNotify( mEditInput );
+            this.mInputState.addNotify( mGameInput );
+
+            document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
+
+            this.mPuzzle.setEditMode( this, false );
         }
     }
 }

@@ -1,4 +1,4 @@
-function GameInput()
+function EditInput()
 {
     this.handleMouseDown = function( Game, Event )
     {
@@ -9,13 +9,13 @@ function GameInput()
         
         if ( Game.mInputState.mKeyDown[87] )
         {
-            Game.mPuzzle.tryPaint( Game, Event );
+            Game.mPuzzle.editAdd( Game, Event );
             return true;
         }
         
         if ( Game.mInputState.mKeyDown[88] )
         {
-            Game.mPuzzle.tryBreak( Game, Event );
+            Game.mPuzzle.editRemove( Game, Event );
             return true;
         }
         return false;

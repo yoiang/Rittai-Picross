@@ -10,7 +10,28 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
 
     var mTransform = null;
     var mTreeInfo = null;
-	
+
+    this.addBlock = function( Game, X, Y, Z, Solid )
+    {
+        var add = null;
+
+        if ( Solid )
+        {
+            add = new Cube(Game, this, true, mTransform, X, Y, Z, true );
+            mSolidBlocks++;
+        } else
+        {
+            add = new Cube(Game, this, false, mTransform, X, Y, Z, true );
+            mSpaceBlocks++;
+        }
+        if ( Game.mDebug )
+        {
+            add.setDebug(true);
+        }
+
+        mBlocks[X][Y][Z] = add;
+    }
+
     this.fillPuzzle = function(Game, BlocksDefinition)
     {
         mTransform = Game.mPack.createObject('Transform');
@@ -40,23 +61,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
                 }
                 for( var travZ = 0; travZ < BlocksDefinition[travX][travY].length; travZ++)
                 {
-                    var addCube = null;
-                    if ( BlocksDefinition[travX][travY][travZ] == 1)
-                    {
-                        addCube = new Cube(Game, this, true, mTransform, travX, travY, travZ, true );
-                        mSolidBlocks++;
-                    } else
-                    {
-                        addCube = new Cube(Game, this, false, mTransform, travX, travY, travZ, true );
-                        mSpaceBlocks++;
-                    }
-
-                    if ( Game.mDebug )
-                    {
-                        addCube.setDebug(true);
-                    }
-
-                    mBlocks[travX][travY][travZ] = addCube;
+                    this.addBlock( Game, travX, travY, travZ, BlocksDefinition[travX][travY][travZ] == 1 );
 
                     Game.mClient.render();
                 }
@@ -144,9 +149,10 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
         {
             if ( mBlocks && mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] == breakMe )
             {
+                mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] = null;
+
                 breakMe.destroy( Game );
 
-                mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] = null;
                 mSpaceBlocks--;
                 this.updateWon(Game);
 				
@@ -183,27 +189,27 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
         return mRemainingFails;
     }
 
-    this.getLost = function( )
+    this.shouldLose = function( )
     {
         return this.getRemainingFails() == 0;
     }
 
     this.updateLost = function( Game )
     {
-        if ( this.getLost() )
+        if ( !Game.getLost() && !Game.getWon() && this.shouldLose() )
         {
             Game.setLost( true );
         }
     }
 
-    this.getWon = function( )
+    this.shouldWin = function( )
     {
         return this.getSpaceBlocks() == 0;
     }
 
     this.updateWon = function( Game )
     {
-        if ( !this.getLost( ) && this.getWon() )
+        if ( !Game.getLost() && !Game.getWon() && this.shouldWin() )
         {
             Game.setWon( true );
         }
@@ -293,6 +299,73 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
         }
     }
 
+    this.setEditMode = function( Game, Value )
+    {
+        if ( Value )
+        {
+            for( var travX = 0; travX < mBlocks.length; travX ++)
+            {
+                for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+                {
+                    for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                    {
+                        if ( mBlocks[travX][travY][travZ] && mBlocks[travX][travY][travZ].getSolid() == false )
+                        {
+                            var remove = mBlocks[travX][travY][travZ];
+                            mBlocks[travX][travY][travZ] = null;
+                            remove.destroy( Game );
+
+                            mSpaceBlocks --;
+                            Game.mClient.render();
+                        }
+                    }
+                }
+            }
+            mTreeInfo.update();
+        } else
+        {
+            for( travX = 0; travX < mBlocks.length; travX ++)
+            {
+                for( travY = 0; travY < mBlocks[travX].length; travY ++)
+                {
+                    for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                    {
+                        if ( mBlocks[travX][travY][travZ] == null )
+                        {
+                            this.addBlock( Game, travX, travY, travZ, false ); // TODO: reinit puzzle
+                            Game.mClient.render();
+                        }
+                    }
+                }
+            }
+            this.setFaces( Game );
+            mTreeInfo.update();
+        }
+    }
+
+    this.editAdd = function( Game, Event )
+    {
+
+    }
+
+    this.editRemove = function( Game, Event )
+    {
+        pickedCube = this.pickCube( Game, Event );
+        if ( pickedCube != null )
+        {
+            if ( mBlocks && mBlocks[pickedCube.getPuzzleLocX()][pickedCube.getPuzzleLocY()][pickedCube.getPuzzleLocZ()] == pickedCube )
+            {
+                mBlocks[pickedCube.getPuzzleLocX()][pickedCube.getPuzzleLocY()][pickedCube.getPuzzleLocZ()] = null;
+                pickedCube.destroy( Game );
+
+                mSolidBlocks--;
+
+                mTreeInfo.update();
+                Game.mClient.render();
+            }
+        }
+    }
+    
     this.pickShape = function( Game, Event )
     {
         var Ray = o3djs.picking.clientPositionToWorldRay(

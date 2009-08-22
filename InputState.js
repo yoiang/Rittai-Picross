@@ -29,7 +29,8 @@ function InputState( Game )
            KeyCode = Event.which;
         }
         this.mKeyDown[KeyCode] = true;
-//        alert(keycode.toString());
+
+        document.getElementById("DebugLog").innerHTML = "" + KeyCode;
 
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
@@ -104,6 +105,17 @@ function InputState( Game )
     this.addNotify = function( add )
     {
         this.mNotify[ this.mNotify.length ] = add;
+    }
+
+    this.removeNotify = function( remove )
+    {
+        for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
+        {
+            if (this.mNotify[ travNotify ] == remove )
+            {
+                this.mNotify[ travNotify ] = null; // TODO: check remove functionality
+            }
+        }
     }
 
     this.isKeyDown = function( KeyCode )

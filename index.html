@@ -17,6 +17,7 @@
         <script type="text/javascript" src="ResourceLoading.js"></script>
         <script type="text/javascript" src="DebugOverlay.js"></script>
         <script type="text/javascript" src="IngameOverlay.js"></script>
+        <script type="text/javascript" src="EditInput.js"></script>
         <script type="text/javascript">
             o3djs.require('o3djs.util');
             o3djs.require('o3djs.math');
@@ -82,6 +83,8 @@
     <body>
         <div class="Body">
             立体ピクロス - <a href="Todo.txt" target="rittai_todo">todo</a>
+            <div id="Subtitle"></div>
+            <div id="DebugLog"></div>
             <div id="o3d"></div>
             <form name="puzzleSelectForm">
                 <span id="puzzleSelectDiv"></span> <input type="text" id="url" size="60"> <input type="button" id="updateButton" onclick="PuzzleManualSelect();" value="Load Puzzle"><br/>
