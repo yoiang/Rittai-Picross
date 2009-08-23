@@ -101,9 +101,13 @@ function loadPuzzleFinished()
     {
         var Result = gXMLHttp.responseText.toString();
         var Version = Result[0];
+        Result = Result.slice( 2 ); // assume version number and endline
         if ( Version == "1" )
         {
             loadPuzzleVersion1( Result );
+        } else if ( Version == "2" )
+        {
+            loadPuzzleVersion2( Result );
         }
     }
 }
@@ -123,11 +127,11 @@ function loadPuzzleVersion1( PuzzleText )
     
     Values = Values.split(" ");
 
-    var FailAttempts = Values[1];
-    var X = Values[2];
-    var Y = Values[3];
-    var Z = Values[4];
-    var travValues = 5;
+    var FailAttempts = Values[0];
+    var X = Values[1];
+    var Y = Values[2];
+    var Z = Values[3];
+    var travValues = 4;
 
     var BlocksZ = [];
     for( var travZ = 0; travZ < Z; travZ ++ )
@@ -146,6 +150,83 @@ function loadPuzzleVersion1( PuzzleText )
         BlocksZ[ travZ ] = BlocksY;
     }
     gGame.createPuzzle( BlocksZ, FailAttempts)
+}
+
+function loadPuzzleVersion2( PuzzleText )
+{
+    Clean = PuzzleText.replace(/\/\/.*$/img, ""); // remove comments
+    var Assignments = Clean.split(/^[\s]*([\w]+)[ ]*=/im);
+    var travAssignments = 0;
+    if ( Assignments[travAssignments] == "" )
+    {
+        travAssignments ++;
+    }
+
+    var FailAttempts = 0;
+    var X = 0;
+    var Y = 0;
+    var Z = 0;
+    var BlocksZ = [];
+
+    while ( travAssignments + 1 < Assignments.length )
+    {
+        if ( Assignments[travAssignments] == "FailAttempts" )
+        {
+            FailAttempts = parseInt( Assignments[travAssignments + 1] );
+        } else if ( Assignments[travAssignments] == "Dimensions" )
+        {
+            Dimensions = cleanSquareBlock( Assignments[travAssignments + 1] ).split(" ");
+            X = parseInt( Dimensions[0] );
+            Y = parseInt( Dimensions[1] );
+            Z = parseInt( Dimensions[2] );
+        } else if ( Assignments[travAssignments] == "Puzzle" )
+        {
+            BlockDefinition = cleanSquareBlock( Assignments[travAssignments + 1] ).split(" ");
+
+            var travBlockDefinition = 0;
+            for( var travZ = 0; travZ < Z; travZ ++ )
+            {
+                var BlocksY = [];
+                for( var travY = 0; travY < Y; travY ++ )
+                {
+                    var BlocksX = [];
+                    for( var travX = 0; travX < X; travX ++ )
+                    {
+                        BlocksX[ travX ] = BlockDefinition[ travBlockDefinition ];
+                        travBlockDefinition ++;
+                    }
+                    BlocksY[ travY ] = BlocksX;
+                }
+                BlocksZ[ travZ ] = BlocksY;
+            }
+        }
+        travAssignments += 2;
+    }
+
+    gGame.createPuzzle( BlocksZ, FailAttempts);
+    
+}
+
+function cleanSquareBlock( cleanUp )
+{
+    var Clean = cleanUp.replace(/\[/g,"");
+    Clean = Clean.replace(/\]/g,"");
+    Clean = Clean.replace(/\n/g,"");
+    Clean = Clean.replace(/,/g," ");
+    var Values = Clean;
+    do
+    {
+        Clean = Values;
+        Values = Clean.replace(/  /g, " "); // remove double spaces to be safe with split
+    }
+    while( Values != Clean );
+    
+    if( Values[0] == " " )
+    {
+        Values = Values.slice(1);
+    }
+
+    return Values;
 }
 
 function selectPuzzle()
