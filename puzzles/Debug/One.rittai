@@ -1,4 +1,5 @@
-1
-1
-1 1 1
-1
+1 // version number
+1 // number of fail attempts
+1 1 1 // x y z sizes
+
+1 // actual puzzle, 0 = space, 1 = solid

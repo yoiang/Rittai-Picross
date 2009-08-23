@@ -110,8 +110,17 @@ function loadPuzzleFinished()
 
 function loadPuzzleVersion1( PuzzleText )
 {
-    Values = PuzzleText.replace(/\n/g, " ");
-    Values = Values.replace(/  /g, " ");
+    Clean = PuzzleText.replace(/\/\/.*$/img, ""); // remove comments
+    Clean = Clean.replace(/\n/g, " "); // remove endlines
+    
+    var Values = Clean;
+    do
+    {
+        Clean = Values;
+        Values = Clean.replace(/  /g, " "); // remove double spaces to be safe with split
+    }
+    while( Values != Clean );
+    
     Values = Values.split(" ");
 
     var FailAttempts = Values[1];
