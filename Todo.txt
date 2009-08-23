@@ -11,6 +11,7 @@
 - puzzle maker
 - colors defined in puzzle file
 - puzzle finish colors
+- support over 9x9x9 puzzles
 
 - speed up puzzle creation or speed up block removal from instanced per face
     - per cube instancing, pass all faces into shader, determine which face is which in shader w/ orientation, bleh
