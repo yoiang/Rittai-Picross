@@ -181,7 +181,7 @@ function loadPuzzleVersion2( PuzzleText )
             setPuzzleInfo.mDimensions = readIntegerArray( Assignments[travAssignments + 1] );
         } else if ( Assignments[travAssignments] == "Puzzle" )
         {
-            BlockDefinition = cleanSquareBlock( Assignments[travAssignments + 1] ).split(" ");
+            BlockDefinition = readIntegerArray( Assignments[travAssignments + 1] );
 
             setPuzzleInfo.mBlockDefinition = [];
             var travBlockDefinition = 0;
@@ -202,8 +202,7 @@ function loadPuzzleVersion2( PuzzleText )
             }
         } else if ( Assignments[travAssignments] == "Title" )
         {
-            // TODO: Match ""
-            setPuzzleInfo.mTitle = readTextBlock(Assignments[travAssignments + 1]);//Assignments[travAssignments + 1].replace(/\n/g, "");
+            setPuzzleInfo.mTitle = readTextBlock(Assignments[travAssignments + 1]);
         } else if ( Assignments[travAssignments] == "PaintColor" )
         {
             setPuzzleInfo.mPaintColor = readFloatArray( Assignments[travAssignments + 1] );
