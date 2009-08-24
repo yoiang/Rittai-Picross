@@ -6,12 +6,15 @@
 - dragging destroy?
 
 - dim completed rows' faces
-- determine what faces don't need to be numbered
+- determine what faces don't need to be numbered, remove based on difficulty?
 
-- puzzle maker
-- colors defined in puzzle file
-- puzzle finish colors
-- support over 9x9x9 puzzles
+- puzzle editor
+    - set title and colors in editor
+    - puzzle finish colors
+    - autoupdate faces in affected rows when adding and removing blocks
+    - allow in editor resizing
+    - support over 9x9x9 puzzles
+
 
 - insure InputState notifies remain in same order
 
