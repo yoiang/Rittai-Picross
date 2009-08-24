@@ -1,62 +1,83 @@
 body
 {
-	background-color: white;
+    background-color: white;
 }
 
 div.Body
 {
-	width: 100%;
-	text-align: center;
+    width: 100%;
+    text-align: center;
 }
 
 div#o3d
 {
-	width: 600px; 
-	height: 600px; 
-	margin-left: auto; 
-	margin-right: auto;
+    width: 600px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.Sections
+{
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+td.Sections
+{
+    width: 490px;
+    vertical-align: top;
+    padding-bottom: 20px;
 }
 
 div.BackgroundInfo
 {
-	font-size: 13px;
+    font-size: 13px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 div#Controls, div#Instructions
 {
-	width: 600px;
-	text-align: justify;	
-	margin-left: auto; 
-	margin-right: auto;
+    width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div#Instructions
+{
+    text-align: justify;
 }
 
 table.Controls
 {
-	margin-left: auto; 
-	margin-right: auto;
+    width: 450px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 td.ControlsKey
 {
-	text-align: right;
+    text-align: right;
 }
 
 td.ControlsFunction
 {
-	text-align: left;
+    text-align: left;
 }
 
 span.title, div.title
 {
-	font-weight: bold;
-	text-align: center;
-	font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
 }
 
 td.ControlsFunction > span.bold,
 div#Instructions > span.bold
 {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 div.hidden
@@ -67,4 +88,15 @@ div.hidden
 div.unhidden
 {
     display: block;
+}
+
+a.toggleHidden
+{
+    text-decoration: none;
+}
+
+textarea#EditModePuzzleFile
+{
+    width: 450px;
+    height: 200px;
 }
