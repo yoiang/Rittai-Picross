@@ -13,6 +13,10 @@
 - puzzle finish colors
 - support over 9x9x9 puzzles
 
+- insure InputState notifies remain in same order
+
+- handle puzzle definition before dimensions
+
 - speed up puzzle creation or speed up block removal from instanced per face
     - per cube instancing, pass all faces into shader, determine which face is which in shader w/ orientation, bleh
     - make g<Blah>ToCube into a Hash (also move into Puzzle?)
