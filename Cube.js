@@ -339,6 +339,8 @@ function CubeMaterial( Game )
     var mNumberParam = null;
     var mNonadjacentSpacesParam = null;
 
+    var mDimNumberParam = null;
+
     var mFailedBreakParam = null;
     var mPaintedParam = null;
 
@@ -368,6 +370,9 @@ function CubeMaterial( Game )
         mNumberParam.value = 10;
         mNonadjacentSpacesParam = mMaterial.getParam('NonadjacentSpaces');
         mNonadjacentSpacesParam.value = 0;
+
+        mDimNumberParam = mMaterial.getParam('DimNumber');
+        mDimNumberParam.value = false;
 
         mFailedBreakParam = mMaterial.getParam('FailedBreak');
         mFailedBreakParam.value = false;
@@ -415,6 +420,11 @@ function CubeMaterial( Game )
     this.setNonadjacentSpaces = function( Value )
     {
         mNonadjacentSpacesParam.value = Value;
+    }
+
+    this.setmDimNumber = function( Value )
+    {
+        mDimNumberParam.value = Value;
     }
 
     this.setFailedBreak = function( Value )

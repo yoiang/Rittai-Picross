@@ -7,6 +7,8 @@ float4x4 worldViewProjection : WorldViewProjection;
 int Number;
 int NonadjacentSpaces;
 
+bool DimNumber;
+
 bool FailedBreak;
 bool Painted;
 
@@ -45,7 +47,14 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
     float2 NumberTex = float2( input.tex.x / 11.0 + float(Number) / 11.0, input.tex.y );
+
     float4 Color = tex2D(NumberTexSampler, NumberTex);
+    if ( DimNumber )
+    {
+        Color.x += 0.5;
+        Color.y += 0.5;
+        Color.z += 0.5;
+    }
 
     if ( NonadjacentSpaces == 1 )
     {
