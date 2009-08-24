@@ -101,20 +101,35 @@ function InputState( Game )
             }
         }
     }
+
+    this.findNotify = function( find )
+    {
+        for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
+        {
+            if (this.mNotify[ travNotify ] == find )
+            {
+                return travNotify;
+            }
+        }
+        return -1;
+    }
     
     this.addNotify = function( add )
     {
-        this.mNotify[ this.mNotify.length ] = add;
+        var find = this.findNotify( add );
+        if ( find == -1 )
+        {
+            this.mNotify[ this.mNotify.length ] = add;
+        }
     }
 
     this.removeNotify = function( remove )
     {
-        for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
+        var find = this.findNotify( remove );
+        if ( find != -1 )
         {
-            if (this.mNotify[ travNotify ] == remove )
-            {
-                this.mNotify[ travNotify ] = null; // TODO: check remove functionality
-            }
+            this.mNotify[ find ] = null;
+            this.mNotify.splice( find, 1 );
         }
     }
 
