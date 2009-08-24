@@ -1,7 +1,9 @@
 2 // version number
-FailAttempts = 1 // number of fail attempts
-PaintColor = [ 0, 0, 1 ]
+AllowedFails = 1 // number of fail attempts
+PaintColor = [ 0, 1, 1, 1 ]
 
 Dimensions = [1 1 
 1] // x y z sizes
 Puzzle=[ 1 ] // actual puzzle, 0 = space, 1 = solid
+
+Title = "One"

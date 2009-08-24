@@ -1,9 +1,12 @@
-1
 2
-2 2 2
-
-0 1
+Title = "test"
+AllowedFails = 2
+Dimensions = [ 2,2,2 ]
+Puzzle = [ 0 1
 0 0
 
 1 1
 1 1
+
+ ]
+PaintColor = [ 0,0,1,1 ]

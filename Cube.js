@@ -30,6 +30,10 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
         {
             mFaces[ travFaces ] = new Face( Game, mShape, travFaces );
             mFaces[ travFaces ].getMaterial().setSolid(mSolid);
+            if ( mPuzzle.getInfo && mPuzzle.getInfo() )
+            {
+                mFaces[ travFaces ].getMaterial().setPaintedColor( mPuzzle.getInfo().mPaintColor );
+            }
         }
 
         // Create a new transform and parent the Shape under it.

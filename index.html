@@ -64,6 +64,8 @@
     
                 fillPuzzleList();
 
+                gGame.setGameMode( true );
+
                 gGame.mClient.setRenderCallback(renderCallback);
 
                 gGame.mFinishedInit = true;
@@ -104,11 +106,6 @@
                     <td class="Sections">
                         <span class="title">Controls</span> <a href="javascript:toggleHidden('Controls');" class="toggleHidden">+</a>
                         <div id="Controls" class="hidden">
-                            <table class="Controls">
-                                <tr><td class="ControlsKey">Drag Mouse - </td><td class="ControlsFunction">Rotate puzzle</td></tr>
-                                <tr><td class="ControlsKey">Hold W, Click Mouse - </td><td class="ControlsFunction"><span class="bold">PAINT</span> block</td></tr>
-                                <tr><td class="ControlsKey">Hold X, Click Mouse - </td><td class="ControlsFunction"><span class="bold">BREAK</span> block</td></tr>
-                            </table>
                         </div>
                     </td>
                     <td class="Sections">

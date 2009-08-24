@@ -60,11 +60,13 @@ table.Controls
 td.ControlsKey
 {
     text-align: right;
+    width: 50%;
 }
 
 td.ControlsFunction
 {
     text-align: left;
+    width: 50%;
 }
 
 span.title, div.title

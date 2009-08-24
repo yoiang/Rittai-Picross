@@ -71,7 +71,7 @@ function Game( ClientElements )
         this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];        
     }
 
-    this.createPuzzle = function( Blocks, AllowedFails )
+    this.createPuzzle = function( setPuzzleInfo )
     {
 
         if ( this.mPuzzle )
@@ -81,7 +81,7 @@ function Game( ClientElements )
             this.mIngameOverlay.puzzleDestroyed( this );
         }
 
-        this.mPuzzle = new Puzzle( this, Blocks, AllowedFails, this.mCamera );
+        this.mPuzzle = new Puzzle( this, setPuzzleInfo, this.mCamera );
 
         this.mIngameOverlay.finishedCreatePuzzle( this, this.mPuzzle );
 
@@ -89,7 +89,13 @@ function Game( ClientElements )
 
         this.mClient.render();
 
-        document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
+        if ( setPuzzleInfo.mTitle != "" )
+        {
+            document.getElementById("Subtitle").innerHTML = "\"" + setPuzzleInfo.mTitle + "\"";
+        } else
+        {
+            document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
+        }
     }
 
     this.mInputState = new InputState( this );
@@ -128,6 +134,17 @@ function Game( ClientElements )
     this.toggleEditMode = function()
     {
         mEditMode = !mEditMode;
+        this.setEditMode( mEditMode );
+    }
+
+    this.setGameMode = function( Value )
+    {
+        this.setEditMode( !Value );
+    }
+
+    this.setEditMode = function( Value )
+    {
+        mEditMode = Value;
         if ( mEditMode )
         {
             this.mInputState.removeNotify( mGameInput );
@@ -135,17 +152,44 @@ function Game( ClientElements )
 
             document.getElementById("Subtitle").innerHTML = "Edit Mode";
 
+            var ControlsString = "<table class=\"Controls\">\n";
+            ControlsString += generateControlEntry( "Drag Mouse", "Rotate puzzle" );
+            ControlsString += generateControlEntry( "Hold W, Click Mouse", "Add block" );
+            ControlsString += generateControlEntry( "Hold X, Click Mouse", "Remove block" );
+            ControlsString += generateControlEntry( "Press S", "Save puzzle to textarea" );
+            ControlsString += "</table>";
+            document.getElementById("Controls").innerHTML = ControlsString;
+
             this.clearWonLost();
 
-            this.mPuzzle.setEditMode( this, true );
+            if ( this.mPuzzle )
+            {
+                this.mPuzzle.setEditMode( this, true );
+            }
         } else
         {
             this.mInputState.removeNotify( mEditInput );
             this.mInputState.addNotify( mGameInput );
 
-            document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
+            if ( this.mPuzzle && this.mPuzzle.getInfo().mTitle != "" )
+            {
+                document.getElementById("Subtitle").innerHTML = "\"" + this.mPuzzle.getInfo().mTitle + "\"";
+            } else
+            {
+                document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
+            }
 
-            this.mPuzzle.setEditMode( this, false );
+            ControlsString = "<table class=\"Controls\">\n";
+            ControlsString += generateControlEntry( "Drag Mouse", "Rotate puzzle" );
+            ControlsString += generateControlEntry( "Hold W, Click Mouse", "<span class=\"bold\">PAINT</span> block" );
+            ControlsString += generateControlEntry( "Hold X, Click Mouse", "<span class=\"bold\">BREAK</span> block" );
+            ControlsString += "</table>";
+            document.getElementById("Controls").innerHTML = ControlsString;
+
+            if ( this.mPuzzle )
+            {
+                this.mPuzzle.setEditMode( this, false );
+            }
         }
     }
 
@@ -158,4 +202,9 @@ function Game( ClientElements )
             document.getElementById("Subtitle").innerHTML = "Edit Mode - saved";
         }
     }
+}
+
+function generateControlEntry( Key, Function )
+{
+    return "<tr><td class=\"ControlsKey\">" + Key + " - </td><td class=\"ControlsFunction\">" + Function + "</td></tr>";
 }

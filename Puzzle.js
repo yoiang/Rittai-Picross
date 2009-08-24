@@ -1,15 +1,16 @@
-function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
+function Puzzle(Game, setInfo, Camera )
 {
     var mSolidBlocks = 0;
     var mSpaceBlocks = 0;
-    var mAllowedFails = AllowedFails;
-    var mRemainingFails = AllowedFails;
+    var mRemainingFails = setInfo.mAllowedFails;
     
     var mBlocks = null;
     var mMax = null;
 
     var mTransform = null;
     var mTreeInfo = null;
+
+    var mInfo = setInfo;
 
     this.addBlock = function( Game, X, Y, Z, Solid )
     {
@@ -32,7 +33,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
         mBlocks[X][Y][Z] = add;
     }
 
-    this.fillPuzzle = function(Game, BlocksDefinition)
+    this.fillPuzzle = function(Game)
     {
         mTransform = Game.mPack.createObject('Transform');
         mTransform.parent = Game.mClient.root;
@@ -40,6 +41,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
         mBlocks = [];
         mMax = [];
 
+        BlocksDefinition = mInfo.mBlockDefinition;
+        
         if ( mMax[ 0 ] == undefined || mBlocks.length > mMax[ 0 ] )
         {
             mMax[ 0 ] = BlocksDefinition.length;
@@ -181,7 +184,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
 
     this.getAllowedFails = function ()
     {
-        return mAllowedFails;
+        return mInfo.mAllowedFails;
     }
 
     this.getRemainingFails = function ()
@@ -301,6 +304,7 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
 
     this.setEditMode = function( Game, Value )
     {
+        var NeedsUpdate = false;
         if ( Value )
         {
             for( var travX = 0; travX < mBlocks.length; travX ++)
@@ -311,6 +315,8 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
                     {
                         if ( mBlocks[travX][travY][travZ] && mBlocks[travX][travY][travZ].getSolid() == false )
                         {
+                            NeedsUpdate = true;
+
                             var remove = mBlocks[travX][travY][travZ];
                             mBlocks[travX][travY][travZ] = null;
                             remove.destroy( Game );
@@ -321,7 +327,6 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
                     }
                 }
             }
-            mTreeInfo.update();
         } else
         {
             for( travX = 0; travX < mBlocks.length; travX ++)
@@ -332,13 +337,21 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
                     {
                         if ( mBlocks[travX][travY][travZ] == null )
                         {
+                            NeedsUpdate = true;
+                            
                             this.addBlock( Game, travX, travY, travZ, false ); // TODO: reinit puzzle
                             Game.mClient.render();
                         }
                     }
                 }
             }
-            this.setFaces( Game );
+            if ( NeedsUpdate )
+            {
+                this.setFaces( Game );
+            }
+        }
+        if ( NeedsUpdate )
+        {
             mTreeInfo.update();
         }
     }
@@ -401,9 +414,11 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
     this.save = function( Game )
     {
         var Output = "";
-        Output += "1\n"; // file version
-        Output += mAllowedFails + "\n";
-        Output += mMax[0] + " " + mMax[1] + " " + mMax[2] + "\n\n";
+        Output += "2\n"; // file version
+        Output += "Title = \"" + this.getInfo().mTitle + "\"\n";
+        Output += "AllowedFails = " + this.getInfo().mAllowedFails + "\n";
+        Output += "Dimensions = [ " + mMax.toString() + " ]\n";
+        Output += "Puzzle = [ ";
         for( travX = 0; travX < mBlocks.length; travX ++)
         {
             for( travY = 0; travY < mBlocks[travX].length; travY ++)
@@ -428,11 +443,30 @@ function Puzzle(Game, BlocksDefinition, AllowedFails, Camera )
             }
             Output += "\n";
         }
+        Output += " ]\n";
+        Output += "PaintColor = [ " + this.getInfo().mPaintColor.toString() + " ]\n";
         return Output;
     }
 
-    Camera.centerOn( Game, [ BlocksDefinition.length, BlocksDefinition[0].length, BlocksDefinition[0][0].length] );
-    this.fillPuzzle(Game, BlocksDefinition);
+    this.getInfo = function()
+    {
+        return mInfo;
+    }
+
+    Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );
+    this.fillPuzzle(Game);
     this.setFaces(Game);
     Camera.centerOnPuzzle( Game, this );
+}
+
+function PuzzleInfo()
+{
+    this.mTitle = "";
+
+    this.mAllowedFails = 0;
+
+    this.mDimensions = null;
+    this.mBlockDefinition = null;
+    
+    this.mPaintColor = [ 0, 0, 1, 1 ];
 }
