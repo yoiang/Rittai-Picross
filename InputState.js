@@ -30,8 +30,6 @@ function InputState( Game )
         }
         this.mKeyDown[KeyCode] = true;
 
-        document.getElementById("DebugLog").innerHTML = "" + KeyCode;
-
         for( var travNotify = 0; travNotify < this.mNotify.length; travNotify++)
         {
             if (this.mNotify[ travNotify ] && this.mNotify[ travNotify ].handleKeyDown )

@@ -345,10 +345,7 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
-            if ( NeedsUpdate )
-            {
-                this.setFaces( Game );
-            }
+            this.setFaces( Game );
         }
         if ( NeedsUpdate )
         {
@@ -358,7 +355,77 @@ function Puzzle(Game, setInfo, Camera )
 
     this.editAdd = function( Game, Event )
     {
+        var pickedShape = this.pickShape( Game, Event );
+        if ( pickedShape )
+        {
+            var pickedCube = this.findCubeFromShape( pickedShape.shapeInfo.shape );
+            var relHitPos = pickedShape.worldIntersectionPosition;
+            var PuzzleLoc = [ pickedCube.getPuzzleLocX(), pickedCube.getPuzzleLocY(), pickedCube.getPuzzleLocZ() ];
 
+            relHitPos[ 0 ] -= PuzzleLoc[0];
+            relHitPos[ 1 ] -= PuzzleLoc[1];
+            relHitPos[ 2 ] -= PuzzleLoc[2];
+
+            if ( relHitPos[ 0 ] == Math.round( relHitPos[ 0 ] ) )
+            {
+                if ( relHitPos[ 0 ] == 0 )
+                {
+                    PuzzleLoc[ 0 ] -= 1;
+                } else
+                {
+                    PuzzleLoc[ 0 ] += 1;
+                }
+            } else if ( relHitPos[ 1 ] == Math.round( relHitPos[ 1 ] ) )
+            {
+                if ( relHitPos[ 1 ] == 0 )
+                {
+                    PuzzleLoc[ 1 ] -= 1;
+                } else
+                {
+                    PuzzleLoc[ 1 ] += 1;
+                }
+            } else if ( relHitPos[ 2 ] == Math.round( relHitPos[ 2 ] ) )
+            {
+                if ( relHitPos[ 2 ] == 0 )
+                {
+                    PuzzleLoc[ 2 ] -= 1;
+                } else
+                {
+                    PuzzleLoc[ 2 ] += 1;
+                }
+            }
+                //TODO: shift puzzle
+            if ( PuzzleLoc[0] < 0 )
+            {
+                return;
+            }
+            if ( PuzzleLoc[1] < 0 )
+            {
+                return;
+            }
+            if ( PuzzleLoc[2] < 0 )
+            {
+                return;
+            }
+
+            if ( PuzzleLoc[0] >= mMax[0] )
+            {
+                return;
+            }
+            if ( PuzzleLoc[1] >= mMax[1] )
+            {
+                return;
+            }
+            if ( PuzzleLoc[2] >= mMax[2] )
+            {
+                return;
+            }
+
+            this.addBlock( Game, PuzzleLoc[0], PuzzleLoc[1], PuzzleLoc[2], true );
+
+            mTreeInfo.update();
+            Game.mClient.render();
+        }
     }
 
     this.editRemove = function( Game, Event )
