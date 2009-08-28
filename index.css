@@ -38,14 +38,14 @@ div.BackgroundInfo
     margin-right: auto;
 }
 
-div#Controls, div#Instructions
+div#ControlsBody, div#InstructionsBody
 {
     width: 450px;
     margin-left: auto;
     margin-right: auto;
 }
 
-div#Instructions
+div#InstructionsBody
 {
     text-align: justify;
 }
@@ -77,7 +77,7 @@ span.title, div.title
 }
 
 td.ControlsFunction > span.bold,
-div#Instructions > span.bold
+div#InstructionsBody > span.bold
 {
     font-weight: bold;
 }

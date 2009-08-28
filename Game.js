@@ -28,7 +28,7 @@ function Game( ClientElements )
 
         this.mIngameOverlay = new IngameOverlay( this );
 
-        this.mClient.render();
+        this.doRender();
     }
 
     this.mPuzzle = null;
@@ -87,7 +87,7 @@ function Game( ClientElements )
 
         this.clearWonLost();
 
-        this.mClient.render();
+        this.doRender();
 
         if ( setPuzzleInfo.mTitle != "" )
         {
@@ -157,10 +157,15 @@ function Game( ClientElements )
             ControlsString += generateControlEntry( "Hold W, Click Mouse", "Add block" );
             ControlsString += generateControlEntry( "Hold X, Click Mouse", "Remove block" );
             ControlsString += generateControlEntry( "Press S", "Save puzzle to textarea" );
+            ControlsString += generateControlEntry( "Press E", "Toggle Edit Mode" );
             ControlsString += "</table>";
-            document.getElementById("Controls").innerHTML = ControlsString;
+            document.getElementById("ControlsBody").innerHTML = ControlsString;
+
+            document.getElementById("EditMode").className = "unhidden";
 
             this.clearWonLost();
+
+            this.doRender();
 
             if ( this.mPuzzle )
             {
@@ -183,8 +188,15 @@ function Game( ClientElements )
             ControlsString += generateControlEntry( "Drag Mouse", "Rotate puzzle" );
             ControlsString += generateControlEntry( "Hold W, Click Mouse", "<span class=\"bold\">PAINT</span> block" );
             ControlsString += generateControlEntry( "Hold X, Click Mouse", "<span class=\"bold\">BREAK</span> block" );
+            ControlsString += generateControlEntry( "Press E", "Toggle Edit Mode" );
             ControlsString += "</table>";
-            document.getElementById("Controls").innerHTML = ControlsString;
+            document.getElementById("ControlsBody").innerHTML = ControlsString;
+
+            document.getElementById("EditMode").className = "hidden";
+
+            this.clearWonLost();
+
+            this.doRender();
 
             if ( this.mPuzzle )
             {
@@ -200,6 +212,14 @@ function Game( ClientElements )
             document.getElementById("Subtitle").innerHTML = "Edit Mode - saving...";
             document.getElementById("EditModePuzzleFile").innerHTML = this.mPuzzle.save( this );
             document.getElementById("Subtitle").innerHTML = "Edit Mode - saved";
+        }
+    }
+
+    this.doRender = function()
+    {
+        if ( this.mClient )
+        {
+            this.mClient.render();
         }
     }
 }
