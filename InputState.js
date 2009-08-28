@@ -7,6 +7,8 @@ function InputState( Game )
 
     this.registerO3DEvents = function(Game )
     {
+        o3djs.event.addEventListener(Game.mO3dElement, 'keydown', keyDown);
+        o3djs.event.addEventListener(Game.mO3dElement, 'keyup', keyUp);
         o3djs.event.addEventListener(Game.mO3dElement, 'mousedown', mouseDown);
         o3djs.event.addEventListener(Game.mO3dElement, 'mousemove', mouseMove);
         o3djs.event.addEventListener(Game.mO3dElement, 'mouseup', mouseUp);
@@ -26,7 +28,7 @@ function InputState( Game )
         if (window.event) {
             KeyCode = window.event.keyCode;
         } else if (Event) {
-           KeyCode = Event.which;
+           KeyCode = Event.keyCode;
         }
         this.mKeyDown[KeyCode] = true;
 
@@ -46,7 +48,7 @@ function InputState( Game )
         if (window.event) {
             KeyCode = window.event.keyCode;
         } else if (Event) {
-           KeyCode = Event.which;
+           KeyCode = Event.keyCode;
         }
         this.mKeyDown[KeyCode] = false;
 
@@ -142,20 +144,15 @@ function InputState( Game )
     }
 }
 
-document.onkeydown = function(e) {
+function keyDown(e) {
     if ( gGame && gGame.mInputState && gGame.mInputState.handleKeyDown )
         gGame.mInputState.handleKeyDown( e );
-};
+}
 
-document.onkeyup = function(e) {
+function keyUp(e) {
     if ( gGame && gGame.mInputState && gGame.mInputState.handleKeyUp )
         gGame.mInputState.handleKeyUp( e );
-};
-
-document.onmouseup = function(e) {
-    if ( gGame && gGame.mInputState && gGame.mInputState.handleMouseButtonUp )
-        gGame.mInputState.handleMouseButtonUp( e );
-};
+}
 
 function mouseDown(e) {
     if ( gGame && gGame.mInputState && gGame.mInputState.handleMouseDown )
