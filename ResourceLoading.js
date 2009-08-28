@@ -116,6 +116,7 @@ function loadPuzzleVersion1( PuzzleText )
 {
     Clean = PuzzleText.replace(/\/\/.*$/img, ""); // remove comments
     Clean = Clean.replace(/\n/g, " "); // remove endlines
+    Clean = Clean.replace(/\r/g, " "); // remove carriage returns
     
     var Values = Clean;
     do
@@ -124,6 +125,14 @@ function loadPuzzleVersion1( PuzzleText )
         Values = Clean.replace(/  /g, " "); // remove double spaces to be safe with split
     }
     while( Values != Clean );
+    if ( Values[0] == " " )
+    {
+	Values = Values.slice( 1 );
+    }
+    if ( Values[ Values.length - 1 ] == " " )
+    {
+	Values = Values.slice( 0, Values.length - 1 );
+    }
     
     Values = Values.split(" ");
 
@@ -162,6 +171,7 @@ function loadPuzzleVersion1( PuzzleText )
 function loadPuzzleVersion2( PuzzleText )
 {
     Clean = PuzzleText.replace(/\/\/.*$/img, ""); // remove comments
+    Clean = Clean.replace(/\r/g, ""); // remove carriage return
     var Assignments = Clean.split(/^[\s]*([\w]+)[ ]*=/im);
     var travAssignments = 0;
     if ( Assignments[travAssignments] == "" )
@@ -231,6 +241,7 @@ function cleanSquareBlock( cleanUp )
     }
 
     Clean = Clean[0].replace(/\n/g," ");
+    Clean = Clean.replace(/\r/g, " ");
     Clean = Clean.replace(/,/g," ");
     Clean = Clean.replace(/\[/g, "" );
     Clean = Clean.replace(/\]/g, "" );
@@ -245,6 +256,10 @@ function cleanSquareBlock( cleanUp )
     if( Values[0] == " " )
     {
         Values = Values.slice(1);
+    }
+    if ( Values[ Values.length - 1 ] == " " )
+    {
+	Values = Values.slice( 0, Values.length - 1 );
     }
     return Values;
 }
