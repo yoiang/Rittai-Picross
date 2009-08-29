@@ -4,8 +4,8 @@
 
 float4x4 worldViewProjection : WorldViewProjection;
 
-int Number;
-int NonadjacentSpaces;
+float3 Numbers;
+float3 SpacesHints;
 
 bool DimNumber;
 
@@ -25,6 +25,7 @@ float4 DebugSpaceColor;
 struct VertexShaderInput
 {
     float4 position : POSITION;
+    float3 normal : NORMAL;
     float2 tex : TEXCOORD0;
 };
 
@@ -32,7 +33,8 @@ struct PixelShaderInput
 {
     float4 position : POSITION;
     float2 tex : TEXCOORD0;
-};
+    float3 normal : TEXCOORD1;
+ };
 
 PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 {
@@ -41,14 +43,35 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     output.position = mul(input.position, worldViewProjection);
 
     output.tex = input.tex;
+    output.normal = input.normal;
     return output;
 }
 
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
+    float Number = 10;
+    float SpacesHint = 0;
+
+    if ( input.normal.x != 0 )
+    {
+        Number = Numbers.x;
+        SpacesHint = SpacesHints.x;
+    } else if ( input.normal.y != 0 )
+    {
+        Number = Numbers.y;
+        SpacesHint = SpacesHints.y;
+    } else if ( input.normal.z != 0 )
+    {
+        Number = Numbers.z;
+        SpacesHint = SpacesHints.z;
+    }
+
     float2 NumberTex = float2( input.tex.x / 11.0 + float(Number) / 11.0, input.tex.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTex);
+    Color.x *= input.normal.x;
+    Color.y *= input.normal.y;
+    Color.z *= input.normal.z;
     if ( DimNumber )
     {
         Color.x += 0.5;
@@ -56,7 +79,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         Color.z += 0.5;
     }
 
-    if ( NonadjacentSpaces == 1 )
+    if ( SpacesHint == 1 )
     {
         float2 SymbolTex = float2( input.tex.x / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
@@ -65,7 +88,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         {
             Color = Color * SymbolColor;
         }
-    } else if ( NonadjacentSpaces > 1 )
+    } else if ( SpacesHint > 1 )
     {
         float2 SymbolTex = float2( input.tex.x / 11.0 + 1.0 / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );

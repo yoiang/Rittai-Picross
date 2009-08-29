@@ -358,7 +358,11 @@ function Puzzle(Game, setInfo, Camera )
         var pickedShape = this.pickShape( Game, Event );
         if ( pickedShape )
         {
-            var pickedCube = this.findCubeFromShape( pickedShape.shapeInfo.shape );
+            var pickedCube = this.findCubeFromTransform( pickedShape.shapeInfo.parent.transform );
+            if ( pickedCube == null )
+            {
+                return;
+            }
             var relHitPos = pickedShape.worldIntersectionPosition;
             var PuzzleLoc = [ pickedCube.getPuzzleLocX(), pickedCube.getPuzzleLocY(), pickedCube.getPuzzleLocZ() ];
 
@@ -458,13 +462,13 @@ function Puzzle(Game, setInfo, Camera )
         return mTreeInfo.pick(Ray);
     }
 
-    this.findCubeFromShape = function( Shape )
+    this.findCubeFromTransform = function( Transform )
     {
-        for( var travShapeToCube = 0; travShapeToCube < gShapeToCube.length; travShapeToCube ++)
+        for( var travTransformToCube = 0; travTransformToCube < gTransformToCube.length; travTransformToCube ++)
         {
-            if ( gShapeToCube[ travShapeToCube ][ 0 ] == Shape )
+            if ( gTransformToCube[ travTransformToCube ][ 0 ] == Transform )
             {
-                return gShapeToCube[ travShapeToCube ][ 1 ];
+                return gTransformToCube[ travTransformToCube ][ 1 ];
             }
         }
         return null;
@@ -474,7 +478,7 @@ function Puzzle(Game, setInfo, Camera )
     {
         var PickInfo = this.pickShape( Game, Event );
         if ( PickInfo )
-            return this.findCubeFromShape( PickInfo.shapeInfo.shape );
+            return this.findCubeFromTransform( PickInfo.shapeInfo.parent.transform );
         return null;
     }
 
