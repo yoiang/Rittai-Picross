@@ -69,9 +69,6 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     float2 NumberTex = float2( input.tex.x / 11.0 + float(Number) / 11.0, input.tex.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTex);
-    Color.x *= input.normal.x;
-    Color.y *= input.normal.y;
-    Color.z *= input.normal.z;
     if ( DimNumber )
     {
         Color.x += 0.5;
