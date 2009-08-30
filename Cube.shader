@@ -5,6 +5,7 @@
 float4x4 worldViewProjection : WorldViewProjection;
 
 float3 Numbers;
+float3 HideNumbers;
 float3 SpacesHints;
 
 bool DimNumber;
@@ -47,53 +48,77 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     return output;
 }
 
-float4 pixelShaderFunction(PixelShaderInput input): COLOR
+float4 getNumberColor( in float Number, in float2 TexUV )
 {
-    float Number = 10;
-    float SpacesHint = 0;
+    float2 NumberTexUV = float2( TexUV.x / 11.0 + float(Number) / 11.0, TexUV.y );
 
-    if ( input.normal.x != 0 )
-    {
-        Number = Numbers.x;
-        SpacesHint = SpacesHints.x;
-    } else if ( input.normal.y != 0 )
-    {
-        Number = Numbers.y;
-        SpacesHint = SpacesHints.y;
-    } else if ( input.normal.z != 0 )
-    {
-        Number = Numbers.z;
-        SpacesHint = SpacesHints.z;
-    }
-
-    float2 NumberTex = float2( input.tex.x / 11.0 + float(Number) / 11.0, input.tex.y );
-
-    float4 Color = tex2D(NumberTexSampler, NumberTex);
+    float4 Color = tex2D(NumberTexSampler, NumberTexUV);
     if ( DimNumber )
     {
         Color.x += 0.5;
         Color.y += 0.5;
         Color.z += 0.5;
     }
+    return Color;
+}
 
+float4 getSpacesHintColor( in float SpacesHint, in float2 TexUV )
+{
+    float SymbolOffset = -1.0;
     if ( SpacesHint == 1 )
     {
-        float2 SymbolTex = float2( input.tex.x / 11.0, input.tex.y );
-        float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
-
-        if ( SymbolColor.x != 1.0 && SymbolColor.y != 1.0 && SymbolColor.z != 1.0 )
-        {
-            Color = Color * SymbolColor;
-        }
+        SymbolOffset = 0.0;
     } else if ( SpacesHint > 1 )
     {
-        float2 SymbolTex = float2( input.tex.x / 11.0 + 1.0 / 11.0, input.tex.y );
-        float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
+        SymbolOffset = 1.0 / 11.0;
+    } else
+    {
+        return float4( 1, 1, 1, 1 );
+    }
 
-        if ( SymbolColor.x != 1.0 && SymbolColor.y != 1.0 && SymbolColor.z != 1.0 )
+    float2 SymbolTexUV = float2( TexUV.x / 11.0 + SymbolOffset, TexUV.y );
+    return tex2D(SymbolTexSampler, SymbolTexUV );
+}
+
+float4 pixelShaderFunction(PixelShaderInput input): COLOR
+{
+    float Number = 10;
+    float SpacesHint = 0;
+    bool HideNumber = false;
+
+    if ( input.normal.x != 0 )
+    {
+        Number = Numbers.x;
+        SpacesHint = SpacesHints.x;
+        if ( HideNumbers.x )
         {
-            Color = Color * SymbolColor;
+            HideNumber = true;
         }
+    } else if ( input.normal.y != 0 )
+    {
+        Number = Numbers.y;
+        SpacesHint = SpacesHints.y;
+        if ( HideNumbers.y )
+        {
+            HideNumber = true;
+        }
+    } else if ( input.normal.z != 0 )
+    {
+        Number = Numbers.z;
+        SpacesHint = SpacesHints.z;
+        if ( HideNumbers.z )
+        {
+            HideNumber = true;
+        }
+    }
+
+    float2 BorderTex = float2( input.tex.x / 11.0 + 10.0 / 11.0, input.tex.y );
+    float4 Color = tex2D(SymbolTexSampler, BorderTex );
+
+    if ( !HideNumber )
+    {
+        Color = Color * getNumberColor( Number, input.tex );
+        Color = Color * getSpacesHintColor( SpacesHint, input.tex );
     }
 
     if ( FailedBreak )
@@ -101,17 +126,13 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         float2 SymbolTex = float2( input.tex.x / 11.0 + 2.0 / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
 
-        if ( SymbolColor.x != 1.0 && SymbolColor.y != 1.0 && SymbolColor.z != 1.0 )
-        {
-        	Color = Color * PaintedColor * SymbolColor;
-        } else
-        {
-	        Color = Color * PaintedColor;
-        }
+        Color = Color * PaintedColor * SymbolColor;
     } else if ( Painted )
     {
         Color = Color * PaintedColor;
-    } else if ( Debug )
+    }
+
+    if ( Debug )
     {
         float4 colorMult;
         if ( Solid )

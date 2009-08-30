@@ -10,6 +10,7 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
 
     var mTransform = null;
     var mNumbersParam = null;
+    var mHideNumbersParam = null;
     var mSpacesHintsParam = null;
     var mSolidParam = null;
     var mFailedBreakParam = null;
@@ -28,6 +29,8 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
 
         mNumbersParam = mTransform.createParam('Numbers', 'ParamFloat3');
         mNumbersParam.value = [ 10, 10, 10 ];
+        mHideNumbersParam = mTransform.createParam('HideNumbers', 'ParamFloat3');
+        mHideNumbersParam.value = [ 0, 0, 0 ];
         mSpacesHintsParam = mTransform.createParam('SpacesHints', 'ParamFloat3');
         mSpacesHintsParam.value = [ 0, 0, 0 ];
 
