@@ -1,14 +1,12 @@
 var gTransformToCube = []; // associate a transform with a cube
 var gShapeTemplate = null;
 
-function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, PuzzleLocZ, AssociateWithTransform )
+function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWithTransform )
 {
     var mRows = null;
 
     var mPuzzle = Puzzle;
-    var mPuzzleLocX = PuzzleLocX;
-    var mPuzzleLocY = PuzzleLocY;
-    var mPuzzleLocZ = PuzzleLocZ;
+    var mPuzzleLocation = PuzzleLocation;
 
     var mTransform = null;
     var mNumbersParam = null;
@@ -47,7 +45,7 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
 
         mTransform.parent = ParentTransform;
 
-        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation([mPuzzleLocX,mPuzzleLocY,mPuzzleLocZ]));
+        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation(mPuzzleLocation));
     };
 
     this.setNumbersTexture = function( Value )
@@ -114,19 +112,9 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocX, PuzzleLocY, Puz
         mFailedBreakParam.value = Value;
     }
 
-    this.getPuzzleLocX = function()
+    this.getPuzzleLocation = function()
     {
-        return mPuzzleLocX;
-    }
-
-    this.getPuzzleLocY = function()
-    {
-        return mPuzzleLocY;
-    }
-
-    this.getPuzzleLocZ = function()
-    {
-        return mPuzzleLocZ;
+        return mPuzzleLocation;
     }
 
     this.destroy = function( Game )

@@ -12,17 +12,17 @@ function Puzzle(Game, setInfo, Camera )
 
     var mInfo = setInfo;
 
-    this.addBlock = function( Game, X, Y, Z, Solid )
+    this.addBlock = function( Game, PuzzleLocation, Solid )
     {
         var add = null;
 
         if ( Solid )
         {
-            add = new Cube(Game, this, true, mTransform, X, Y, Z, true );
+            add = new Cube(Game, this, true, mTransform, PuzzleLocation, true );
             mSolidBlocks++;
         } else
         {
-            add = new Cube(Game, this, false, mTransform, X, Y, Z, true );
+            add = new Cube(Game, this, false, mTransform, PuzzleLocation, true );
             mSpaceBlocks++;
         }
         if ( Game.mDebug )
@@ -30,7 +30,7 @@ function Puzzle(Game, setInfo, Camera )
             add.setDebug(true);
         }
 
-        mBlocks[X][Y][Z] = add;
+        mBlocks[ PuzzleLocation[0] ][ PuzzleLocation[1] ][ PuzzleLocation[2] ] = add;
     }
 
     this.fillPuzzle = function(Game)
@@ -64,7 +64,7 @@ function Puzzle(Game, setInfo, Camera )
                 }
                 for( var travZ = 0; travZ < BlocksDefinition[travX][travY].length; travZ++)
                 {
-                    this.addBlock( Game, travX, travY, travZ, BlocksDefinition[travX][travY][travZ] == 1 );
+                    this.addBlock( Game, [ travX, travY, travZ ], BlocksDefinition[travX][travY][travZ] == 1 );
 
                     Game.mClient.render();
                 }
@@ -148,19 +148,18 @@ function Puzzle(Game, setInfo, Camera )
 
     this.breakSpace = function( Game, breakMe )
     {
-        if ( breakMe )
+        if ( breakMe && mBlocks )
         {
-            if ( mBlocks && mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] == breakMe )
-            {
-                mBlocks[breakMe.getPuzzleLocX()][breakMe.getPuzzleLocY()][breakMe.getPuzzleLocZ()] = null;
+            var PuzzleLocation = breakMe.getPuzzleLocation();
 
-                breakMe.destroy( Game );
+            mBlocks[ PuzzleLocation[0] ][ PuzzleLocation[1] ][ PuzzleLocation[2] ] = null;
 
-                mSpaceBlocks--;
-                this.updateWon(Game);
-				
-                mTreeInfo.update();
-            }
+            breakMe.destroy( Game );
+
+            mSpaceBlocks--;
+            this.updateWon(Game);
+
+            mTreeInfo.update();
         }
     }
 
@@ -339,7 +338,7 @@ function Puzzle(Game, setInfo, Camera )
                         {
                             NeedsUpdate = true;
                             
-                            this.addBlock( Game, travX, travY, travZ, false ); // TODO: reinit puzzle
+                            this.addBlock( Game, [ travX, travY, travZ ], false ); // TODO: reinit puzzle
                             Game.mClient.render();
                         }
                     }
@@ -364,68 +363,68 @@ function Puzzle(Game, setInfo, Camera )
                 return;
             }
             var relHitPos = pickedShape.worldIntersectionPosition;
-            var PuzzleLoc = [ pickedCube.getPuzzleLocX(), pickedCube.getPuzzleLocY(), pickedCube.getPuzzleLocZ() ];
+            var addLoc = [ pickedCube.getPuzzleLocation()[0], pickedCube.getPuzzleLocation()[1], pickedCube.getPuzzleLocation()[2] ];
 
-            relHitPos[ 0 ] -= PuzzleLoc[0];
-            relHitPos[ 1 ] -= PuzzleLoc[1];
-            relHitPos[ 2 ] -= PuzzleLoc[2];
+            relHitPos[ 0 ] -= addLoc[0];
+            relHitPos[ 1 ] -= addLoc[1];
+            relHitPos[ 2 ] -= addLoc[2];
 
             if ( relHitPos[ 0 ] == Math.round( relHitPos[ 0 ] ) )
             {
                 if ( relHitPos[ 0 ] == 0 )
                 {
-                    PuzzleLoc[ 0 ] -= 1;
+                    addLoc[ 0 ] -= 1;
                 } else
                 {
-                    PuzzleLoc[ 0 ] += 1;
+                    addLoc[ 0 ] += 1;
                 }
             } else if ( relHitPos[ 1 ] == Math.round( relHitPos[ 1 ] ) )
             {
                 if ( relHitPos[ 1 ] == 0 )
                 {
-                    PuzzleLoc[ 1 ] -= 1;
+                    addLoc[ 1 ] -= 1;
                 } else
                 {
-                    PuzzleLoc[ 1 ] += 1;
+                    addLoc[ 1 ] += 1;
                 }
             } else if ( relHitPos[ 2 ] == Math.round( relHitPos[ 2 ] ) )
             {
                 if ( relHitPos[ 2 ] == 0 )
                 {
-                    PuzzleLoc[ 2 ] -= 1;
+                    addLoc[ 2 ] -= 1;
                 } else
                 {
-                    PuzzleLoc[ 2 ] += 1;
+                    addLoc[ 2 ] += 1;
                 }
             }
                 //TODO: shift puzzle
-            if ( PuzzleLoc[0] < 0 )
+            if ( addLoc[0] < 0 )
             {
                 return;
             }
-            if ( PuzzleLoc[1] < 0 )
+            if ( addLoc[1] < 0 )
             {
                 return;
             }
-            if ( PuzzleLoc[2] < 0 )
-            {
-                return;
-            }
-
-            if ( PuzzleLoc[0] >= mMax[0] )
-            {
-                return;
-            }
-            if ( PuzzleLoc[1] >= mMax[1] )
-            {
-                return;
-            }
-            if ( PuzzleLoc[2] >= mMax[2] )
+            if ( addLoc[2] < 0 )
             {
                 return;
             }
 
-            this.addBlock( Game, PuzzleLoc[0], PuzzleLoc[1], PuzzleLoc[2], true );
+            if ( addLoc[0] >= mMax[0] )
+            {
+                return;
+            }
+            if ( addLoc[1] >= mMax[1] )
+            {
+                return;
+            }
+            if ( addLoc[2] >= mMax[2] )
+            {
+                return;
+            }
+
+            this.addBlock( Game, addLoc, true );
 
             mTreeInfo.update();
             Game.mClient.render();
@@ -435,18 +434,17 @@ function Puzzle(Game, setInfo, Camera )
     this.editRemove = function( Game, Event )
     {
         pickedCube = this.pickCube( Game, Event );
-        if ( pickedCube != null )
+        if ( pickedCube != null && mBlocks != null)
         {
-            if ( mBlocks && mBlocks[pickedCube.getPuzzleLocX()][pickedCube.getPuzzleLocY()][pickedCube.getPuzzleLocZ()] == pickedCube )
-            {
-                mBlocks[pickedCube.getPuzzleLocX()][pickedCube.getPuzzleLocY()][pickedCube.getPuzzleLocZ()] = null;
-                pickedCube.destroy( Game );
+            var PuzzleLoc = pickedCube.getPuzzleLocation();
 
-                mSolidBlocks--;
+            mBlocks[ PuzzleLoc[0] ][ PuzzleLoc[1] ][ PuzzleLoc[2] ] = null;
+            pickedCube.destroy( Game );
 
-                mTreeInfo.update();
-                Game.mClient.render();
-            }
+            mSolidBlocks--;
+
+            mTreeInfo.update();
+            Game.mClient.render();
         }
     }
     
@@ -510,9 +508,15 @@ function Puzzle(Game, setInfo, Camera )
                         Output += "0 ";
                     }
                 }
+                if ( travY < mBlocks[travX].length - 1 )
+                {
+                    Output += "\n";
+                }
+            }
+            if ( travX < mBlocks.length - 1 )
+            {
                 Output += "\n";
             }
-            Output += "\n";
         }
         Output += " ]\n";
         Output += "PaintColor = [ " + this.getInfo().mPaintColor.toString() + " ]\n";
