@@ -5,7 +5,6 @@
 - dragging paint
 - dragging destroy?
 
-- dim completed rows' faces
 - determine what faces don't need to be numbered, remove based on difficulty?
 
 - puzzle editor

@@ -75,7 +75,7 @@ function Puzzle(Game, setInfo, Camera )
         mTreeInfo.update();
     }
 
-    this.setFaces = function( Game )
+    this.setRowInfos = function( Game )
     {
         if ( mBlocks )
         {
@@ -128,19 +128,75 @@ function Puzzle(Game, setInfo, Camera )
                 }
             }
 
-
             for( travX = 0; travX < mBlocks.length; travX ++)
             {
                 for( travY = 0; travY < mBlocks[travX].length; travY ++)
                 {
                     for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                     {
+                        if ( SolidCountX[travY][travZ] instanceof Array )
+                        {
+                            SolidCountX[ travY ][ travZ ] = new RowInfo( SolidCountX[travY][travZ] );
+                        }
+                        if ( SolidCountY[travX][travZ] instanceof Array )
+                        {
+                            SolidCountY[ travX ][ travZ ] = new RowInfo( SolidCountY[travX][travZ] );
+                        }
+                        if ( SolidCountZ[travX][travY] instanceof Array )
+                        {
+                            SolidCountZ[ travX ][ travY ] = new RowInfo( SolidCountZ[travX][travY] );
+                        }
+
                         mBlocks[travX][travY][travZ].setRows(Game,
-                            new RowInfo(SolidCountX[travY][travZ]),
-                            new RowInfo(SolidCountY[travX][travZ]),
-                            new RowInfo(SolidCountZ[travX][travY])
-                            );
+                            SolidCountX[ travY ][ travZ ],
+                            SolidCountY[ travX ][ travZ ],
+                            SolidCountZ[ travX ][ travY ]
+                        );
+
+                        this.updateDimmed( [ travX, travY, travZ ],
+                          [ SolidCountX[ travY ][ travZ ],
+                            SolidCountY[ travX ][ travZ ],
+                            SolidCountZ[ travX ][ travY ] ]);
                     }
+                }
+            }
+        }
+    }
+
+    this.updateDimmed = function( PuzzleLocation, Rows )
+    {
+        if ( Rows[ 0 ].getSpaces() == 0 )
+        {
+            for( var travRow = 0; travRow < mMax[ 0 ]; travRow ++ )
+            {
+                if ( mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ] != null )
+                {
+                    var Dimmed = mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ].getDimNumbers();
+                    mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ].setDimNumbers( 1, Dimmed[ 1 ], Dimmed[ 2 ] );
+                }
+            }
+        }
+
+        if ( Rows[ 1 ].getSpaces() == 0 )
+        {
+            for( travRow = 0; travRow < mMax[ 1 ]; travRow ++ )
+            {
+                if ( mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ] != null )
+                {
+                    Dimmed = mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ].getDimNumbers();
+                    mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ].setDimNumbers( Dimmed[ 0 ], 1, Dimmed[ 2 ] );
+                }
+            }
+        }
+
+        if ( Rows[ 2 ].getSpaces() == 0 )
+        {
+            for( travRow = 0; travRow < mMax[ 2 ]; travRow ++ )
+            {
+                if ( mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ] != null )
+                {
+                    Dimmed = mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ].getDimNumbers();
+                    mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ].setDimNumbers( Dimmed[ 0 ], Dimmed[ 1 ], 1 );
                 }
             }
         }
@@ -154,6 +210,13 @@ function Puzzle(Game, setInfo, Camera )
 
             mBlocks[ PuzzleLocation[0] ][ PuzzleLocation[1] ][ PuzzleLocation[2] ] = null;
 
+            var mRows = breakMe.getRows();
+            mRows[ 0 ].setSpaces( mRows[ 0 ].getSpaces() - 1 );
+            mRows[ 1 ].setSpaces( mRows[ 1 ].getSpaces() - 1 );
+            mRows[ 2 ].setSpaces( mRows[ 2 ].getSpaces() - 1 );
+
+            this.updateDimmed( PuzzleLocation, mRows );
+            
             breakMe.destroy( Game );
 
             mSpaceBlocks--;
@@ -344,7 +407,7 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
-            this.setFaces( Game );
+            this.setRowInfos( Game );
         }
         if ( NeedsUpdate )
         {
@@ -530,7 +593,7 @@ function Puzzle(Game, setInfo, Camera )
 
     Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );
     this.fillPuzzle(Game);
-    this.setFaces(Game);
+    this.setRowInfos(Game);
     Camera.centerOnPuzzle( Game, this );
 }
 

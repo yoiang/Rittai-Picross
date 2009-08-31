@@ -5,10 +5,9 @@
 float4x4 worldViewProjection : WorldViewProjection;
 
 float3 Numbers;
+float3 DimNumbers;
 float3 HideNumbers;
 float3 SpacesHints;
-
-bool DimNumber;
 
 bool FailedBreak;
 bool Painted;
@@ -48,21 +47,19 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     return output;
 }
 
-float4 getNumberColor( in float Number, in float2 TexUV )
+float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
 {
     float2 NumberTexUV = float2( TexUV.x / 11.0 + float(Number) / 11.0, TexUV.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTexUV);
-    if ( DimNumber )
+    if ( Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 && DimNumber ) // junk for blocking overdimming, fix this
     {
-        Color.x += 0.5;
-        Color.y += 0.5;
-        Color.z += 0.5;
+        return Color + 0.5;
     }
     return Color;
 }
 
-float4 getSpacesHintColor( in float SpacesHint, in float2 TexUV )
+float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 TexUV )
 {
     float SymbolOffset = -1.0;
     if ( SpacesHint == 1 )
@@ -77,6 +74,10 @@ float4 getSpacesHintColor( in float SpacesHint, in float2 TexUV )
     }
 
     float2 SymbolTexUV = float2( TexUV.x / 11.0 + SymbolOffset, TexUV.y );
+    if ( DimNumber )
+    {
+        return tex2D(SymbolTexSampler, SymbolTexUV ) + 0.5;
+    }
     return tex2D(SymbolTexSampler, SymbolTexUV );
 }
 
@@ -85,6 +86,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     float Number = 10;
     float SpacesHint = 0;
     bool HideNumber = false;
+    bool DimNumber = false;
 
     if ( input.normal.x != 0 )
     {
@@ -94,6 +96,10 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         {
             HideNumber = true;
         }
+        if ( DimNumbers.x )
+        {
+            DimNumber = true;
+        }
     } else if ( input.normal.y != 0 )
     {
         Number = Numbers.y;
@@ -101,6 +107,10 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         if ( HideNumbers.y )
         {
             HideNumber = true;
+        }
+        if ( DimNumbers.y )
+        {
+            DimNumber = true;
         }
     } else if ( input.normal.z != 0 )
     {
@@ -110,6 +120,10 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         {
             HideNumber = true;
         }
+        if ( DimNumbers.z )
+        {
+            DimNumber = true;
+        }
     }
 
     float2 BorderTex = float2( input.tex.x / 11.0 + 10.0 / 11.0, input.tex.y );
@@ -117,8 +131,11 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
 
     if ( !HideNumber )
     {
-        Color = Color * getNumberColor( Number, input.tex );
-        Color = Color * getSpacesHintColor( SpacesHint, input.tex );
+        Color = Color * getNumberColor( Number, DimNumber, input.tex );
+        if ( Color.x == 1 && Color.y == 1 && Color.z == 1 ) // junk so dimming doesn't over dim, fix this
+        {
+            Color = Color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
+        }
     }
 
     if ( FailedBreak )

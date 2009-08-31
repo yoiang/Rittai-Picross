@@ -9,9 +9,12 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
     var mPuzzleLocation = PuzzleLocation;
 
     var mTransform = null;
+
     var mNumbersParam = null;
     var mHideNumbersParam = null;
     var mSpacesHintsParam = null;
+    var mDimNumbersParam = null;
+
     var mSolidParam = null;
     var mFailedBreakParam = null;
     var mPaintedParam = null;
@@ -28,11 +31,14 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
         mTransform.addShape(gShapeTemplate.getShape());
 
         mNumbersParam = mTransform.createParam('Numbers', 'ParamFloat3');
-        mNumbersParam.value = [ 10, 10, 10 ];
+        this.setNumbers( 10, 10, 10 );
         mHideNumbersParam = mTransform.createParam('HideNumbers', 'ParamFloat3');
-        mHideNumbersParam.value = [ 0, 0, 0 ];
+        this.setHideNumbers( 0, 0, 0 );
         mSpacesHintsParam = mTransform.createParam('SpacesHints', 'ParamFloat3');
-        mSpacesHintsParam.value = [ 0, 0, 0 ];
+        this.setSpacesHints( 0, 0, 0 );
+
+        mDimNumbersParam = mTransform.createParam('DimNumbers', 'ParamFloat3');
+        this.setDimNumbers( 0, 0, 0 );
 
         mSolidParam = mTransform.createParam('Solid', 'ParamBoolean');
         this.setSolid( Solid );
@@ -65,8 +71,46 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
     {
         mRows = [ RowX, RowY, RowZ ];
 
-        mNumbersParam.value = [ RowX.getNumber(), RowY.getNumber(), RowZ.getNumber() ];
-        mSpacesHintsParam.value = [ RowX.getSpacesHint(), RowY.getSpacesHint(), RowZ.getSpacesHint() ];
+        this.setNumbers( RowX.getNumber(), RowY.getNumber(), RowZ.getNumber() );
+        this.setSpacesHints( RowX.getSpacesHint(), RowY.getSpacesHint(), RowZ.getSpacesHint() );
+    }
+
+    this.setNumbers = function( X, Y, Z )
+    {
+        mNumbersParam.value = [ X, Y, Z ];
+    }
+    this.getNumbers = function()
+    {
+        return mNumbersParam.value;
+    }
+    this.setHideNumbers = function( X, Y, Z )
+    {
+        mHideNumbersParam.value = [ X, Y, Z ];
+    }
+    this.getHideNumbers = function()
+    {
+        return mHideNumbersParam.value;
+    }
+    this.setSpacesHints = function( X, Y, Z )
+    {
+        mSpacesHintsParam.value = [ X, Y, Z ];
+    }
+    this.getSpacesHints = function()
+    {
+        return mSpacesHintsParam.value;
+    }
+
+    this.setDimNumbers = function( X, Y, Z )
+    {
+        mDimNumbersParam.value = [ X, Y, Z ];
+    }
+    this.getDimNumbers = function()
+    {
+        return mDimNumbersParam.value;
+    }
+    this.getRows = function()
+    {
+        return mRows;
     }
 
     this.setFailedBreak = function( Value)
@@ -320,13 +364,21 @@ function CubeShape( Game )
 
 function RowInfo( Row )
 {
-    var mRow = Row;
+    var mRow;
     var mNumber = 0;
+    var mSpaces = 0;
+    var mSpacesRemaining = 0;
     var mSpacesHint = 0;
-    this.updateCounts = function()
+
+    this.updateCounts = function( Row )
     {
+        mRow = Row;
+
         mNumber = 0;
+        mSpaces = 0;
+        mSpacesRemaining = 0;
         mSpacesHint = 0;
+
         var LastBlockWasSpace = false;
         for( var travRow = 0; travRow < mRow.length; travRow ++ )
         {
@@ -336,6 +388,7 @@ function RowInfo( Row )
                 LastBlockWasSpace = false;
             } else
             {
+                mSpaces ++;
                 if ( mNumber > 0 && !LastBlockWasSpace )
                 {
                     mSpacesHint ++;
@@ -347,18 +400,46 @@ function RowInfo( Row )
         {
             mSpacesHint --;
         }
+        mSpacesRemaining = mSpaces;
     }
-    this.updateCounts();
 
+    this.setNumber = function( Value )
+    {
+        mNumber = Value;
+    }
     this.getNumber = function()
     {
         return mNumber;
     }
 
+    this.setSpaces = function( Value )
+    {
+        mSpaces = Value;
+    }
+    this.getSpaces = function()
+    {
+        return mSpaces;
+    }
+
+    this.setSpacesRemaining = function( Value )
+    {
+        mSpacesRemaining = Value;
+    }
+    this.getSpacesRemaining = function()
+    {
+        return mSpacesRemaining;
+    }
+
+    this.setSpacesHint = function( Value )
+    {
+        mSpacesHint = Value;
+    }
     this.getSpacesHint = function()
     {
         return mSpacesHint;
     }
+
+    this.updateCounts( Row );
 }
 
 function CubeMaterial( Game )
@@ -369,7 +450,7 @@ function CubeMaterial( Game )
     var mNumbersParam = null;
     var mSpacesHintsParam = null;
 
-    var mDimNumberParam = null;
+    var mDimNumbersParam = null;
 
     var mFailedBreakParam = null;
     var mPaintedParam = null;
@@ -401,8 +482,8 @@ function CubeMaterial( Game )
         mSpacesHintsParam = mMaterial.getParam('SpacesHints');
         mSpacesHintsParam.value = [ 0, 0, 0 ];
 
-        mDimNumberParam = mMaterial.getParam('DimNumber');
-        mDimNumberParam.value = false;
+        mDimNumbersParam = mMaterial.getParam('DimNumbers');
+        mDimNumbersParam.value = [ 0, 0, 0 ];
 
         mFailedBreakParam = mMaterial.getParam('FailedBreak');
         mFailedBreakParam.value = false;
@@ -452,9 +533,9 @@ function CubeMaterial( Game )
         mSpacesHintsParam.value = Value;
     }
 
-    this.setmDimNumber = function( Value )
+    this.setDimNumbers = function( Value )
     {
-        mDimNumberParam.value = Value;
+        mDimNumbersParam.value = Value;
     }
 
     this.setFailedBreak = function( Value )
