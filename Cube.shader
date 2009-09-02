@@ -54,7 +54,7 @@ float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
     float4 Color = tex2D(NumberTexSampler, NumberTexUV);
     if ( Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 && DimNumber ) // junk for blocking overdimming, fix this
     {
-        return Color + 0.5;
+        return Color + 0.8;
     }
     return Color;
 }
@@ -76,7 +76,7 @@ float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 Tex
     float2 SymbolTexUV = float2( TexUV.x / 11.0 + SymbolOffset, TexUV.y );
     if ( DimNumber )
     {
-        return tex2D(SymbolTexSampler, SymbolTexUV ) + 0.5;
+        return tex2D(SymbolTexSampler, SymbolTexUV ) + 0.8;
     }
     return tex2D(SymbolTexSampler, SymbolTexUV );
 }
