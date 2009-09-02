@@ -38,7 +38,7 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
         this.setSpacesHints( 0, 0, 0 );
 
         mDimNumbersParam = mTransform.createParam('DimNumbers', 'ParamFloat3');
-        this.setDimNumbers( 0, 0, 0 );
+        this.setDimNumbers( [ 0, 0, 0 ] );
 
         mSolidParam = mTransform.createParam('Solid', 'ParamBoolean');
         this.setSolid( Solid );
@@ -100,9 +100,9 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
         return mSpacesHintsParam.value;
     }
 
-    this.setDimNumbers = function( X, Y, Z )
+    this.setDimNumbers = function( Value )
     {
-        mDimNumbersParam.value = [ X, Y, Z ];
+        mDimNumbersParam.value = Value;
     }
     this.getDimNumbers = function()
     {
@@ -148,15 +148,6 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
     this.setPainted = function( Value )
     {
         mPaintedParam.value = Value;
-    }
-
-    this.getFailedBreak = function()
-    {
-        return mFailedBreakParam.value;
-    }
-    this.setFailedBreak = function( Value )
-    {
-        mFailedBreakParam.value = Value;
     }
 
     this.getPuzzleLocation = function()
@@ -362,17 +353,19 @@ function CubeShape( Game )
     this.init( Game );
 }
 
-function RowInfo( Row )
+function RowInfo( setRowDefinition, setDimension )
 {
-    var mRow;
+    var mRowDefinition = null;
+    var mDimension = -1;
     var mNumber = 0;
     var mSpaces = 0;
     var mSpacesRemaining = 0;
     var mSpacesHint = 0;
 
-    this.updateCounts = function( Row )
+    this.updateCounts = function( setRowDefinition, setDimension )
     {
-        mRow = Row;
+        mRowDefinition = setRowDefinition;
+        mDimension = setDimension;
 
         mNumber = 0;
         mSpaces = 0;
@@ -380,9 +373,9 @@ function RowInfo( Row )
         mSpacesHint = 0;
 
         var LastBlockWasSpace = false;
-        for( var travRow = 0; travRow < mRow.length; travRow ++ )
+        for( var travRow = 0; travRow < mRowDefinition.length; travRow ++ )
         {
-            if ( mRow[ travRow ] == 1 )
+            if ( mRowDefinition[ travRow ] == 1 )
             {
                 mNumber ++;
                 LastBlockWasSpace = false;
@@ -401,6 +394,11 @@ function RowInfo( Row )
             mSpacesHint --;
         }
         mSpacesRemaining = mSpaces;
+    }
+
+    this.getDimension = function()
+    {
+        return mDimension;
     }
 
     this.setNumber = function( Value )
@@ -439,7 +437,7 @@ function RowInfo( Row )
         return mSpacesHint;
     }
 
-    this.updateCounts( Row );
+    this.updateCounts( setRowDefinition, setDimension );
 }
 
 function CubeMaterial( Game )

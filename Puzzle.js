@@ -136,15 +136,15 @@ function Puzzle(Game, setInfo, Camera )
                     {
                         if ( SolidCountX[travY][travZ] instanceof Array )
                         {
-                            SolidCountX[ travY ][ travZ ] = new RowInfo( SolidCountX[travY][travZ] );
+                            SolidCountX[ travY ][ travZ ] = new RowInfo( SolidCountX[travY][travZ], 0 );
                         }
                         if ( SolidCountY[travX][travZ] instanceof Array )
                         {
-                            SolidCountY[ travX ][ travZ ] = new RowInfo( SolidCountY[travX][travZ] );
+                            SolidCountY[ travX ][ travZ ] = new RowInfo( SolidCountY[travX][travZ], 1 );
                         }
                         if ( SolidCountZ[travX][travY] instanceof Array )
                         {
-                            SolidCountZ[ travX ][ travY ] = new RowInfo( SolidCountZ[travX][travY] );
+                            SolidCountZ[ travX ][ travY ] = new RowInfo( SolidCountZ[travX][travY], 2 );
                         }
 
                         mBlocks[travX][travY][travZ].setRows(Game,
@@ -153,11 +153,59 @@ function Puzzle(Game, setInfo, Camera )
                             SolidCountZ[ travX ][ travY ]
                         );
 
-                        this.updateDimmed( Game, [ travX, travY, travZ ],
-                          [ SolidCountX[ travY ][ travZ ],
-                            SolidCountY[ travX ][ travZ ],
-                            SolidCountZ[ travX ][ travY ] ]);
+                        this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountX[ travY ][ travZ ] );
+                        this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountY[ travX ][ travZ ] );
+                        this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountZ[ travX ][ travY ] );
                     }
+                }
+            }
+        }
+    }
+   
+    this.getBlockByDimIterator = function( PuzzleLocation, Dimension, Iterator )
+    {
+        if ( Dimension == 0 )
+        {
+            return mBlocks[ Iterator ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ];
+        } else if ( Dimension == 1 )
+        {
+            return mBlocks[ PuzzleLocation[ 0 ] ][ Iterator ][ PuzzleLocation[ 2 ] ];
+        } else
+        {
+            return mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ Iterator ];
+        }
+    }
+
+    this.updateDimmedRow = function( Game, PuzzleLocation, Row )
+    {
+        var Painted;
+        if ( Row.getSpaces() == 0 )
+        {
+            var Dimension = Row.getDimension();
+            if ( Game.getOnlyDimIfPainted() )
+            {
+                Painted = true;
+                for( var travRow = 0; travRow < mMax[ Dimension ]; travRow ++ )
+                {
+                    var Test = this.getBlockByDimIterator( PuzzleLocation, Dimension, travRow );
+
+                    if ( Test != null && !Test.getPainted() && !Test.getFailedBreak() )
+                    {
+                        Painted = false;
+                        break;
+                    }
+                }
+            }
+
+            for( travRow = 0; travRow < mMax[ Dimension ]; travRow ++ )
+            {
+                Set = this.getBlockByDimIterator( PuzzleLocation, Dimension, travRow );
+                
+                if ( Set != null )
+                {
+                    var Dim = Set.getDimNumbers();
+                    Dim[ Dimension ] = ( !Game.getOnlyDimIfPainted() || Painted ) ? 1 : 0;
+                    Set.setDimNumbers( Dim );
                 }
             }
         }
@@ -165,89 +213,9 @@ function Puzzle(Game, setInfo, Camera )
 
     this.updateDimmed = function( Game, PuzzleLocation, Rows )
     {
-        var Painted;
-        if ( Rows[ 0 ].getSpaces() == 0 )
+        for( var travRows = 0; travRows < 3; travRows ++ )
         {
-            if ( Game.getOnlyDimIfPainted() )
-            {
-                Painted = true;
-                for( var travRow = 0; travRow < mMax[ 0 ]; travRow ++ )
-                {
-                    if ( mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ] != null )
-                    {
-                        if ( !mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ].getPainted() )
-                        {
-                            Painted = false;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            for( travRow = 0; travRow < mMax[ 0 ]; travRow ++ )
-            {
-                if ( mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ] != null )
-                {
-                    var Dimmed = mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ].getDimNumbers();
-                    mBlocks[ travRow ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ].setDimNumbers( (!Game.getOnlyDimIfPainted() || Painted)?1:0, Dimmed[ 1 ], Dimmed[ 2 ] );
-                }
-            }
-        }
-
-        if ( Rows[ 1 ].getSpaces() == 0 )
-        {
-            if ( Game.getOnlyDimIfPainted() )
-            {
-                Painted = true;
-                for( travRow = 0; travRow < mMax[ 1 ]; travRow ++ )
-                {
-                    if ( mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ] != null )
-                    {
-                        if ( !mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ].getPainted() )
-                        {
-                            Painted = false;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            for( travRow = 0; travRow < mMax[ 1 ]; travRow ++ )
-            {
-                if ( mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ] != null )
-                {
-                    Dimmed = mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ].getDimNumbers();
-                    mBlocks[ PuzzleLocation[ 0 ] ][ travRow ][ PuzzleLocation[ 2 ] ].setDimNumbers( Dimmed[ 0 ], (!Game.getOnlyDimIfPainted() || Painted)?1:0, Dimmed[ 2 ] );
-                }
-            }
-        }
-
-        if ( Rows[ 2 ].getSpaces() == 0 )
-        {
-            if ( Game.getOnlyDimIfPainted() )
-            {
-                Painted = true;
-                for( travRow = 0; travRow < mMax[ 2 ]; travRow ++ )
-                {
-                    if ( mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ] != null )
-                    {
-                        if ( !mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ].getPainted() )
-                        {
-                            Painted = false;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            for( travRow = 0; travRow < mMax[ 2 ]; travRow ++ )
-            {
-                if ( mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ] != null )
-                {
-                    Dimmed = mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ].getDimNumbers();
-                    mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ travRow ].setDimNumbers( Dimmed[ 0 ], Dimmed[ 1 ], (!Game.getOnlyDimIfPainted() || Painted)?1:0 );
-                }
-            }
+            this.updateDimmedRow( Game, PuzzleLocation, Rows[ travRows ] );
         }
     }
 
