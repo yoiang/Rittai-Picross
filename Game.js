@@ -36,6 +36,8 @@ function Game( ClientElements )
     var mWon = false;
     var mLost = false;
 
+    var mOnlyDimIfPainted = true;
+
     this.getWon = function()
     {
         return mWon;
@@ -221,6 +223,11 @@ function Game( ClientElements )
         {
             this.mClient.render();
         }
+    }
+
+    this.getOnlyDimIfPainted = function()
+    {
+        return mOnlyDimIfPainted;
     }
 }
 
