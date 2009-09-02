@@ -67,7 +67,7 @@ function IngameOverlay( Game )
 
         for (travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
         {
-            mAllowedFails[travAllowedFails] = new Cube(Game, this, true, mTransform, travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0, false );
+            mAllowedFails[travAllowedFails] = new Cube(Game, null, true, mTransform, [ travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0 ], false );
         }
     }
 
