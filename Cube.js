@@ -1,12 +1,11 @@
 var gTransformToCube = []; // associate a transform with a cube
 var gShapeTemplate = null;
 
-function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWithTransform )
+function Cube( Game, setCubeInfo, AssociateWithTransform )
 {
-    var mRows = null;
+    var mCubeInfo = setCubeInfo;
 
-    var mPuzzle = Puzzle;
-    var mPuzzleLocation = PuzzleLocation;
+    var mRows = null;
 
     var mTransform = null;
 
@@ -19,7 +18,9 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
     var mFailedBreakParam = null;
     var mPaintedParam = null;
 
-    this.createShape = function(Game, ParentTransform, Solid, AssociateWithTransform)
+    var mFinishedColorParam = null;
+
+    this.createShape = function(Game, AssociateWithTransform)
     {
         if ( gShapeTemplate == null )
         {
@@ -41,20 +42,23 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
         this.setDimNumbers( [ 0, 0, 0 ] );
 
         mSolidParam = mTransform.createParam('Solid', 'ParamBoolean');
-        this.setSolid( Solid );
+        this.setSolid( mCubeInfo.mSolid );
         mFailedBreakParam = mTransform.createParam('FailedBreak', 'ParamBoolean');
         this.setFailedBreak( false );
         mPaintedParam = mTransform.createParam('Painted', 'ParamBoolean');
         this.setPainted( false );
+
+        mFinishedColorParam = mTransform.createParam('FinishedColor', 'ParamFloat4' );
+        this.setFinishedColor( mCubeInfo.mFinishedColor );
 
         if ( AssociateWithTransform )
         {
             gTransformToCube[ gTransformToCube.length ] = [ mTransform, this ];
         }
 
-        mTransform.parent = ParentTransform;
+        mTransform.parent = mCubeInfo.mParentTransform;
 
-        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation(mPuzzleLocation));
+        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation( mCubeInfo.mPuzzleLocation ));
     };
 
     this.setNumbersTexture = function( Value )
@@ -128,7 +132,7 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
     }
     this.setSolid = function( Value )
     {
-        mSolidParam.value = Solid;
+        mSolidParam.value = Value;
     }
 
     this.setDebug = function(Value)
@@ -150,19 +154,47 @@ function Cube( Game, Puzzle, Solid, ParentTransform, PuzzleLocation, AssociateWi
         mPaintedParam.value = Value;
     }
 
+    this.setFinishedColor = function( Value )
+    {
+        mFinishedColorParam.value = Value;
+    }
+
     this.getPuzzleLocation = function()
     {
-        return mPuzzleLocation;
+        return mCubeInfo.mPuzzleLocation;
     }
 
     this.destroy = function( Game )
     {
-        mTransform.parent = null;
-        Game.mPack.removeObject(mTransform);
-        mTransform = null;
+        if ( mCubeInfo != null )
+        {
+            mCubeInfo.destroy();
+        }
+        if( mTransform != null )
+        {
+            mTransform.parent = null;
+            Game.mPack.removeObject(mTransform);
+            mTransform = null;
+        }
     }
 
-    this.createShape( Game, ParentTransform, Solid, AssociateWithTransform );
+    this.createShape( Game, AssociateWithTransform );
+}
+
+function CubeInfo( )
+{
+    this.mPuzzle = null;
+    this.mParentTransform = null;
+    
+    this.mSolid = false;
+    this.mFinishedColor = [ 0.3, 0.3, 0.3, 1 ];
+    this.mPuzzleLocation = [ -1, -1, -1 ];
+
+    this.destroy = function()
+    {
+        this.mPuzzle = null;
+        this.mParentTransform = null;
+    }
 }
 
 function CubeShape( Game )
@@ -455,6 +487,9 @@ function CubeMaterial( Game )
 
     var mSolidParam = null;
     var mDebugParam = null;
+    
+    var mFinishedParam = null;
+    var mFinishedColorParam = null;
 
     var mNumberTexSampler = null;
     var mSymbolTexSampler = null;
@@ -492,6 +527,11 @@ function CubeMaterial( Game )
         mSolidParam.value = false;
         mDebugParam = mMaterial.getParam('Debug');
         mDebugParam.value = false;
+
+        mFinishedParam = mMaterial.getParam('Finished');
+        mFinishedParam.value = false;
+        mFinishedColorParam = mMaterial.getParam('FinishedColor');
+        mFinishedColorParam.value = [ 0, 0, 0, 1 ];
 
         var NumberSamplerParam = mMaterial.getParam('NumberTexSampler');
         mNumberTexSampler = Game.mPack.createObject('Sampler');
@@ -568,6 +608,24 @@ function CubeMaterial( Game )
     this.toggleDebug = function()
     {
         this.setDebug(!this.getDebug());
+    }
+
+    this.setFinished = function( Value )
+    {
+        mFinishedParam.value = Value;
+    }
+    this.getFinished = function()
+    {
+        return mFinishedParam.value;
+    }
+
+    this.setFinishedColor = function( Value )
+    {
+        mFinishedColorParam.value = Value;
+    }
+    this.getFinishedColor = function()
+    {
+        return mFinishedColorParam.value;
     }
 
     this.setNumbersTexture = function( Value )

@@ -16,15 +16,21 @@ function Puzzle(Game, setInfo, Camera )
     {
         var add = null;
 
+        var Info = new CubeInfo();
+        Info.mPuzzle = this;
+        Info.mParentTransform = mTransform;
+        Info.mSolid = Solid;
+        Info.mPuzzleLocation = PuzzleLocation;
+//        Info.mFinishedColor = [ 1, 1, 1, 1 ];
+
         if ( Solid )
         {
-            add = new Cube(Game, this, true, mTransform, PuzzleLocation, true );
             mSolidBlocks++;
         } else
         {
-            add = new Cube(Game, this, false, mTransform, PuzzleLocation, true );
             mSpaceBlocks++;
         }
+        add = new Cube(Game, Info, true );
         if ( Game.mDebug )
         {
             add.setDebug(true);
@@ -65,8 +71,6 @@ function Puzzle(Game, setInfo, Camera )
                 for( var travZ = 0; travZ < BlocksDefinition[travX][travY].length; travZ++)
                 {
                     this.addBlock( Game, [ travX, travY, travZ ], BlocksDefinition[travX][travY][travZ] == 1 );
-
-                    Game.mClient.render();
                 }
             }
         }

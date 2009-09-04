@@ -65,9 +65,14 @@ function IngameOverlay( Game )
     {        
         mAllowedFails = [];
 
-        for (travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
+        for (var travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
         {
-            mAllowedFails[travAllowedFails] = new Cube(Game, null, true, mTransform, [ travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0 ], false );
+            var Info = new CubeInfo();
+            Info.mParentTransform = mTransform;
+            Info.mSolid = true;
+            Info.mPuzzleLocation = [ travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0 ];
+            Info.mFinishedColor = [ 1, 1, 1, 1 ];
+            mAllowedFails[travAllowedFails] = new Cube(Game, Info, false );
         }
     }
 

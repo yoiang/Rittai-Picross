@@ -84,6 +84,11 @@
                     item.className=(item.className=='hidden')?'unhidden':'hidden';
                 }
             }
+            
+            function generateControlEntry( Key, Function )
+            {
+                return "<tr><td class=\"ControlsKey\">" + Key + " - </td><td class=\"ControlsFunction\">" + Function + "</td></tr>";
+            }
         </script>
 
         <link href="index.css" type="text/css" rel="stylesheet"/>

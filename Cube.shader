@@ -4,6 +4,8 @@
 
 float4x4 worldViewProjection : WorldViewProjection;
 
+bool Solid;
+
 float3 Numbers;
 float3 DimNumbers;
 float3 HideNumbers;
@@ -12,15 +14,17 @@ float3 SpacesHints;
 bool FailedBreak;
 bool Painted;
 
-bool Solid;
+float4 PaintedColor;
+
+bool Finished;
+float4 FinishedColor;
+
 bool Debug;
+float4 DebugSolidColor;
+float4 DebugSpaceColor;
 
 sampler NumberTexSampler;
 sampler SymbolTexSampler;
-
-float4 PaintedColor;
-float4 DebugSolidColor;
-float4 DebugSpaceColor;
 
 struct VertexShaderInput
 {
@@ -83,59 +87,72 @@ float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 Tex
 
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
-    float Number = 10;
-    float SpacesHint = 0;
-    bool HideNumber = false;
-    bool DimNumber = false;
+    float4 Color = float4( 1, 1, 1, 1 );
+    if ( !Finished )
+    {
+        float Number = 10;
+        float SpacesHint = 0;
+        bool HideNumber = false;
+        bool DimNumber = false;
 
-    if ( input.normal.x != 0 )
-    {
-        Number = Numbers.x;
-        SpacesHint = SpacesHints.x;
-        if ( HideNumbers.x )
+        if ( input.normal.x != 0 )
         {
-            HideNumber = true;
-        }
-        if ( DimNumbers.x )
+            Number = Numbers.x;
+            SpacesHint = SpacesHints.x;
+            if ( HideNumbers.x )
+            {
+                HideNumber = true;
+            }
+            if ( DimNumbers.x )
+            {
+                DimNumber = true;
+            }
+        } else if ( input.normal.y != 0 )
         {
-            DimNumber = true;
-        }
-    } else if ( input.normal.y != 0 )
-    {
-        Number = Numbers.y;
-        SpacesHint = SpacesHints.y;
-        if ( HideNumbers.y )
+            Number = Numbers.y;
+            SpacesHint = SpacesHints.y;
+            if ( HideNumbers.y )
+            {
+                HideNumber = true;
+            }
+            if ( DimNumbers.y )
+            {
+                DimNumber = true;
+            }
+        } else if ( input.normal.z != 0 )
         {
-            HideNumber = true;
+            Number = Numbers.z;
+            SpacesHint = SpacesHints.z;
+            if ( HideNumbers.z )
+            {
+                HideNumber = true;
+            }
+            if ( DimNumbers.z )
+            {
+                DimNumber = true;
+            }
         }
-        if ( DimNumbers.y )
-        {
-            DimNumber = true;
-        }
-    } else if ( input.normal.z != 0 )
-    {
-        Number = Numbers.z;
-        SpacesHint = SpacesHints.z;
-        if ( HideNumbers.z )
-        {
-            HideNumber = true;
-        }
-        if ( DimNumbers.z )
-        {
-            DimNumber = true;
-        }
-    }
 
-    float2 BorderTex = float2( input.tex.x / 11.0 + 10.0 / 11.0, input.tex.y );
-    float4 Color = tex2D(SymbolTexSampler, BorderTex );
 
-    if ( !HideNumber )
-    {
-        Color = Color * getNumberColor( Number, DimNumber, input.tex );
-        if ( Color.x == 1 && Color.y == 1 && Color.z == 1 ) // junk so dimming doesn't over dim, fix this
+        float2 BorderTex = float2( input.tex.x / 11.0 + 10.0 / 11.0, input.tex.y );
+        Color = tex2D(SymbolTexSampler, BorderTex );
+
+        if ( !HideNumber )
         {
-            Color = Color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
+            Color = Color * getNumberColor( Number, DimNumber, input.tex );
+            if ( Color.x == 1 && Color.y == 1 && Color.z == 1 ) // junk so dimming doesn't over dim, fix this
+            {
+                Color = Color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
+            }
         }
+
+        if ( Painted || FailedBreak )
+        {
+            Color = Color * PaintedColor;
+        }
+    } else
+    {
+        Color = Color * FinishedColor;
     }
 
     if ( FailedBreak )
@@ -143,10 +160,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         float2 SymbolTex = float2( input.tex.x / 11.0 + 2.0 / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
 
-        Color = Color * PaintedColor * SymbolColor;
-    } else if ( Painted )
-    {
-        Color = Color * PaintedColor;
+        Color = Color * SymbolColor;
     }
 
     if ( Debug )

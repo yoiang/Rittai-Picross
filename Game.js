@@ -22,6 +22,16 @@ function Game( ClientElements )
 
     var mEditMode = false;
 
+
+    this.mPuzzle = null;
+
+    var mWon = false;
+    var mLost = false;
+
+    var mOnlyDimIfPainted = true;
+
+    var mHideUnneededFaces = true;
+    
     this.initView = function()
     {
         this.mCamera = new TargetCamera( this );
@@ -30,13 +40,6 @@ function Game( ClientElements )
 
         this.doRender();
     }
-
-    this.mPuzzle = null;
-
-    var mWon = false;
-    var mLost = false;
-
-    var mOnlyDimIfPainted = true;
 
     this.getWon = function()
     {
@@ -49,6 +52,10 @@ function Game( ClientElements )
         if ( Value )
         {
             this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
+            if ( gShapeTemplate )
+            {
+                gShapeTemplate.getMaterial().setFinished( true );
+            }
         }
     }
 
@@ -70,7 +77,11 @@ function Game( ClientElements )
     {
         mWon = false;
         mLost = false;
-        this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];        
+        this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];
+        if ( gShapeTemplate )
+        {
+            gShapeTemplate.getMaterial().setFinished( false );
+        }
     }
 
     this.createPuzzle = function( setPuzzleInfo )
@@ -209,12 +220,7 @@ function Game( ClientElements )
 
     this.savePuzzle = function()
     {
-        if ( document.getElementById("Subtitle").innerHTML == "Edit Mode" )
-        {
-            document.getElementById("Subtitle").innerHTML = "Edit Mode - saving...";
-            document.getElementById("EditModePuzzleFile").innerHTML = this.mPuzzle.save( this );
-            document.getElementById("Subtitle").innerHTML = "Edit Mode - saved";
-        }
+        document.getElementById("EditModePuzzleFile").innerHTML = this.mPuzzle.save( this );
     }
 
     this.doRender = function()
@@ -229,9 +235,9 @@ function Game( ClientElements )
     {
         return mOnlyDimIfPainted;
     }
-}
 
-function generateControlEntry( Key, Function )
-{
-    return "<tr><td class=\"ControlsKey\">" + Key + " - </td><td class=\"ControlsFunction\">" + Function + "</td></tr>";
+    this.getHideUnneededFaces = function()
+    {
+        return mHideUnneededFaces;
+    }
 }
