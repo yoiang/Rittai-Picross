@@ -34,7 +34,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         mNumbersParam = mTransform.createParam('Numbers', 'ParamFloat3');
         this.setNumbers( -1, -1, -1 );
         mHideNumbersParam = mTransform.createParam('HideNumbers', 'ParamFloat3');
-        this.setHideNumbers( 0, 0, 0 );
+        this.setHideNumbers( [ 1, 1, 1 ] );
         mSpacesHintsParam = mTransform.createParam('SpacesHints', 'ParamFloat3');
         this.setSpacesHints( 0, 0, 0 );
 
@@ -87,9 +87,9 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     {
         return mNumbersParam.value;
     }
-    this.setHideNumbers = function( X, Y, Z )
+    this.setHideNumbers = function( Value )
     {
-        mHideNumbersParam.value = [ X, Y, Z ];
+        mHideNumbersParam.value = Value;
     }
     this.getHideNumbers = function()
     {
@@ -169,6 +169,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         if ( mCubeInfo != null )
         {
             mCubeInfo.destroy();
+            mCubeInfo = null;
         }
         if( mTransform != null )
         {

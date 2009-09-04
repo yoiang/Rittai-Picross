@@ -165,6 +165,23 @@ function Puzzle(Game, setInfo, Camera )
             }
         }
     }
+
+    this.showNeededFaces = function( Game )
+    {
+        for( var travX = 0; travX < mBlocks.length; travX ++)
+        {
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+            {
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                {
+                    if ( mBlocks[ travX ][ travY ][ travZ ] != null )
+                    {
+                        mBlocks[ travX ][ travY ][ travZ ].setHideNumbers( [ 0, 0, 0 ] );
+                    }
+                }
+            }
+        }
+    }
    
     this.getBlockByDimIterator = function( PuzzleLocation, Dimension, Iterator )
     {
@@ -619,8 +636,9 @@ function Puzzle(Game, setInfo, Camera )
     }
 
     Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );
-    this.fillPuzzle(Game);
-    this.setRowInfos(Game);
+    this.fillPuzzle( Game );
+    this.setRowInfos( Game );
+    this.showNeededFaces( Game );
     Camera.centerOnPuzzle( Game, this );
 }
 
