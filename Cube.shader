@@ -53,7 +53,12 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 
 float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
 {
-    float2 NumberTexUV = float2( TexUV.x / 11.0 + float(Number) / 11.0, TexUV.y );
+    if ( Number < 0 || Number > 9 )
+    {
+        return float4( 1, 1, 1, 1 );
+    }
+
+    float2 NumberTexUV = float2( TexUV.x / 10.0 + float(Number) / 10.0, TexUV.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTexUV);
     if ( Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 && DimNumber ) // junk for blocking overdimming, fix this
@@ -68,10 +73,10 @@ float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 Tex
     float SymbolOffset = -1.0;
     if ( SpacesHint == 1 )
     {
-        SymbolOffset = 0.0;
+        SymbolOffset = 1.0 / 11.0;
     } else if ( SpacesHint > 1 )
     {
-        SymbolOffset = 1.0 / 11.0;
+        SymbolOffset = 2.0 / 11.0;
     } else
     {
         return float4( 1, 1, 1, 1 );
@@ -133,8 +138,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
             }
         }
 
-
-        float2 BorderTex = float2( input.tex.x / 11.0 + 10.0 / 11.0, input.tex.y );
+        float2 BorderTex = float2( input.tex.x / 11.0, input.tex.y );
         Color = tex2D(SymbolTexSampler, BorderTex );
 
         if ( !HideNumber )
@@ -157,7 +161,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
 
     if ( FailedBreak )
     {
-        float2 SymbolTex = float2( input.tex.x / 11.0 + 2.0 / 11.0, input.tex.y );
+        float2 SymbolTex = float2( input.tex.x / 11.0 + 3.0 / 11.0, input.tex.y );
         float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
 
         Color = Color * SymbolColor;
