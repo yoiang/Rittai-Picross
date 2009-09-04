@@ -95,7 +95,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     float4 Color = float4( 1, 1, 1, 1 );
     if ( !Finished )
     {
-        float Number = 10;
+        float Number = -1;
         float SpacesHint = 0;
         bool HideNumber = false;
         bool DimNumber = false;

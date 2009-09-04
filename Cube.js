@@ -32,7 +32,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         mTransform.addShape(gShapeTemplate.getShape());
 
         mNumbersParam = mTransform.createParam('Numbers', 'ParamFloat3');
-        this.setNumbers( 10, 10, 10 );
+        this.setNumbers( -1, -1, -1 );
         mHideNumbersParam = mTransform.createParam('HideNumbers', 'ParamFloat3');
         this.setHideNumbers( 0, 0, 0 );
         mSpacesHintsParam = mTransform.createParam('SpacesHints', 'ParamFloat3');
@@ -511,7 +511,7 @@ function CubeMaterial( Game )
         mEffect.createUniformParameters(mMaterial);
 
         mNumbersParam = mMaterial.getParam('Numbers');
-        mNumbersParam.value = [ 10, 10, 10 ];
+        mNumbersParam.value = [ -1, -1, -1 ];
         mSpacesHintsParam = mMaterial.getParam('SpacesHints');
         mSpacesHintsParam.value = [ 0, 0, 0 ];
 
