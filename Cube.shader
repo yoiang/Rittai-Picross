@@ -156,7 +156,19 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         }
     } else
     {
-        Color = Color * FinishedColor;
+        float Diffuse = 1.0;
+        if ( input.normal.x != 0 )
+        {
+            Diffuse = 1.0;
+        } else if ( input.normal.y != 0 )
+        {
+            Diffuse = 0.9;
+        } else if ( input.normal.z != 0 )
+        {
+            Diffuse = 0.8;
+        }
+
+        Color = Color * FinishedColor * Diffuse;
     }
 
     if ( FailedBreak )
@@ -178,5 +190,6 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
             Color = Color * DebugSpaceColor;
         }
     }
+
     return Color;
 }
