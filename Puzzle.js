@@ -231,6 +231,7 @@ function Puzzle(Game, setInfo, Camera )
  
     this.attemptGuaranteeAdjacentRow = function( UnguaranteedLoc, Dimension, Guaranteed, RowNumber )
     {
+        // TODO: beginning and end should be offset by surrounding guaranteed
         var MoreGuaranteed = false;
         var GuaranteedCount = 0;
         var Skip = mMax[ Dimension ] - RowNumber;
@@ -310,10 +311,11 @@ function Puzzle(Game, setInfo, Camera )
                 {
                     this.showRowFaces( UnguaranteedLoc, Dimension );
 
-                    break;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     this.findUnguaranteedCubeLoc = function( Guaranteed, Last )
@@ -325,18 +327,18 @@ function Puzzle(Game, setInfo, Camera )
         } else
         {
             StartFromLoc = Last;
-            StartFromLoc[0]++;
-            if ( StartFromLoc[0] >= mMax[0])
+            StartFromLoc[2]++;
+            if ( StartFromLoc[2] >= mMax[2])
             {
-                StartFromLoc[0] = 0;
+                StartFromLoc[2] = 0;
                 StartFromLoc[1] ++;
                 if( StartFromLoc[1] >= mMax[1])
                 {
                     StartFromLoc[1] = 0;
-                    StartFromLoc[ 2 ] ++;
-                    if ( StartFromLoc[2] >= mMax[2] )
+                    StartFromLoc[ 0 ] ++;
+                    if ( StartFromLoc[0] >= mMax[0] )
                     {
-                        StartFromLoc[2] = 0;
+                        StartFromLoc[0] = 0;
                     }
                 }
             }
@@ -393,21 +395,26 @@ function Puzzle(Game, setInfo, Camera )
             this.attemptGuaranteeLocation( SolidBlockLocs[ travSolid ], Guaranteed );
         }
 
-        var tempMaxIt = travSolid;
+        var ItCount = 0;
+        var NoImprovement = true;
         var UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, null );
-        while ( UnguaranteedLoc != null && tempMaxIt < 1000)
+        while ( UnguaranteedLoc != null || !NoImprovement)
         {
-            this.attemptGuaranteeLocation( UnguaranteedLoc, Guaranteed );
-            
-            tempMaxIt ++;
-            UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, UnguaranteedLoc );
-            if ( UnguaranteedLoc == null )
+            if ( UnguaranteedLoc != null && this.attemptGuaranteeLocation( UnguaranteedLoc, Guaranteed ) )
             {
+                NoImprovement = false;
+            }
+            
+            UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, UnguaranteedLoc );
+            if ( UnguaranteedLoc == null && NoImprovement == false )
+            {
+                NoImprovement = true;
                 UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, null );
             }
+            ItCount++;
         }
 
-        document.getElementById("DebugLog").innerHTML += "showNeededFaces Iterated: " + tempMaxIt;
+        document.getElementById("DebugLog").innerHTML += "showNeededFaces Iterated: " + ItCount;
 
         var count = 0;
         for( travX = 0; travX < mBlocks.length; travX ++)
