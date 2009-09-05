@@ -31,10 +31,6 @@ function Puzzle(Game, setInfo, Camera )
             mSpaceBlocks++;
         }
         add = new Cube(Game, Info, true );
-        if ( Game.mDebug )
-        {
-            add.setDebug(true);
-        }
 
         mBlocks[ PuzzleLocation[0] ][ PuzzleLocation[1] ][ PuzzleLocation[2] ] = add;
     }
@@ -151,10 +147,10 @@ function Puzzle(Game, setInfo, Camera )
                             SolidCountZ[ travX ][ travY ] = new RowInfo( SolidCountZ[travX][travY], 2 );
                         }
 
-                        mBlocks[travX][travY][travZ].setRows(Game,
-                            SolidCountX[ travY ][ travZ ],
-                            SolidCountY[ travX ][ travZ ],
-                            SolidCountZ[ travX ][ travY ]
+                        mBlocks[travX][travY][travZ].setRows(
+                            [ SolidCountX[ travY ][ travZ ],
+                              SolidCountY[ travX ][ travZ ],
+                              SolidCountZ[ travX ][ travY ] ]
                         );
 
                         this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountX[ travY ][ travZ ] );
@@ -166,34 +162,282 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    this.showNeededFaces = function( Game )
+    this.showRowFaces = function( UnguaranteedLoc, Dimension )
+    {
+        for( var trav = 0; trav < mMax[ Dimension ]; trav ++)
+        {
+            var updateCube = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
+            var Hide = updateCube.getHideNumbers();
+            if ( Hide != null && Hide[ Dimension ] != 0 )
+            {
+                Hide[ Dimension ] = 0;
+                updateCube.setHideNumbers( Hide );
+            }
+        }
+    }
+    
+    this.attemptGuaranteeZeroRow = function( UnguaranteedLoc, Dimension, Guaranteed )
+    {
+        /*/ skip find unguaranteed, always assume we are doing it on a row with at least one?
+        var FoundUnguaranteed = false;
+        for( var trav = 0; trav < mMax[ Dimension ]; trav ++ )
+        {
+            if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
+            {
+                FoundUnguaranteed = true;
+                break;
+            }
+        }
+
+        if ( FoundUnguaranteed )*/
+        {
+            for( var trav = 0; trav < mMax[ Dimension ]; trav ++ )
+            {
+                setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
+            }
+            return true;
+        }
+//        return false;
+    }
+
+    this.checkIndirectGuaranteed = function( UnguaranteedLoc, Dimension, Guaranteed )
+    {
+        var NotGuaranteed = [];
+        for( var trav = 0; trav < mMax[ Dimension ]; trav ++ ) // check that all spaces in row are guaranteed
+        {
+            var CheckSpace = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
+            if ( !CheckSpace.getSolid() )
+            {
+                if ( !getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) )
+                {
+                    return false;
+                }
+            } else
+            {
+                if ( !getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) )
+                {
+                    NotGuaranteed[ NotGuaranteed.length ] = trav;
+                }
+            }
+        }
+
+        // if so whole row is guaranteed
+        for( trav = 0; trav < NotGuaranteed.length; trav ++ )
+        {
+            setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, NotGuaranteed[ trav ], 1 );
+        }
+        return true;
+    }
+ 
+    this.attemptGuaranteeAdjacentRow = function( UnguaranteedLoc, Dimension, Guaranteed, RowNumber )
+    {
+        var MoreGuaranteed = false;
+        var GuaranteedCount = 0;
+        var Skip = mMax[ Dimension ] - RowNumber;
+        for( var trav = 0; trav < mMax[ Dimension ]; trav ++ )
+        {
+            if ( trav >= Skip && trav < mMax[ Dimension ] - Skip )
+            {
+                if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
+                {
+                    setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
+                    MoreGuaranteed = true;
+                }
+            }
+
+            if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 1 )
+            {
+                GuaranteedCount ++;
+            }
+        }
+        if ( GuaranteedCount >= RowNumber )
+        {
+            for( trav = 0; trav < mMax[ Dimension ]; trav ++ )
+            {
+                if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
+                {
+                    setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
+                    MoreGuaranteed = true;
+                }
+            }
+        }
+        return MoreGuaranteed;
+    }
+
+    
+    this.checkMoreGuaranteed = function( UnguaranteedLoc, Dimension, Guaranteed )
+    {
+        var MoreGuaranteed = false;
+        
+        var firstCube = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, 0 );
+        var Row = firstCube.getRows()[ Dimension ];
+
+        var SpacesHint = Row.getSpacesHint();
+        var RowNumber = Row.getNumber();
+        if ( RowNumber == 0 )
+        {
+            MoreGuaranteed = this.attemptGuaranteeZeroRow( UnguaranteedLoc, Dimension, Guaranteed );
+        } else
+        {
+            if ( Row.getSpaces() > 0 && this.checkIndirectGuaranteed( UnguaranteedLoc, Dimension, Guaranteed ) )
+            {
+                return false; // since whole row guaranteed break out and don't show faces
+            }
+
+            if ( SpacesHint == 0 )
+            {
+                //if ( mMax[ Dimension ] / 2.0 < Number )
+    //            {
+                    MoreGuaranteed = this.attemptGuaranteeAdjacentRow( UnguaranteedLoc, Dimension, Guaranteed, RowNumber );
+      //          }
+            } //todo: other spaces hints
+            
+        }
+
+        return MoreGuaranteed;
+    }
+
+    this.attemptGuaranteeLocation = function( UnguaranteedLoc, Guaranteed )
+    {
+        var Unguaranteed = mBlocks[UnguaranteedLoc[0]][UnguaranteedLoc[1]][UnguaranteedLoc[2]];
+
+        var Hidden = Unguaranteed.getHideNumbers();
+        for( var Dimension = 0; Dimension < 3; Dimension ++ )
+        {
+            if ( Hidden[ Dimension ] == 1 )
+            {
+                if ( this.checkMoreGuaranteed( UnguaranteedLoc, Dimension, Guaranteed ))
+                {
+                    this.showRowFaces( UnguaranteedLoc, Dimension );
+
+                    break;
+                }
+            }
+        }
+    }
+
+    this.findUnguaranteedCubeLoc = function( Guaranteed, Last )
+    {
+        var StartFromLoc = null;
+        if ( Last == null )
+        {
+            StartFromLoc = [ 0, 0, 0 ];
+        } else
+        {
+            StartFromLoc = Last;
+            StartFromLoc[0]++;
+            if ( StartFromLoc[0] >= mMax[0])
+            {
+                StartFromLoc[0] = 0;
+                StartFromLoc[1] ++;
+                if( StartFromLoc[1] >= mMax[1])
+                {
+                    StartFromLoc[1] = 0;
+                    StartFromLoc[ 2 ] ++;
+                    if ( StartFromLoc[2] >= mMax[2] )
+                    {
+                        StartFromLoc[2] = 0;
+                    }
+                }
+            }
+        }
+        
+        var travX = StartFromLoc[0];
+        var travY = StartFromLoc[1];
+        var travZ = StartFromLoc[2];
+        for(; travX < Guaranteed.length; travX ++)
+        {
+            for(; travY < Guaranteed[travX].length; travY ++)
+            {
+                for(; travZ < Guaranteed[travX][travY].length; travZ++)
+                {
+                    if ( Guaranteed[ travX ][ travY ][ travZ ] == 0 )
+                    {
+                        return [travX, travY, travZ];
+                    }
+                }
+                travZ = 0;
+            }
+            travY = 0;
+        }
+        return null;
+    }
+
+    this.showNeededFaces = function( )
+    {
+        document.getElementById("DebugLog").innerHTML = "";
+
+        var SolidBlockLocs = [];
+
+        var Guaranteed = [];
+        for( var travX = 0; travX < mBlocks.length; travX ++)
+        {
+            Guaranteed[travX] = [];
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+            {
+                Guaranteed[travX][travY] = [];
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
+                {
+                    Guaranteed[ travX ][ travY ][ travZ ] = 0;
+                    if ( mBlocks[ travX ][ travY ][ travZ ] != null && mBlocks[ travX ][ travY ][ travZ ].getSolid() )
+                    {
+                        SolidBlockLocs[ SolidBlockLocs.length ] = [ travX, travY, travZ ];
+                    }
+                }
+            }
+        }
+
+        // first try to guarantee the Solid Blocks
+        for ( var travSolid = 0; travSolid < SolidBlockLocs.length; travSolid ++ )
+        {
+            this.attemptGuaranteeLocation( SolidBlockLocs[ travSolid ], Guaranteed );
+        }
+
+        var tempMaxIt = travSolid;
+        var UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, null );
+        while ( UnguaranteedLoc != null && tempMaxIt < 1000)
+        {
+            this.attemptGuaranteeLocation( UnguaranteedLoc, Guaranteed );
+            
+            tempMaxIt ++;
+            UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, UnguaranteedLoc );
+            if ( UnguaranteedLoc == null )
+            {
+                UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, null );
+            }
+        }
+
+        document.getElementById("DebugLog").innerHTML += "showNeededFaces Iterated: " + tempMaxIt;
+
+        var count = 0;
+        for( travX = 0; travX < mBlocks.length; travX ++)
+        {
+            for( travY = 0; travY < mBlocks[travX].length; travY ++)
+            {
+                for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
+                {
+                    if ( Guaranteed[ travX ][ travY ][ travZ ] == 0 )
+                    {
+                        count ++;
+                    }
+                }
+            }
+        }
+        if ( count > 0 )
+            document.getElementById("DebugLog").innerHTML += " " + count;
+    }
+
+    this.showAllFaces = function( )
     {
         for( var travX = 0; travX < mBlocks.length; travX ++)
         {
             for( var travY = 0; travY < mBlocks[travX].length; travY ++)
             {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
                 {
-                    if ( mBlocks[ travX ][ travY ][ travZ ] != null )
-                    {
-                        mBlocks[ travX ][ travY ][ travZ ].setHideNumbers( [ 0, 0, 0 ] );
-                    }
+                    mBlocks[travX][travY][travZ].setHideNumbers( [ 0, 0, 0 ] );
                 }
             }
-        }
-    }
-   
-    this.getBlockByDimIterator = function( PuzzleLocation, Dimension, Iterator )
-    {
-        if ( Dimension == 0 )
-        {
-            return mBlocks[ Iterator ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ];
-        } else if ( Dimension == 1 )
-        {
-            return mBlocks[ PuzzleLocation[ 0 ] ][ Iterator ][ PuzzleLocation[ 2 ] ];
-        } else
-        {
-            return mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ Iterator ];
         }
     }
 
@@ -208,7 +452,7 @@ function Puzzle(Game, setInfo, Camera )
                 Painted = true;
                 for( var travRow = 0; travRow < mMax[ Dimension ]; travRow ++ )
                 {
-                    var Test = this.getBlockByDimIterator( PuzzleLocation, Dimension, travRow );
+                    var Test = getByDimIterator3( mBlocks, PuzzleLocation, Dimension, travRow );
 
                     if ( Test != null && !Test.getPainted() && !Test.getFailedBreak() )
                     {
@@ -220,7 +464,7 @@ function Puzzle(Game, setInfo, Camera )
 
             for( travRow = 0; travRow < mMax[ Dimension ]; travRow ++ )
             {
-                Set = this.getBlockByDimIterator( PuzzleLocation, Dimension, travRow );
+                Set = getByDimIterator3( mBlocks, PuzzleLocation, Dimension, travRow );
                 
                 if ( Set != null )
                 {
@@ -240,7 +484,7 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    this.breakSpace = function( Game, breakMe )
+    this.breakSpace = function( Game, breakMe, updateTreeInfo )
     {
         if ( breakMe && mBlocks )
         {
@@ -260,7 +504,8 @@ function Puzzle(Game, setInfo, Camera )
             mSpaceBlocks--;
             this.updateWon(Game);
 
-            mTreeInfo.update();
+            if ( updateTreeInfo )
+                mTreeInfo.update();
         }
     }
 
@@ -270,26 +515,6 @@ function Puzzle(Game, setInfo, Camera )
         mRemainingFails --;
         Game.mIngameOverlay.updateRemainingFails( Game, this );
         this.updateLost(Game);
-    }
-
-    this.getSolidBlocks = function()
-    {
-        return mSolidBlocks;
-    }
-
-    this.getSpaceBlocks = function()
-    {
-        return mSpaceBlocks;
-    }
-
-    this.getAllowedFails = function ()
-    {
-        return mInfo.mAllowedFails;
-    }
-
-    this.getRemainingFails = function ()
-    {
-        return mRemainingFails;
     }
 
     this.shouldLose = function( )
@@ -323,52 +548,6 @@ function Puzzle(Game, setInfo, Camera )
         return mTransform;
     }
 
-    this.destroy = function( Game )
-    {
-        for( var travX = 0; travX < mBlocks.length; travX ++)
-        {
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-            {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                {
-                    if ( mBlocks[travX][travY][travZ] )
-                    {
-                        mBlocks[travX][travY][travZ].destroy( Game );
-                        mBlocks[travX][travY][travZ] = null;
-                    }
-                }
-            }
-        }
-
-        Game.mPack.removeObject(mTransform);
-        mTransform.parent = null;
-        mTransform = null;
-
-        Game.mClient.render();
-    }
-
-    this.setDebug = function( Value )
-    {
-        for( var travX = 0; travX < mBlocks.length; travX ++)
-        {
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-            {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                {
-                    if ( mBlocks[travX][travY][travZ] )
-                    {
-                        mBlocks[travX][travY][travZ].setDebug(Value);
-                    }
-                }
-            }
-        }
-    }
-
-    this.getMax = function()
-    {
-        return mMax;
-    }
-
     this.tryPaint = function( Game, Event )
     {
         var pickedCube = this.pickCube( Game, Event );
@@ -388,7 +567,7 @@ function Puzzle(Game, setInfo, Camera )
 
     this.tryBreak = function( Game, Event )
     {
-        pickedCube = this.pickCube( Game, Event );
+        var pickedCube = this.pickCube( Game, Event );
         if ( pickedCube != null )
         {
             if ( pickedCube.getPainted() || pickedCube.getFailedBreak() )
@@ -401,13 +580,40 @@ function Puzzle(Game, setInfo, Camera )
                 this.triedBreakSolid( Game, pickedCube );
             } else
             {
-                this.breakSpace( Game, pickedCube );
+                this.breakSpace( Game, pickedCube, true );
             }
 
             Game.mClient.render();
         }
     }
 
+    this.breakZeroRows = function( Game )
+    {
+        for( var travX = 0; travX < mBlocks.length; travX ++)
+        {
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+            {
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
+                {
+                    if ( mBlocks[ travX ][ travY ][ travZ ] != null )
+                    {
+                        var HideNumbers = mBlocks[ travX ][ travY ][ travZ ].getHideNumbers();
+                        var Numbers = mBlocks[ travX ][ travY ][ travZ ].getNumbers();
+                        for( var travDims = 0; travDims < 3; travDims ++ )
+                        {
+                            if ( HideNumbers[ travDims ] == 0 && Numbers[ travDims ] == 0 )
+                            {
+                                this.breakSpace( Game, mBlocks[ travX ][ travY ][ travZ ], false );
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        mTreeInfo.update();
+    }
+    
     this.setEditMode = function( Game, Value )
     {
         var NeedsUpdate = false;
@@ -583,7 +789,14 @@ function Puzzle(Game, setInfo, Camera )
     {
         var PickInfo = this.pickShape( Game, Event );
         if ( PickInfo )
-            return this.findCubeFromTransform( PickInfo.shapeInfo.parent.transform );
+        {
+            var Cube = this.findCubeFromTransform( PickInfo.shapeInfo.parent.transform );
+            if ( Game.mDebugOverlay )
+            {
+                Game.mDebugOverlay.setPickedCube( Cube );
+            }
+            return Cube;
+        }
         return null;
     }
 
@@ -635,10 +848,75 @@ function Puzzle(Game, setInfo, Camera )
         return mInfo;
     }
 
+    this.getSolidBlocks = function()
+    {
+        return mSolidBlocks;
+    }
+
+    this.getSpaceBlocks = function()
+    {
+        return mSpaceBlocks;
+    }
+
+    this.getAllowedFails = function ()
+    {
+        return mInfo.mAllowedFails;
+    }
+
+    this.getRemainingFails = function ()
+    {
+        return mRemainingFails;
+    }
+
+    this.setDebug = function( Value )
+    {
+        if ( gShapeTemplate != null )
+        {
+            gShapeTemplate.getMaterial().setDebug( Value );
+        }
+    }
+
+    this.getMax = function()
+    {
+        return mMax;
+    }
+
+    this.destroy = function( Game )
+    {
+        for( var travX = 0; travX < mBlocks.length; travX ++)
+        {
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+            {
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                {
+                    if ( mBlocks[travX][travY][travZ] )
+                    {
+                        mBlocks[travX][travY][travZ].destroy( Game );
+                        mBlocks[travX][travY][travZ] = null;
+                    }
+                }
+            }
+        }
+
+        if ( mTransform != null )
+        {
+            Game.mPack.removeObject(mTransform);
+            mTransform.parent = null;
+            mTransform = null;
+        }
+        Game.mClient.render();
+    }
+
     Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );
     this.fillPuzzle( Game );
     this.setRowInfos( Game );
-    this.showNeededFaces( Game );
+    if ( Game.getHideUnneededFaces() )
+    {
+        this.showNeededFaces( );
+    } else
+    {
+        this.showAllFaces( );
+    }
     Camera.centerOnPuzzle( Game, this );
 }
 

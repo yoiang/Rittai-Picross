@@ -52,7 +52,10 @@ function GameInput()
             Game.toggleEditMode();
             return true;
         }
-
+        if ( KeyCode == 90 )
+        {
+            Game.mPuzzle.breakZeroRows( Game );
+        }
 
         Game.mIngameOverlay.update( Game );
         return false;

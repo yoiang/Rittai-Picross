@@ -71,13 +71,18 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         gShapeTemplate.getMaterial().setSymbolsTexture( Value );
     }
 
-    this.setRows = function( Game, RowX, RowY, RowZ )
+    this.setRows = function( setRows )
     {
-        mRows = [ RowX, RowY, RowZ ];
+        mRows = setRows;
 
-        this.setNumbers( RowX.getNumber(), RowY.getNumber(), RowZ.getNumber() );
-        this.setSpacesHints( RowX.getSpacesHint(), RowY.getSpacesHint(), RowZ.getSpacesHint() );
+        this.setNumbers( mRows[ 0 ].getNumber(), mRows[ 1 ].getNumber(), mRows[ 2 ].getNumber() );
+        this.setSpacesHints( mRows[ 0 ].getSpacesHint(), mRows[ 1 ].getSpacesHint(), mRows[ 2 ].getSpacesHint() );
     }
+    this.getRows = function()
+    {
+        return mRows;
+    }
+
 
     this.setNumbers = function( X, Y, Z )
     {
@@ -112,11 +117,6 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     {
         return mDimNumbersParam.value;
     }
-    this.getRows = function()
-    {
-        return mRows;
-    }
-
     this.setFailedBreak = function( Value)
     {
         mFailedBreakParam.value = Value;
@@ -133,11 +133,6 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     this.setSolid = function( Value )
     {
         mSolidParam.value = Value;
-    }
-
-    this.setDebug = function(Value)
-    {
-        gShapeTemplate.getMaterial().setDebug( Value );
     }
 
     this.togglePainted = function( )

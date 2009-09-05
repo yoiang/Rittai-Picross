@@ -5,6 +5,8 @@ function DebugOverlay( Game )
     this.mCanvasPaint = null;
     this.mDisplayQuad = null;
 
+    var mPickedCubePuzzleLocation = null;
+
     this.init = function( Game )
     {
         this.mViewInfo = o3djs.rendergraph.createBasicView(Game.mPack, Game.mClient.root, Game.mClient.renderGraphRoot);
@@ -30,7 +32,6 @@ function DebugOverlay( Game )
 
         this.mCanvasPaint = Game.mPack.createObject('CanvasPaint');
     }
-    this.init( Game );
 
     this.update = function( Game )
     {
@@ -46,7 +47,7 @@ function DebugOverlay( Game )
             this.mCanvasPaint.setOutline(0, [0, 0, 0, 0]);
 
             var Y = 15;
-            this.mCanvasPaint.color = [1, 0.5, 0, 1];
+            this.mCanvasPaint.color = [0, 0.5, 0.5, 1];
             this.drawText('Space Blocks Left:' + Game.mPuzzle.getSpaceBlocks().toString(), 10, Y);
             this.drawText('Solid Blocks:' + Game.mPuzzle.getSolidBlocks().toString(), 10, Y += 13);
                 this.drawText('Remaining Fails:' + Game.mPuzzle.getAllowedFails().toString(), 10, Y += 13);
@@ -55,6 +56,12 @@ function DebugOverlay( Game )
             this.drawText('Camera', 10, Y += 13, this.mCanvasPaint);
             this.drawText('Target: ( ' + Game.mCamera.getTarget()[0].toFixed(3) + ', ' + Game.mCamera.getTarget()[1].toFixed(3) + ', ' + Game.mCamera.getTarget()[2].toFixed(3) + ' )', 20, Y += 13);
             this.drawText('Eye - rotZ: ' + Game.mCamera.getEye().rotZ.toFixed(3) + '   rotH: ' + Game.mCamera.getEye().rotH.toFixed(3) + '   dFT: ' + Game.mCamera.getEye().distanceFromTarget.toFixed(3) + '   Location: ( ' + Game.mCamera.getEye().x.toFixed(3) + ', ' + Game.mCamera.getEye().y.toFixed(3) + ', ' + Game.mCamera.getEye().z.toFixed(3) + ' )', 20, Y += 13);
+
+            if ( mPickedCubePuzzleLocation != null )
+            {
+                this.mCanvasPaint.color = [0, 0.5, 1, 1];
+                this.drawText('Picked Cube: (' + mPickedCubePuzzleLocation[0] + ', ' + mPickedCubePuzzleLocation[1] + ', ' + mPickedCubePuzzleLocation[2] + ' )', 10, Y += 13, this.mCanvasPaint);
+            }
         }
         this.mDisplayQuad.updateTexture();
     }
@@ -62,6 +69,11 @@ function DebugOverlay( Game )
     this.drawText = function( Text, X, Y )
     {
         this.mDisplayQuad.canvas.drawText(Text, X, Y, this.mCanvasPaint);
+    }
+
+    this.setPickedCube = function( Cube )
+    {
+        mPickedCubePuzzleLocation = Cube.getPuzzleLocation();
     }
 
     this.destroy = function( Game )
@@ -73,4 +85,6 @@ function DebugOverlay( Game )
         this.mCanvasPaint = null;
         this.mDisplayQuad = null;
     }
+    
+    this.init( Game );
 }
