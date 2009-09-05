@@ -53,9 +53,8 @@ function DebugOverlay( Game )
 
             this.mCanvasPaint.color = [1, 0.5, 0, 1];
             this.drawText('Camera', 10, Y += 13, this.mCanvasPaint);
-            this.drawText('Eye - rotZ: ' + Game.mCamera.getEye().rotZ + ' rotH: ' + Game.mCamera.getEye().rotH, 20, Y += 13);
-            this.drawText('      dFT: ' + Game.mCamera.getEye().distanceFromTarget + ' (X, Y, Z): ( ' + Game.mCamera.getEye().x + ', ' + Game.mCamera.getEye().y + ', ' + Game.mCamera.getEye().z + ' )', 20, Y += 13);
-            this.drawText('Target (X, Y, Z): ( ' + Game.mCamera.getTarget()[0] + ', ' + Game.mCamera.getTarget()[1] + ', ' + Game.mCamera.getTarget()[2] + ' )', 20, Y += 13);
+            this.drawText('Target: ( ' + Game.mCamera.getTarget()[0].toFixed(3) + ', ' + Game.mCamera.getTarget()[1].toFixed(3) + ', ' + Game.mCamera.getTarget()[2].toFixed(3) + ' )', 20, Y += 13);
+            this.drawText('Eye - rotZ: ' + Game.mCamera.getEye().rotZ.toFixed(3) + '   rotH: ' + Game.mCamera.getEye().rotH.toFixed(3) + '   dFT: ' + Game.mCamera.getEye().distanceFromTarget.toFixed(3) + '   Location: ( ' + Game.mCamera.getEye().x.toFixed(3) + ', ' + Game.mCamera.getEye().y.toFixed(3) + ', ' + Game.mCamera.getEye().z.toFixed(3) + ' )', 20, Y += 13);
         }
         this.mDisplayQuad.updateTexture();
     }
