@@ -241,3 +241,33 @@ function Game( ClientElements )
         return mHideUnneededFaces;
     }
 }
+
+
+function getByDimIterator3( Array3, Location, Dimension, Iterator )
+{
+    if ( Dimension == 0 )
+    {
+        return Array3[ Iterator ][ Location[ 1 ] ][ Location[ 2 ] ];
+    } else if ( Dimension == 1 )
+    {
+        return Array3[ Location[ 0 ] ][ Iterator ][ Location[ 2 ] ];
+    } else
+    {
+        return Array3[ Location[ 0 ] ][ Location[ 1 ] ][ Iterator ];
+    }
+    return null;
+}
+
+function setByDimIterator3( Array3, Location, Dimension, Iterator, Value )
+{
+    if ( Dimension == 0 )
+    {
+        Array3[ Iterator ][ Location[ 1 ] ][ Location[ 2 ] ] = Value;
+    } else if ( Dimension == 1 )
+    {
+        Array3[ Location[ 0 ] ][ Iterator ][ Location[ 2 ] ] = Value;
+    } else
+    {
+        Array3[ Location[ 0 ] ][ Location[ 1 ] ][ Iterator ] = Value;
+    }
+}
