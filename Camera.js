@@ -3,7 +3,7 @@ function TargetCamera( Game )
     var mViewInfo = null;
 
     var mEye = {
-        rotZ: 43.4,
+        rotZ: 0,
         rotH: 46,
         distanceFromTarget: 15
     };
@@ -39,7 +39,7 @@ function TargetCamera( Game )
         mTarget[1] = Location[1] / 2.0;
         mTarget[2] = Location[2] / 2.0;
 
-        mEye.rotZ = 43.4;
+        mEye.rotZ = -0.76;
         mEye.rotH = 46;
         mEye.distanceFromTarget = o3djs.math.distanceSquared( [0,0,0], [mTarget[0], mTarget[1], mTarget[2]] ) + 5;
 
@@ -56,6 +56,14 @@ function TargetCamera( Game )
         {
             mEye.rotH = 46.6;
         }
+        if ( mEye.rotZ < 0 )
+        {
+            mEye.rotZ = 2 * Math.PI + mEye.rotZ;
+        } else
+        {
+            mEye.rotZ = mEye.rotZ % ( 2 * Math.PI );
+        }
+
 
         mEye.x = mTarget[0] + Math.cos(mEye.rotZ) * mEye.distanceFromTarget * Math.sin(mEye.rotH);
         mEye.y = mTarget[2] + Math.cos(mEye.rotH) * mEye.distanceFromTarget;
