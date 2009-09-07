@@ -477,6 +477,7 @@ function CubeMaterial( Game )
     var mSpacesHintsParam = null;
 
     var mDimNumbersParam = null;
+    var mHideNumbersParam = null;
 
     var mFailedBreakParam = null;
     var mPaintedParam = null;
@@ -513,6 +514,9 @@ function CubeMaterial( Game )
 
         mDimNumbersParam = mMaterial.getParam('DimNumbers');
         mDimNumbersParam.value = [ 0, 0, 0 ];
+
+        mHideNumbersParam = mMaterial.getParam('HideNumbers');
+        mHideNumbersParam.value = [ 0, 0, 0 ];
 
         mFailedBreakParam = mMaterial.getParam('FailedBreak');
         mFailedBreakParam.value = false;
@@ -570,6 +574,11 @@ function CubeMaterial( Game )
     this.setDimNumbers = function( Value )
     {
         mDimNumbersParam.value = Value;
+    }
+
+    this.setHideNumbers = function( Value )
+    {
+        mHideNumbersParam.value = Value;
     }
 
     this.setFailedBreak = function( Value )

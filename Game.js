@@ -77,6 +77,13 @@ function Game( ClientElements )
     {
         mWon = false;
         mLost = false;
+
+        if ( this.mPuzzle )
+        {
+            this.mPuzzle.resetRemainingFails();
+            this.mIngameOverlay.updateRemainingFails( this, this.mPuzzle );
+        }
+
         this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];
         if ( gShapeTemplate )
         {

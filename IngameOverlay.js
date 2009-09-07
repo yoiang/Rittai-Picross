@@ -78,6 +78,10 @@ function IngameOverlay( Game )
 
     this.updateRemainingFails = function( Game, Puzzle )
     {
+        if ( Puzzle == null )
+        {
+            return;
+        }
         for (var travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
         {
             if ( travAllowedFails < Puzzle.getRemainingFails() )

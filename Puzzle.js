@@ -2,7 +2,7 @@ function Puzzle(Game, setInfo, Camera )
 {
     var mSolidBlocks = 0;
     var mSpaceBlocks = 0;
-    var mRemainingFails = setInfo.mAllowedFails;
+    var mRemainingFails = 0;
     
     var mBlocks = null;
     var mMax = null;
@@ -448,6 +448,18 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
+    this.showFaces = function( Game )
+    {
+        this.setRowInfos( Game );
+        if ( Game.getHideUnneededFaces() )
+        {
+            this.showNeededFaces( );
+        } else
+        {
+            this.showAllFaces( );
+        }
+    }
+
     this.updateDimmedRow = function( Game, PuzzleLocation, Row )
     {
         var Painted;
@@ -632,16 +644,24 @@ function Puzzle(Game, setInfo, Camera )
                 {
                     for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                     {
-                        if ( mBlocks[travX][travY][travZ] && mBlocks[travX][travY][travZ].getSolid() == false )
+                        if ( mBlocks[travX][travY][travZ] )
                         {
-                            NeedsUpdate = true;
+                            if ( mBlocks[travX][travY][travZ].getSolid() )
+                            {
+                                mBlocks[travX][travY][travZ].setFailedBreak( false );
+                                mBlocks[travX][travY][travZ].setPainted( false );
+                                mBlocks[travX][travY][travZ].setHideNumbers( [ 1, 1, 1 ] );
+                            } else
+                            {
+                                NeedsUpdate = true;
 
-                            var remove = mBlocks[travX][travY][travZ];
-                            mBlocks[travX][travY][travZ] = null;
-                            remove.destroy( Game );
+                                var remove = mBlocks[travX][travY][travZ];
+                                mBlocks[travX][travY][travZ] = null;
+                                remove.destroy( Game );
 
-                            mSpaceBlocks --;
-                            Game.doRender();
+                                mSpaceBlocks --;
+                                Game.doRender();
+                            }
                         }
                     }
                 }
@@ -660,11 +680,13 @@ function Puzzle(Game, setInfo, Camera )
                             
                             this.addBlock( Game, [ travX, travY, travZ ], false ); // TODO: reinit puzzle
                             Game.doRender();
+                        } else
+                        {
                         }
                     }
                 }
             }
-            this.setRowInfos( Game );
+            this.showFaces( Game );
         }
         if ( NeedsUpdate )
         {
@@ -875,6 +897,11 @@ function Puzzle(Game, setInfo, Camera )
         return mRemainingFails;
     }
 
+    this.resetRemainingFails = function ()
+    {
+        mRemainingFails = mInfo.mAllowedFails;
+    }
+
     this.setDebug = function( Value )
     {
         if ( gShapeTemplate != null )
@@ -915,15 +942,9 @@ function Puzzle(Game, setInfo, Camera )
 
     Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );
     this.fillPuzzle( Game );
-    this.setRowInfos( Game );
-    if ( Game.getHideUnneededFaces() )
-    {
-        this.showNeededFaces( );
-    } else
-    {
-        this.showAllFaces( );
-    }
+    this.showFaces( Game );
     Camera.centerOnPuzzle( Game, this );
+    this.resetRemainingFails();
 }
 
 function PuzzleInfo()
