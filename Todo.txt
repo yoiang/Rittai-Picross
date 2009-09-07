@@ -10,12 +10,9 @@
 - puzzle editor
     - set title and colors in editor
     - puzzle finish colors
-    - autoupdate faces in affected rows when adding and removing blocks
+    - autoupdate faces in affected rows when adding and removing blocks?
     - allow in editor resizing
     - support over 9x9x9 puzzles
-
-
-- insure InputState notifies remain in same order
 
 - optimize IngameOverlay
     - quads should be sized to only area where UI elements are located rather than whole screen
@@ -27,8 +24,7 @@
 - auto destroy 0 row option!!!!
 
 - mousewheel zoom
-- fix xyz orders
-- why doesn't ray intersection with One.rittai work? (also check Won and Failed at load)
+- fix xyz iterate orders
 - allow resize of window
 - good camera
 - autozoom on load to fit puzzle
