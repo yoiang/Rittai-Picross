@@ -94,11 +94,13 @@ function Game( ClientElements )
             this.mIngameOverlay.puzzleDestroyed( this );
         }
 
+        this.clearWonLost();
+
+        this.doRender();
+
         this.mPuzzle = new Puzzle( this, setPuzzleInfo, this.mCamera );
 
         this.mIngameOverlay.finishedCreatePuzzle( this, this.mPuzzle );
-
-        this.clearWonLost();
 
         this.doRender();
 
@@ -109,6 +111,9 @@ function Game( ClientElements )
         {
             document.getElementById("Subtitle").innerHTML = "Puzzle Mode";
         }
+
+        this.mPuzzle.updateLost( this );
+        this.mPuzzle.updateWon( this );
     }
 
     this.mInputState = new InputState( this );
