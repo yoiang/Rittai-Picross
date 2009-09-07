@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://Rittai.Picross"
+    elementFormDefault="qualified" xmlns:tns="http://Rittai.Picross">
+    <xsd:element name="Puzzle">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="PaintColor" type="tns:Color"/>
+                <xsd:element name="Cubes">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Cube" maxOccurs="unbounded" type="tns:Cube"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="Title" type="xsd:string"/>
+            <xsd:attribute name="XSize" type="xsd:integer" use="required"/>
+            <xsd:attribute name="YSize" type="xsd:integer" use="required"/>
+            <xsd:attribute name="ZSize" type="xsd:integer" use="required"/>
+            <xsd:attribute name="AllowedFails" type="xsd:integer" use="required"/>
+            <xsd:attribute name="Version" type="xsd:integer" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:complexType name="Cube">
+        <xsd:sequence>
+            <xsd:element name="FinishedColor" type="tns:Color"/>
+        </xsd:sequence>
+        <xsd:attribute name="Solid" type="xsd:boolean"/>
+    </xsd:complexType>
+    <xsd:complexType name="Color">
+        <xsd:sequence>
+            <xsd:element name="r" type="xsd:float" default="0.0"/>
+            <xsd:element name="g" type="xsd:float" default="0.0"/>
+            <xsd:element name="b" type="xsd:float" default="0.0"/>
+            <xsd:element name="a" default="0.0" type="xsd:float"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="Vector3i">
+        <xsd:sequence>
+            <xsd:element name="x" type="xsd:integer"/>
+            <xsd:element name="y" type="xsd:integer"/>
+            <xsd:element name="z" type="xsd:integer"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>
+
+
+
+
+
+

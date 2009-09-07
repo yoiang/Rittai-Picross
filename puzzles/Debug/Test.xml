@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : Test.xml
+    Created on : September 8, 2009, 12:15 AM
+    Author     : Ian
+    Description:
+        Purpose of the document follows.
+-->
+
+<ns1:Puzzle  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+   xmlns:ns1='http://Rittai.Picross'
+   xsi:schemaLocation='http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd' 
+   Title="Test.xml" XSize="2" YSize="2" ZSize="2" AllowedFails="2" Version="3">
+
+    <ns1:PaintColor>
+        <ns1:r>0</ns1:r>
+        <ns1:g>0</ns1:g>
+        <ns1:b>1</ns1:b>
+        <ns1:a>1</ns1:a>
+    </ns1:PaintColor>
+    <ns1:Cubes>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>0.0</ns1:r>
+                <ns1:g>0.0</ns1:g>
+                <ns1:b>0.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1.0</ns1:r>
+                <ns1:g>0.0</ns1:g>
+                <ns1:b>0.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>0.0</ns1:r>
+                <ns1:g>1.0</ns1:g>
+                <ns1:b>0.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>0.0</ns1:r>
+                <ns1:g>0.0</ns1:g>
+                <ns1:b>1.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1.0</ns1:r>
+                <ns1:g>1.0</ns1:g>
+                <ns1:b>0.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1.0</ns1:r>
+                <ns1:g>0.0</ns1:g>
+                <ns1:b>1.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>0.0</ns1:r>
+                <ns1:g>1.0</ns1:g>
+                <ns1:b>1.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1.0</ns1:r>
+                <ns1:g>1.0</ns1:g>
+                <ns1:b>1.0</ns1:b>
+                <ns1:a>1.0</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+    </ns1:Cubes>
+
+</ns1:Puzzle>

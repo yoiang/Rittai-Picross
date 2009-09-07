@@ -99,15 +99,26 @@ function loadPuzzleFinished()
 {
     if (gXMLHttp.readyState==4)
     {
-        var Result = gXMLHttp.responseText.toString();
-        var Version = Result[0];
-        Result = Result.slice( 2 ); // assume version number and endline
-        if ( Version == "1" )
+        if ( gXMLHttp.responseXML &&
+                gXMLHttp.responseXML.documentElement &&
+                gXMLHttp.responseXML.documentElement.nodeName == "parsererror" )
         {
-            loadPuzzleVersion1( Result );
-        } else if ( Version == "2" )
+            var Result = gXMLHttp.responseText.toString();
+            var Version = Result[0];
+            Result = Result.slice( 2 ); // assume version number and endline
+            if ( Version == "1" )
+            {
+                loadPuzzleVersion1( Result );
+            } else if ( Version == "2" )
+            {
+                loadPuzzleVersion2( Result );
+            }
+        } else
         {
-            loadPuzzleVersion2( Result );
+            if ( gXMLHttp.responseXML.documentElement.getAttribute("Version") == "3" )
+            {
+                loadPuzzleXML3( gXMLHttp.responseXML.documentElement );
+            }
         }
     }
 }
@@ -154,7 +165,11 @@ function loadPuzzleVersion1( PuzzleText )
             var BlocksX = [];
             for( var travX = 0; travX < X; travX ++ )
             {
-                BlocksX[ travX ] = Values[ travValues ];
+                var Info = new CubeInfo();
+                Info.mSolid = Values[ travValues ] == 1;
+                Info.mPuzzleLocation = [ travZ, travY, travX ];
+
+                BlocksX[ travX ] = Info;
                 travValues ++;
             }
             BlocksY[ travY ] = BlocksX;
@@ -211,7 +226,11 @@ function loadPuzzleVersion2( PuzzleText )
             var BlocksX = [];
             for( var travX = 0; travX < setPuzzleInfo.mDimensions[0]; travX ++ )
             {
-                BlocksX[ travX ] = BlockDefinition[ travBlockDefinition ];
+                var Info = new CubeInfo();
+                Info.mSolid = BlockDefinition[ travBlockDefinition ] == 1;
+                Info.mPuzzleLocation = [ travZ, travY, travX ];
+
+                BlocksX[ travX ] = Info;
                 travBlockDefinition ++;
             }
             BlocksY[ travY ] = BlocksX;
@@ -319,6 +338,82 @@ function readTextBlock( fromString )
     return Clean;
 }
 
+function loadPuzzleXML3( PuzzleXML )
+{
+    var setPuzzleInfo = new PuzzleInfo();
+
+    setPuzzleInfo.mTitle = PuzzleXML.getAttribute("Title");
+    setPuzzleInfo.mAllowedFails = PuzzleXML.getAttribute("AllowedFails");
+    setPuzzleInfo.mDimensions = [
+        PuzzleXML.getAttribute("XSize"),
+        PuzzleXML.getAttribute("YSize"),
+        PuzzleXML.getAttribute("ZSize")
+    ];
+
+    for ( var travChildren = 0; travChildren < PuzzleXML.childElementCount; travChildren ++ )
+    {
+        if ( PuzzleXML.children[travChildren].localName == "PaintColor" )
+        {
+            setPuzzleInfo.mPaintColor = readPuzzleXML3Color( PuzzleXML.children[travChildren] );
+        } else if ( PuzzleXML.children[travChildren].localName == "Cubes" )
+        {
+            setPuzzleInfo.mBlockDefinition = readPuzzleXML3Cubes( PuzzleXML.children[travChildren], setPuzzleInfo.mDimensions );
+        }
+    }
+
+    gGame.createPuzzle( setPuzzleInfo );
+}
+
+function readPuzzleXML3Color( ColorXML )
+{
+    return [ parseFloat( ColorXML.children[0].textContent ), parseFloat( ColorXML.children[1].textContent ), parseFloat( ColorXML.children[2].textContent ), parseFloat( ColorXML.children[3].textContent ) ];
+}
+
+function readPuzzleXML3Cubes( CubesXML, Dimensions )
+{
+    var BlockDefinition = [];
+    var travCubesDefinition = 0;
+    for( var travZ = 0; travZ < Dimensions[2]; travZ ++ )
+    {
+        var BlocksY = [];
+        for( var travY = 0; travY < Dimensions[1]; travY ++ )
+        {
+            var BlocksX = [];
+            for( var travX = 0; travX < Dimensions[0]; travX ++ )
+            {
+                if ( travCubesDefinition < CubesXML.childElementCount )
+                {
+                    BlocksX[ travX ] = readPuzzleXML3Cube( CubesXML.children[travCubesDefinition], [ travZ, travY, travX ] );
+                    travCubesDefinition ++;
+                } else
+                {
+                    BlocksX[ travX ] = null;
+                }
+            }
+            BlocksY[ travY ] = BlocksX;
+        }
+        BlockDefinition[ travZ ] = BlocksY;
+    }
+    return BlockDefinition;
+}
+
+function readPuzzleXML3Cube( CubeXML, setPuzzleLocation )
+{
+    var setCubeInfo = new CubeInfo();
+
+    setCubeInfo.mSolid = CubeXML.getAttribute( "Solid" ) == "true";
+    setCubeInfo.mPuzzleLocation = setPuzzleLocation;
+    for ( var travChildren = 0; travChildren < CubeXML.childElementCount; travChildren ++ )
+    {
+        if ( CubeXML.children[travChildren].localName == "FinishedColor" )
+        {
+            setCubeInfo.mFinishedColor = readPuzzleXML3Color( CubeXML.children[travChildren] );
+        }
+    }
+
+    return setCubeInfo;
+}
+
 function selectPuzzle()
 {
     loadPuzzle( document.getElementById("puzzleSelect").value );
@@ -334,6 +429,7 @@ function fillPuzzleList()
     var PuzzleNames = [
     'puzzles/Debug/One.rittai',
     'puzzles/Debug/test.rittai',
+    'puzzles/Debug/Test.xml',
     'puzzles/Debug/test2.rittai',
     '',
     'puzzles/Tutorial/1 - Break a Block.rittai',

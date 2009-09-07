@@ -12,27 +12,19 @@ function Puzzle(Game, setInfo, Camera )
 
     var mInfo = setInfo;
 
-    this.addBlock = function( Game, PuzzleLocation, Solid )
+    this.addBlock = function( Game, setCubeInfo )
     {
-        var add = null;
-
-        var Info = new CubeInfo();
-        Info.mPuzzle = this;
-        Info.mParentTransform = mTransform;
-        Info.mSolid = Solid;
-        Info.mPuzzleLocation = PuzzleLocation;
-//        Info.mFinishedColor = [ 1, 1, 1, 1 ];
-
-        if ( Solid )
+        if ( setCubeInfo.mSolid )
         {
             mSolidBlocks++;
         } else
         {
             mSpaceBlocks++;
         }
-        add = new Cube(Game, Info, true );
 
-        mBlocks[ PuzzleLocation[0] ][ PuzzleLocation[1] ][ PuzzleLocation[2] ] = add;
+        setCubeInfo.mPuzzle = this;
+        setCubeInfo.mParentTransform = mTransform;
+        mBlocks[ setCubeInfo.mPuzzleLocation[0] ][ setCubeInfo.mPuzzleLocation[1] ][ setCubeInfo.mPuzzleLocation[2] ] = new Cube(Game, setCubeInfo, true );
     }
 
     this.fillPuzzle = function(Game)
@@ -66,7 +58,7 @@ function Puzzle(Game, setInfo, Camera )
                 }
                 for( var travZ = 0; travZ < BlocksDefinition[travX][travY].length; travZ++)
                 {
-                    this.addBlock( Game, [ travX, travY, travZ ], BlocksDefinition[travX][travY][travZ] == 1 );
+                    this.addBlock( Game, BlocksDefinition[travX][travY][travZ] );
                 }
             }
         }
@@ -677,8 +669,14 @@ function Puzzle(Game, setInfo, Camera )
                         if ( mBlocks[travX][travY][travZ] == null )
                         {
                             NeedsUpdate = true;
-                            
-                            this.addBlock( Game, [ travX, travY, travZ ], false ); // TODO: reinit puzzle
+
+                            var Info = new CubeInfo();
+                            Info.mPuzzle = this;
+                            Info.mParentTransform = mTransform;
+                            Info.mSolid = false;
+                            Info.mPuzzleLocation = [ travX, travY, travZ ];
+
+                            this.addBlock( Game, Info );
                             Game.doRender();
                         } else
                         {
@@ -766,7 +764,12 @@ function Puzzle(Game, setInfo, Camera )
                 return;
             }
 
-            this.addBlock( Game, addLoc, true );
+            var Info = new CubeInfo();
+            Info.mPuzzle = this;
+            Info.mParentTransform = mTransform;
+            Info.mSolid = true;
+            Info.mPuzzleLocation = addLoc;
+            this.addBlock( Game, Info );
 
             mTreeInfo.update();
             Game.doRender();
