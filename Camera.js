@@ -72,7 +72,7 @@ function TargetCamera( Game )
         var EyeV = [mEye.x, mEye.y, mEye.z];
         mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(EyeV, mTarget, mUp);
 
-        Game.mClient.render();
+        Game.doRender();
     }
 
     this.getTarget = function()

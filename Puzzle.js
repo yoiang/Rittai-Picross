@@ -568,7 +568,7 @@ function Puzzle(Game, setInfo, Camera )
             }
 
 
-            Game.mClient.render();
+            Game.doRender();
         }
     }
 
@@ -590,7 +590,7 @@ function Puzzle(Game, setInfo, Camera )
                 this.breakSpace( Game, pickedCube, true );
             }
 
-            Game.mClient.render();
+            Game.doRender();
         }
     }
 
@@ -641,7 +641,7 @@ function Puzzle(Game, setInfo, Camera )
                             remove.destroy( Game );
 
                             mSpaceBlocks --;
-                            Game.mClient.render();
+                            Game.doRender();
                         }
                     }
                 }
@@ -659,7 +659,7 @@ function Puzzle(Game, setInfo, Camera )
                             NeedsUpdate = true;
                             
                             this.addBlock( Game, [ travX, travY, travZ ], false ); // TODO: reinit puzzle
-                            Game.mClient.render();
+                            Game.doRender();
                         }
                     }
                 }
@@ -747,7 +747,7 @@ function Puzzle(Game, setInfo, Camera )
             this.addBlock( Game, addLoc, true );
 
             mTreeInfo.update();
-            Game.mClient.render();
+            Game.doRender();
         }
     }
 
@@ -764,7 +764,7 @@ function Puzzle(Game, setInfo, Camera )
             mSolidBlocks--;
 
             mTreeInfo.update();
-            Game.mClient.render();
+            Game.doRender();
         }
     }
     
@@ -911,7 +911,6 @@ function Puzzle(Game, setInfo, Camera )
             mTransform.parent = null;
             mTransform = null;
         }
-        Game.mClient.render();
     }
 
     Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );

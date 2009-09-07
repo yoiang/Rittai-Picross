@@ -134,7 +134,7 @@ function IngameOverlay( Game )
         }
 
         this.mDisplayQuad.updateTexture();
-        Game.mClient.render();
+        Game.doRender();
     }
 
     this.puzzleDestroyed = function( Game )
