@@ -121,8 +121,8 @@ function Game( ClientElements )
     {
         mGameInput = new GameInput(Game);
         mEditInput = new EditInput(Game);
-        this.mInputState.addNotify( mGameInput );
-        this.mInputState.addNotify( this.mCamera );
+        this.mInputState.addNotify( mGameInput, 0 );
+        this.mInputState.addNotify( this.mCamera, 1 );
     }
 
     this.mFinished = false;  // for selenium testing
@@ -166,7 +166,7 @@ function Game( ClientElements )
         if ( mEditMode )
         {
             this.mInputState.removeNotify( mGameInput );
-            this.mInputState.addNotify( mEditInput );
+            this.mInputState.addNotify( mEditInput, 0 );
 
             document.getElementById("Subtitle").innerHTML = "Edit Mode";
 
@@ -192,7 +192,7 @@ function Game( ClientElements )
         } else
         {
             this.mInputState.removeNotify( mEditInput );
-            this.mInputState.addNotify( mGameInput );
+            this.mInputState.addNotify( mGameInput, 0 );
 
             if ( this.mPuzzle && this.mPuzzle.getInfo().mTitle != "" )
             {

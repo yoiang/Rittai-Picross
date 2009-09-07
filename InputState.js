@@ -12,13 +12,6 @@ function InputState( Game )
         o3djs.event.addEventListener(Game.mO3dElement, 'mousedown', mouseDown);
         o3djs.event.addEventListener(Game.mO3dElement, 'mousemove', mouseMove);
         o3djs.event.addEventListener(Game.mO3dElement, 'mouseup', mouseUp);
-
-//    gGame.mO3dElement.addEventListener('mouseover', dragOver, false);
-        // for Firefox
-//    gGame.mO3dElement.addEventListener('DOMMouseScroll', scrollMe, false);
-        // for Safari
-//    gGame.mO3dElement.onmousewheel = scrollMe;
-
     }
     this.registerO3DEvents( Game );
 
@@ -114,12 +107,16 @@ function InputState( Game )
         return -1;
     }
     
-    this.addNotify = function( add )
+    this.addNotify = function( add, priority )
     {
-        var find = this.findNotify( add );
-        if ( find == -1 )
+        this.removeNotify( add );
+        
+        if ( priority == undefined )
         {
             this.mNotify[ this.mNotify.length ] = add;
+        } else
+        {
+            this.mNotify.splice( priority, 0, add );
         }
     }
 
