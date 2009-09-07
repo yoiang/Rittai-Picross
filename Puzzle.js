@@ -671,8 +671,6 @@ function Puzzle(Game, setInfo, Camera )
                             NeedsUpdate = true;
 
                             var Info = new CubeInfo();
-                            Info.mPuzzle = this;
-                            Info.mParentTransform = mTransform;
                             Info.mSolid = false;
                             Info.mPuzzleLocation = [ travX, travY, travZ ];
 
@@ -765,8 +763,6 @@ function Puzzle(Game, setInfo, Camera )
             }
 
             var Info = new CubeInfo();
-            Info.mPuzzle = this;
-            Info.mParentTransform = mTransform;
             Info.mSolid = true;
             Info.mPuzzleLocation = addLoc;
             this.addBlock( Game, Info );
