@@ -168,6 +168,18 @@ function loadPuzzleVersion1( PuzzleText )
     gGame.createPuzzle( setPuzzleInfo );
 }
 
+function getAssignmentValue( Assignments, Name )
+{
+    for( var travAssignments = 0; travAssignments + 1 < Assignments.length; travAssignments = travAssignments + 2 )
+    {
+        if ( Assignments[ travAssignments ] == Name )
+        {
+            return Assignments[ travAssignments + 1];
+        }
+    }
+    return null;
+}
+
 function loadPuzzleVersion2( PuzzleText )
 {
     Clean = PuzzleText.replace(/\/\/.*$/img, ""); // remove comments
@@ -176,57 +188,38 @@ function loadPuzzleVersion2( PuzzleText )
     var travAssignments = 0;
     if ( Assignments[travAssignments] == "" )
     {
-        travAssignments ++;
+        Assignments = Assignments.slice( 1 );
     }
 
     var setPuzzleInfo = new PuzzleInfo();
 
-    while ( travAssignments + 1 < Assignments.length )
-    {
-        if ( Assignments[travAssignments] == "AllowedFails" )
-        {
-            setPuzzleInfo.mAllowedFails = parseInt( Assignments[travAssignments + 1] );
-        } else if ( Assignments[travAssignments] == "Dimensions" )
-        {
-            setPuzzleInfo.mDimensions = readIntegerArray( Assignments[travAssignments + 1] );
-        } else if ( Assignments[travAssignments] == "Puzzle" )
-        {
-            BlockDefinition = readIntegerArray( Assignments[travAssignments + 1] );
+    setPuzzleInfo.mTitle = readTextBlock( getAssignmentValue(Assignments, "Title"));
 
-            setPuzzleInfo.mBlockDefinition = [];
-            var travBlockDefinition = 0;
-            for( var travZ = 0; travZ < setPuzzleInfo.mDimensions[2]; travZ ++ )
-            {
-                var BlocksY = [];
-                for( var travY = 0; travY < setPuzzleInfo.mDimensions[1]; travY ++ )
-                {
-                    var BlocksX = [];
-                    for( var travX = 0; travX < setPuzzleInfo.mDimensions[0]; travX ++ )
-                    {
-                        BlocksX[ travX ] = BlockDefinition[ travBlockDefinition ];
-                        travBlockDefinition ++;
-                    }
-                    BlocksY[ travY ] = BlocksX;
-                }
-                setPuzzleInfo.mBlockDefinition[ travZ ] = BlocksY;
-            }
-        } else if ( Assignments[travAssignments] == "Title" )
+    setPuzzleInfo.mAllowedFails = parseInt( getAssignmentValue( Assignments, "AllowedFails") );
+
+    setPuzzleInfo.mDimensions = readIntegerArray( getAssignmentValue( Assignments, "Dimensions" ), 3 );
+
+    BlockDefinition = readIntegerArray( getAssignmentValue( Assignments, "Puzzle") );
+
+    setPuzzleInfo.mBlockDefinition = [];
+    var travBlockDefinition = 0;
+    for( var travZ = 0; travZ < setPuzzleInfo.mDimensions[2]; travZ ++ )
+    {
+        var BlocksY = [];
+        for( var travY = 0; travY < setPuzzleInfo.mDimensions[1]; travY ++ )
         {
-            setPuzzleInfo.mTitle = readTextBlock(Assignments[travAssignments + 1]);
-        } else if ( Assignments[travAssignments] == "PaintColor" )
-        {
-            setPuzzleInfo.mPaintColor = readFloatArray( Assignments[travAssignments + 1] );
-            while( setPuzzleInfo.mPaintColor.length < 4 )
+            var BlocksX = [];
+            for( var travX = 0; travX < setPuzzleInfo.mDimensions[0]; travX ++ )
             {
-                setPuzzleInfo.mPaintColor[ setPuzzleInfo.mPaintColor.length ] = 0.0;
+                BlocksX[ travX ] = BlockDefinition[ travBlockDefinition ];
+                travBlockDefinition ++;
             }
-            while( setPuzzleInfo.mPaintColor.length > 4 )
-            {
-                setPuzzleInfo.mPaintColor.pop();
-            }
+            BlocksY[ travY ] = BlocksX;
         }
-        travAssignments += 2;
+        setPuzzleInfo.mBlockDefinition[ travZ ] = BlocksY;
     }
+
+    setPuzzleInfo.mPaintColor = readFloatArray( getAssignmentValue( Assignments, "PaintColor" ), 4 );
 
     gGame.createPuzzle( setPuzzleInfo );
     
@@ -234,6 +227,10 @@ function loadPuzzleVersion2( PuzzleText )
 
 function cleanSquareBlock( cleanUp )
 {
+    if ( cleanUp == null )
+    {
+        return "";
+    }
     var Clean = cleanUp.match(/\[[\d\s\,]+?\]/img); // TODO: match only within [ ] so don't have to remove later
     if ( Clean == null )
     {
@@ -264,23 +261,49 @@ function cleanSquareBlock( cleanUp )
     return Values;
 }
 
-function readIntegerArray( fromString )
+function readIntegerArray( fromString, ExpectedLength )
 {
     Values = cleanSquareBlock( fromString ).split( " " );
     for( var travValues = 0; travValues < Values.length; travValues ++ )
     {
         Values[travValues] = parseInt(Values[travValues]);
     }
+    
+    if ( ExpectedLength != undefined )
+    {
+        while( Values.length < ExpectedLength )
+        {
+            Values[ Values.length ] = 0;
+        }
+        while( Values.length > ExpectedLength )
+        {
+            Values.pop();
+        }
+    }
+
     return Values;
 }
 
-function readFloatArray( fromString )
+function readFloatArray( fromString, ExpectedLength )
 {
     Values = cleanSquareBlock( fromString ).split( " " );
     for( var travValues = 0; travValues < Values.length; travValues ++ )
     {
         Values[travValues] = parseFloat(Values[travValues]);
     }
+
+    if ( ExpectedLength != undefined )
+    {
+        while( Values.length < ExpectedLength )
+        {
+            Values[ Values.length ] = 0.0;
+        }
+        while( Values.length > ExpectedLength )
+        {
+            Values.pop();
+        }
+    }
+
     return Values;
 }
 
