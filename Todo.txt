@@ -17,8 +17,6 @@
 
 - insure InputState notifies remain in same order
 
-- handle puzzle definition before dimensions
-
 - optimize IngameOverlay
     - quads should be sized to only area where UI elements are located rather than whole screen
     OR
