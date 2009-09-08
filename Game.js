@@ -196,6 +196,7 @@ function Game( ClientElements )
             document.getElementById("ControlsBody").innerHTML = ControlsString;
 
             document.getElementById("EditMode").className = "unhidden";
+            document.getElementById("EditModeUI").className = "unhidden";
         } else
         {
             this.mInputState.removeNotify( mEditInput );
@@ -227,6 +228,7 @@ function Game( ClientElements )
             document.getElementById("ControlsBody").innerHTML = ControlsString;
 
             document.getElementById("EditMode").className = "hidden";
+            document.getElementById("EditModeUI").className = "hidden";
         }
     }
 

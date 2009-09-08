@@ -126,9 +126,15 @@ td#o3d
     width: 600px;
 }
 
-td#EditModeControls
+td.EditModeUI
 {
-    border: 1px solid black;
+    text-align: center;
+    vertical-align: top;
+}
+
+div#EditModeUI
+{
+    border: 1px solid rgb( 230, 230, 230);
     text-align: center;
     vertical-align: top;
     width: 100px;
