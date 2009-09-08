@@ -210,7 +210,7 @@ function Game( ClientElements )
                 this.mPuzzle.setEditMode( this, false );
             }
 
-            if ( this.mPuzzle && this.mPuzzle.getInfo().mTitle != "" )
+            if ( this.mPuzzle && this.mPuzzle.getTitle() != "" )
             {
                 document.getElementById("Subtitle").innerHTML = "\"" + this.mPuzzle.getInfo().mTitle + "\"";
             } else
@@ -314,4 +314,67 @@ function HexToDec( Hex )
         }
     }
     return Dec;
+}
+
+function WebColorToComponent( From )
+{
+    return [
+        HexToDec( From[0] + From[1] ) / 255.0,
+        HexToDec( From[2] + From[3] ) / 255.0,
+        HexToDec( From[4] + From[5] ) / 255.0,
+        1.0
+    ];
+}
+
+function DecToHex( Dec, MinSize )
+{
+    var Hex = "";
+    var Remainder = Dec;
+    while( Remainder > 0 )
+    {
+        var Divisible = Math.floor( Remainder / 16 );
+        Remainder = Remainder % 16;
+        if ( Remainder == 10 )
+        {
+            Hex = "a" + Hex;
+        } else if ( Remainder == 11 )
+        {
+            Hex = "b" + Hex;
+        } else if ( Remainder == 12 )
+        {
+            Hex = "c" + Hex;
+        } else if ( Remainder == 13 )
+        {
+            Hex = "d" + Hex;
+        } else if ( Remainder == 14 )
+        {
+            Hex = "e" + Hex;
+        } else if ( Remainder == 15 )
+        {
+            Hex = "f" + Hex;
+        } else
+        {
+            Hex = Remainder + Hex;
+        }
+        Remainder = Divisible;
+    }
+
+    if ( MinSize != undefined )
+    {
+        while( Hex.length < MinSize )
+        {
+            Hex = "0" + Hex;
+        }
+    }
+
+    return Hex;
+}
+
+function ComponentToWebColor( From )
+{
+    return(
+        DecToHex( From[0] * 255, 2 ) +
+        DecToHex( From[1] * 255, 2 ) +
+        DecToHex( From[2] * 255, 2 )
+    );
 }

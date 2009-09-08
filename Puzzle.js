@@ -659,7 +659,8 @@ function Puzzle(Game, setInfo, Camera )
                 }
             }
             gShapeTemplate.getMaterial().setFinished( true );
-            document.getElementById("EditModePuzzleTitle").value = mInfo.mTitle;
+            document.getElementById("EditModePuzzleTitle").value = this.getTitle();
+            document.getElementById("EditModePaintColor").value = ComponentToWebColor( this.getPaintColor() );
         } else
         {
             for( travX = 0; travX < mBlocks.length; travX ++)
@@ -684,8 +685,9 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
-            mInfo.mTitle = document.getElementById("EditModePuzzleTitle").value;
             gShapeTemplate.getMaterial().setFinished( false );
+            this.setTitle( document.getElementById("EditModePuzzleTitle").value );
+            this.setPaintColor( WebColorToComponent( document.getElementById("EditModePaintColor").value ) );
             this.showFaces( Game );
         }
         if ( NeedsUpdate )
@@ -769,14 +771,7 @@ function Puzzle(Game, setInfo, Camera )
             var Info = new CubeInfo();
             Info.mSolid = true;
             Info.mPuzzleLocation = addLoc;
-            var ColorValue = document.getElementById("EditModeFinishedColor").value;
-
-            Info.mFinishedColor = [
-                HexToDec( ColorValue[0] + ColorValue[1] ) / 255.0,
-                HexToDec( ColorValue[2] + ColorValue[3] ) / 255.0,
-                HexToDec( ColorValue[4] + ColorValue[5] ) / 255.0,
-                1.0
-            ];
+            Info.mFinishedColor = WebColorToComponent( document.getElementById("EditModeFinishedColor").value );
 
             this.addBlock( Game, Info );
 
@@ -920,6 +915,36 @@ function Puzzle(Game, setInfo, Camera )
         {
             gShapeTemplate.getMaterial().setDebug( Value );
         }
+    }
+
+    this.setTitle = function( Value )
+    {
+        if ( mInfo )
+            mInfo.mTitle = Value;
+    }
+
+    this.getTitle = function( Value )
+    {
+        if ( mInfo )
+            return mInfo.mTitle;
+        return "";
+    }
+
+    this.getPaintColor = function()
+    {
+        if ( mInfo )
+            return mInfo.mPaintColor;
+        if ( gShapeTemplate )
+            return gShapeTemplate.getMaterial().getPaintedColor();
+        return [ 0.0, 0.0, 1.0, 1.0 ];
+    }
+
+    this.setPaintColor = function( Value )
+    {
+        if ( mInfo )
+            mInfo.mPaintColor = Value;
+        if ( gShapeTemplate )
+            gShapeTemplate.getMaterial().setPaintedColor( Value );
     }
 
     this.getMax = function()
