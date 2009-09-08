@@ -154,9 +154,15 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         mFinishedColorParam.value = Value;
     }
 
+    this.getInfo = function()
+    {
+        return mCubeInfo;
+    }
+
+
     this.getPuzzleLocation = function()
     {
-        return mCubeInfo.mPuzzleLocation;
+        return this.getInfo().mPuzzleLocation;
     }
 
     this.destroy = function( Game )
@@ -183,7 +189,7 @@ function CubeInfo( )
     this.mParentTransform = null;
     
     this.mSolid = false;
-    this.mFinishedColor = [ 0.3, 0.3, 0.3, 1 ];
+    this.mFinishedColor = [ 1.0, 1.0, 1.0, 1 ];
     this.mPuzzleLocation = [ -1, -1, -1 ];
 
     this.destroy = function()

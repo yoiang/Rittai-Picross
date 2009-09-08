@@ -836,47 +836,94 @@ function Puzzle(Game, setInfo, Camera )
         return null;
     }
 
-    this.save = function( Game )
+    this.createColorElement = function( XMLDoc, ElementName, Color )
     {
-        var Output = "";
-        Output += "2\n"; // file version
-        Output += "Title = \"" + this.getInfo().mTitle + "\"\n";
-        Output += "AllowedFails = " + this.getInfo().mAllowedFails + "\n";
-        Output += "Dimensions = [ " + mMax.toString() + " ]\n";
-        Output += "Puzzle = [ ";
-        for( travX = 0; travX < mBlocks.length; travX ++)
+        var ColorElement = XMLDoc.createElement( ElementName );
+
+        var Red = XMLDoc.createElement("ns1:r");
+        var Green = XMLDoc.createElement("ns1:g");
+        var Blue = XMLDoc.createElement("ns1:b");
+        var Alpha = XMLDoc.createElement("ns1:a");
+        Red.textContent = "" + parseFloat( Color[0] );
+        Green.textContent = "" + parseFloat( Color[1] );
+        Blue.textContent = "" + parseFloat( Color[2] );
+        Alpha.textContent = "" + parseFloat( Color[3] );
+
+        ColorElement.appendChild( Red );
+        ColorElement.appendChild( Green );
+        ColorElement.appendChild( Blue );
+        ColorElement.appendChild( Alpha );
+
+        return ColorElement;
+    }
+
+    this.createCubeElement = function( XMLDoc, useCubeInfo )
+    {
+        var Cube = XMLDoc.createElement( "ns1:Cube" );
+
+        Cube.setAttribute( "Solid", useCubeInfo.mSolid );
+        Cube.appendChild( this.createColorElement( XMLDoc, "ns1:FinishedColor", useCubeInfo.mFinishedColor ) );
+
+        return Cube;
+    }
+    
+    this.generateXML = function( Game )
+    {
+        var XMLDoc = document.implementation.createDocument("","",null);
+        var PuzzleElement = XMLDoc.createElement("ns1:Puzzle");
+
+        PuzzleElement.setAttribute( "Version", "3" );
+
+        PuzzleElement.setAttribute( "Title", this.getTitle() );
+        PuzzleElement.setAttribute( "XSize", this.getInfo().mDimensions[0] );
+        PuzzleElement.setAttribute( "YSize", this.getInfo().mDimensions[1] );
+        PuzzleElement.setAttribute( "ZSize", this.getInfo().mDimensions[2] );
+        PuzzleElement.setAttribute( "AllowedFails", this.getInfo().mAllowedFails );
+
+        PuzzleElement.setAttribute( "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+        PuzzleElement.setAttribute( "xmlns:ns1", "http://Rittai.Picross" );
+        PuzzleElement.setAttribute( "xsi:schemaLocation", "http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd" );
+
+        PuzzleElement.appendChild( this.createColorElement( XMLDoc, "ns1:PaintColor", this.getPaintColor() ) );
+        var CubesElement = XMLDoc.createElement( "ns1:Cubes" );
+
+        var BlankCubeInfo = new CubeInfo();
+        BlankCubeInfo.mSolid = false;
+
+        for( var travX = 0; travX < mBlocks.length; travX ++)
         {
-            for( travY = 0; travY < mBlocks[travX].length; travY ++)
+            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
             {
-                for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
+                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
                 {
                     if ( mBlocks[travX][travY][travZ] != null )
                     {
-                        if ( mBlocks[ travX ][ travY ][ travZ ].getSolid() )
+                        if ( mBlocks[travX][travY][travZ].getSolid() )
                         {
-                            Output += "1 ";
+                            CubesElement.appendChild( this.createCubeElement( XMLDoc, mBlocks[ travX ][ travY ][ travZ ].getInfo() ) );
                         } else
                         {
-                            Output += "0 ";
+                            CubesElement.appendChild( this.createCubeElement( XMLDoc, BlankCubeInfo ) );
                         }
                     } else
                     {
-                        Output += "0 ";
+                        CubesElement.appendChild( this.createCubeElement( XMLDoc, BlankCubeInfo ) );
                     }
                 }
-                if ( travY < mBlocks[travX].length - 1 )
-                {
-                    Output += "\n";
-                }
-            }
-            if ( travX < mBlocks.length - 1 )
-            {
-                Output += "\n";
             }
         }
-        Output += " ]\n";
-        Output += "PaintColor = [ " + this.getInfo().mPaintColor.toString() + " ]\n";
-        return Output;
+
+        PuzzleElement.appendChild( CubesElement );
+
+        XMLDoc.appendChild(PuzzleElement);
+
+        return XMLDoc;
+    }
+
+    this.save = function( Game )
+    {
+        var XMLDoc= this.generateXML( Game );
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + (new XMLSerializer()).serializeToString( XMLDoc );
     }
 
     this.getInfo = function()
