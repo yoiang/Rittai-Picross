@@ -116,7 +116,22 @@
             立体ピクロス - <a href="Todo.txt" target="rittai_todo">todo</a>
             <div id="Subtitle">please load a puzzle from below</div>
             <div id="DebugLog"></div>
-            <div id="o3d"></div>
+            <table id="main">
+                <tr>
+                    <td id="o3d">
+                        <div id="o3d"></div>
+                    </td>
+                    <td id="EditModeControls">
+                        Edit Mode<br/>
+
+                        Puzzle Title:<br/>
+                        <textarea id="EditModePuzzleTitle"></textarea><br/>
+                        <br/>
+                        Finished Color:<br/>
+                        #<textarea id="EditModeFinishedColor" onchange="javascript:checkColorText('EditModeFinishedColor')">ffffff</textarea><br/>
+                    </td>
+                </tr>
+            </table>
             <form name="puzzleSelectForm">
                 <span id="puzzleSelectDiv"></span> <input type="text" id="url" size="60"> <input type="button" id="updateButton" onclick="PuzzleManualSelect();" value="Load Puzzle"><br/>
             </form>
@@ -158,7 +173,6 @@
                         <div id="EditMode">
                             <span class="title">Edit Mode</span> <a href="javascript:toggleHidden('EditModeBody');" class="toggleHidden">+</a>
                             <div id="EditModeBody" class="hidden">
-                                Finished Color: #<textarea id="EditModeFinishedColor" onchange="javascript:checkColorText('EditModeFinishedColor')">ffffff</textarea><br/>
                                 <textarea id="EditModePuzzleFile"></textarea>
                             </div>
                         </div>

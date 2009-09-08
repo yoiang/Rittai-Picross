@@ -659,6 +659,7 @@ function Puzzle(Game, setInfo, Camera )
                 }
             }
             gShapeTemplate.getMaterial().setFinished( true );
+            document.getElementById("EditModePuzzleTitle").value = mInfo.mTitle;
         } else
         {
             for( travX = 0; travX < mBlocks.length; travX ++)
@@ -683,6 +684,7 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
+            mInfo.mTitle = document.getElementById("EditModePuzzleTitle").value;
             gShapeTemplate.getMaterial().setFinished( false );
             this.showFaces( Game );
         }

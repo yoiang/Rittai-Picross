@@ -175,6 +175,15 @@ function Game( ClientElements )
             this.mInputState.removeNotify( mGameInput );
             this.mInputState.addNotify( mEditInput, 0 );
 
+            this.clearWonLost();
+
+            this.doRender();
+
+            if ( this.mPuzzle )
+            {
+                this.mPuzzle.setEditMode( this, true );
+            }
+
             document.getElementById("Subtitle").innerHTML = "Edit Mode";
 
             var ControlsString = "<table class=\"Controls\">\n";
@@ -187,19 +196,19 @@ function Game( ClientElements )
             document.getElementById("ControlsBody").innerHTML = ControlsString;
 
             document.getElementById("EditMode").className = "unhidden";
-
+        } else
+        {
+            this.mInputState.removeNotify( mEditInput );
+            this.mInputState.addNotify( mGameInput, 0 );
+            
             this.clearWonLost();
 
             this.doRender();
 
             if ( this.mPuzzle )
             {
-                this.mPuzzle.setEditMode( this, true );
+                this.mPuzzle.setEditMode( this, false );
             }
-        } else
-        {
-            this.mInputState.removeNotify( mEditInput );
-            this.mInputState.addNotify( mGameInput, 0 );
 
             if ( this.mPuzzle && this.mPuzzle.getInfo().mTitle != "" )
             {
@@ -218,15 +227,6 @@ function Game( ClientElements )
             document.getElementById("ControlsBody").innerHTML = ControlsString;
 
             document.getElementById("EditMode").className = "hidden";
-
-            this.clearWonLost();
-
-            this.doRender();
-
-            if ( this.mPuzzle )
-            {
-                this.mPuzzle.setEditMode( this, false );
-            }
         }
     }
 
