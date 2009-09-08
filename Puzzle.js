@@ -658,6 +658,7 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
+            gShapeTemplate.getMaterial().setFinished( true );
         } else
         {
             for( travX = 0; travX < mBlocks.length; travX ++)
@@ -682,6 +683,7 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
+            gShapeTemplate.getMaterial().setFinished( false );
             this.showFaces( Game );
         }
         if ( NeedsUpdate )
@@ -765,6 +767,15 @@ function Puzzle(Game, setInfo, Camera )
             var Info = new CubeInfo();
             Info.mSolid = true;
             Info.mPuzzleLocation = addLoc;
+            var ColorValue = document.getElementById("EditModeFinishedColor").value;
+
+            Info.mFinishedColor = [
+                HexToDec( ColorValue[0] + ColorValue[1] ) / 255.0,
+                HexToDec( ColorValue[2] + ColorValue[3] ) / 255.0,
+                HexToDec( ColorValue[4] + ColorValue[5] ) / 255.0,
+                1.0
+            ];
+
             this.addBlock( Game, Info );
 
             mTreeInfo.update();

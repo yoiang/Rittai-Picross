@@ -102,3 +102,9 @@ textarea#EditModePuzzleFile
     width: 450px;
     height: 200px;
 }
+
+textarea#EditModeFinishedColor
+{
+    width: 50px;
+    height: 12px;
+}

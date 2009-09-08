@@ -84,6 +84,23 @@
                     item.className=(item.className=='hidden')?'unhidden':'hidden';
                 }
             }
+
+            function checkColorText( TextareaId )
+            {
+                var Item = document.getElementById( TextareaId );
+                if ( Item )
+                {
+                    var Value = Item.value.toLowerCase();
+                    for( var travValue = 0; travValue < Value.length; travValue ++)
+                    {
+                        if ( Value[travValue] < '0' || Value[travValue] > 'f' )
+                        {
+                            Value[travValue] = '0';
+                        }
+                    }
+                    Item.value = Value;
+                }
+            }
             
             function generateControlEntry( Key, Function )
             {
@@ -141,6 +158,7 @@
                         <div id="EditMode">
                             <span class="title">Edit Mode</span> <a href="javascript:toggleHidden('EditModeBody');" class="toggleHidden">+</a>
                             <div id="EditModeBody" class="hidden">
+                                Finished Color: #<textarea id="EditModeFinishedColor" onchange="javascript:checkColorText('EditModeFinishedColor')">ffffff</textarea><br/>
                                 <textarea id="EditModePuzzleFile"></textarea>
                             </div>
                         </div>

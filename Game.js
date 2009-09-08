@@ -283,3 +283,35 @@ function setByDimIterator3( Array3, Location, Dimension, Iterator, Value )
         Array3[ Location[ 0 ] ][ Location[ 1 ] ][ Iterator ] = Value;
     }
 }
+
+function HexToDec( Hex )
+{
+    var Dec = 0;
+    for( var travHex = 0; travHex < Hex.length; travHex ++ )
+    {
+        Dec = Dec * 16;
+        if ( Hex[ travHex ].toLowerCase() == "a" )
+        {
+            Dec = Dec + 10;
+        } else if ( Hex[ travHex ].toLowerCase() == "b" )
+        {
+            Dec = Dec + 11;
+        } else if ( Hex[ travHex ].toLowerCase() == "c" )
+        {
+            Dec = Dec + 12;
+        } else if ( Hex[ travHex ].toLowerCase() == "d" )
+        {
+            Dec = Dec + 13;
+        } else if ( Hex[ travHex ].toLowerCase() == "e" )
+        {
+            Dec = Dec + 14;
+        } else if ( Hex[ travHex ].toLowerCase() == "f" )
+        {
+            Dec = Dec + 15;
+        } else
+        {
+            Dec = Dec + parseInt( Hex[ travHex ] );
+        }
+    }
+    return Dec;
+}
