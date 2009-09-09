@@ -73,6 +73,7 @@ function IngameOverlay( Game )
             Info.mPuzzleLocation = [ travAllowedFails * 2.0 - Puzzle.getAllowedFails(), -100, 0 ];
             Info.mFinishedColor = [ 1, 1, 1, 1 ];
             mAllowedFails[travAllowedFails] = new Cube(Game, Info, false );
+            mAllowedFails[travAllowedFails].setIgnoreColorModifiers( true );
         }
     }
 

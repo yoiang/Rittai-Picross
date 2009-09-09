@@ -9,6 +9,8 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     var mTransform = null;
 
+    var mIgnoreColorModifiersParam = null;
+
     var mNumbersParam = null;
     var mHideNumbersParam = null;
     var mSpacesHintsParam = null;
@@ -30,6 +32,9 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         // Create a new transform and parent the Shape under it.
         mTransform = Game.mPack.createObject('Transform');
         mTransform.addShape(gShapeTemplate.getShape());
+
+        mIgnoreColorModifiersParam = mTransform.createParam( 'IgnoreColorModifiers', 'ParamBoolean' );
+        this.setIgnoreColorModifiers( false );
 
         mNumbersParam = mTransform.createParam('Numbers', 'ParamFloat3');
         this.setNumbers( -1, -1, -1 );
@@ -83,6 +88,15 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         return mRows;
     }
 
+    this.setIgnoreColorModifiers = function( Value )
+    {
+        mIgnoreColorModifiersParam.value = Value;
+    }
+
+    this.getIgnoreColorModifiers = function()
+    {
+        return mIgnoreColorModifiersParam.value;
+    }
 
     this.setNumbers = function( X, Y, Z )
     {

@@ -1,3 +1,7 @@
+- fix trimming, doesn't save properly
+- fix adjacent face guarenteeing
+- add circle and square face guarenteeing
+
 - Tutorial Puzzles, step by step introduction
 
 - peering through puzzle
@@ -5,11 +9,7 @@
 - dragging paint
 - dragging destroy?
 
-- determine what faces don't need to be numbered, remove based on difficulty?
-
 - puzzle editor
-    - set title and colors in editor
-    - puzzle finish colors
     - autoupdate faces in affected rows when adding and removing blocks?
     - allow in editor resizing
     - support over 9x9x9 puzzles
@@ -20,8 +20,6 @@
     - seperate quad for each UI element
 
     - additional add IngameOverlay to InputState notify list for keydown and up notifications?
-
-- auto destroy 0 row option!!!!
 
 - mousewheel zoom
 - fix xyz iterate orders
