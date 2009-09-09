@@ -429,13 +429,16 @@ function fillPuzzleList()
     var PuzzleNames = [
     'puzzles/Debug/One.rittai',
     'puzzles/Debug/Test.xml',
-    'puzzles/Debug/test2.rittai',
+    'puzzles/Debug/test2.xml',
     '',
     'puzzles/Tutorial/1 - Break a Block.rittai',
     'puzzles/Tutorial/2 - Break a Block, Save a Block.rittai',
     '',
     'puzzles/HollowCube.rittai',
-    'puzzles/TakeNote.xml'
+    'puzzles/TakeNote.xml',
+    'puzzles/SmallHeart.xml',
+    '',
+    'puzzles/9x9x9.rittai'
     ];
 
     var Options = '<select id="puzzleSelect" name="puzzleSelect" onChange="selectPuzzle()">';
