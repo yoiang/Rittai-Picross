@@ -43,19 +43,24 @@ function EditInput()
 
     this.handleKeyDown = function( Game, Event, KeyCode )
     {
-        if ( KeyCode == 68 )
+        if ( KeyCode == 68 ) // D
         {
             Game.toggleDebug();
             return true;
         }
-        if ( KeyCode == 69 )
+        if ( KeyCode == 69 ) // E
         {
             Game.toggleEditMode();
             return true;
         }
-        if ( KeyCode == 83 )
+        if ( KeyCode == 83 ) // S
         {
             Game.savePuzzle();
+        }
+        if ( KeyCode == 84 ) // T
+        {
+            Game.mPuzzle.trim( Game );
+            Game.mCamera.centerOnPuzzle( Game, Game.mPuzzle, false );
         }
 
 

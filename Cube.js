@@ -165,6 +165,12 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         return this.getInfo().mPuzzleLocation;
     }
 
+    this.setPuzzleLocation = function( Value )
+    {
+        this.getInfo().mPuzzleLocation = Value;
+        mTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( this.getInfo().mPuzzleLocation ));
+    }
+
     this.destroy = function( Game )
     {
         if ( mCubeInfo != null )

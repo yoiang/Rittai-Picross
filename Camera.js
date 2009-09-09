@@ -28,19 +28,22 @@ function TargetCamera( Game )
         this.update( Game );
     }
 
-    this.centerOnPuzzle = function( Game, Puzzle )
+    this.centerOnPuzzle = function( Game, Puzzle, ResetAngle )
     {
-        this.centerOn( Game, Puzzle.getMax() );
+        this.centerOn( Game, Puzzle.getMax(), ResetAngle );
     }
 
-    this.centerOn = function( Game, Location )
+    this.centerOn = function( Game, Location, ResetAngle )
     {
         mTarget[0] = Location[0] / 2.0;
         mTarget[1] = Location[1] / 2.0;
         mTarget[2] = Location[2] / 2.0;
 
-        mEye.rotZ = -0.76;
-        mEye.rotH = 46;
+        if ( ResetAngle )
+        {
+            mEye.rotZ = -0.76;
+            mEye.rotH = 46;
+        }
         mEye.distanceFromTarget = o3djs.math.distanceSquared( [0,0,0], [mTarget[0], mTarget[1], mTarget[2]] ) + 5;
 
         this.update( Game );

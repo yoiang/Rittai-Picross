@@ -926,6 +926,132 @@ function Puzzle(Game, setInfo, Camera )
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + (new XMLSerializer()).serializeToString( XMLDoc );
     }
 
+    this.checkForSolid = function( Dimension, Location )
+    {
+        var ODim1, ODim2;
+        if ( Dimension == 0 )
+        {
+            ODim1 = 1;
+            ODim2 = 2;
+        } else if ( Dimension == 1 )
+        {
+            ODim1 = 0;
+            ODim2 = 2;
+        } else
+        {
+            ODim1 = 0;
+            ODim2 = 1;
+        }
+        for ( var travODim1 = 0; travODim1 < mMax[ ODim1 ]; travODim1 ++ )
+        {
+            for ( var travODim2 = 0; travODim2 < mMax[ ODim2 ]; travODim2 ++ )
+            {
+                var CheckLocation = [];
+                CheckLocation[Dimension] = Location;
+                CheckLocation[ODim1] = travODim1;
+                CheckLocation[ODim2] = travODim2;
+                if ( mBlocks[ CheckLocation[0] ][ CheckLocation[1] ][ CheckLocation[2] ] != null &&
+                     mBlocks[ CheckLocation[0] ][ CheckLocation[1] ][ CheckLocation[2] ].getSolid() )
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    this.findSolidLeading = function( Dimension )
+    {
+        for( var countTrim = 0; countTrim < mMax[ Dimension ]; countTrim ++ )
+        {
+            if ( this.checkForSolid( Dimension, countTrim ) )
+            {
+//                countTrim --;
+                break;
+            }
+        }
+        return countTrim;
+    }
+
+    this.findSolidTrailing = function( Dimension )
+    {
+        for( var countTrim = mMax[ Dimension ] - 1; countTrim > 0; countTrim -- )
+        {
+            if ( this.checkForSolid( Dimension, countTrim ) )
+            {
+                countTrim ++;
+                break;
+            }
+        }
+        if ( countTrim == 0 )
+        {
+            return mMax[ Dimension ];
+        }
+        return countTrim;
+    }
+
+    this.trim = function( Game )
+    {
+        var Leading = [];
+        var Trailing = [];
+        var NewMax = [];
+        for ( var travDim = 0; travDim < 3; travDim ++ )
+        {
+            Leading [ travDim ] = this.findSolidLeading ( travDim );
+            Trailing[ travDim ] = this.findSolidTrailing( travDim );
+            NewMax  [ travDim ] = Trailing[ travDim ] - Leading[ travDim ];
+        }
+
+        var NewBlocks = [];
+        for( var travX = 0; travX < mMax[ 0 ]; travX ++)
+        {
+            if ( travX >= Leading[ 0 ] && travX < Trailing[ 0 ] )
+            {
+                NewBlocks[travX - Leading [ 0 ] ] = [];
+            }
+
+            for( var travY = 0; travY < mMax[ 1 ]; travY ++)
+            {
+                if (
+                    travX >= Leading[ 0 ] && travX < Trailing[ 0 ] &&
+                    travY >= Leading[ 1 ] && travY < Trailing[ 1 ]
+                    )
+                {
+                    NewBlocks[travX - Leading [ 0 ]][travY - Leading [ 1 ]] = [];
+                }
+
+                for( var travZ = 0; travZ < mMax[ 2 ]; travZ++)
+                {
+                    if (
+                        travX >= Leading[ 0 ] && travX < Trailing[ 0 ] &&
+                        travY >= Leading[ 1 ] && travY < Trailing[ 1 ] &&
+                        travZ >= Leading[ 2 ] && travZ < Trailing[ 2 ]
+                        )
+                    {
+                        var Move = mBlocks[travX][travY][travZ];
+                        if ( Move != null )
+                        {
+                            Move.setPuzzleLocation( [ 
+                                travX - Leading[ 0 ],
+                                travY - Leading[ 1 ],
+                                travZ - Leading[ 2 ]
+                            ]);
+                        }
+                        NewBlocks[travX - Leading [ 0 ]][travY - Leading [ 1 ]][travZ - Leading[ 2 ] ] = Move;
+                    } else if ( mBlocks[travX][travY][travZ] != null )
+                    {
+                        mBlocks[travX][travY][travZ].destroy( Game );
+                    }
+                    mBlocks[travX][travY][travZ] = null;
+                }
+            }
+        }
+
+        mBlocks = NewBlocks;
+        mMax = NewMax;
+        this.getInfo().mDimensions = mMax;
+    }
+
     this.getInfo = function()
     {
         return mInfo;
@@ -1024,10 +1150,10 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length] );
+    Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length], false );
     this.fillPuzzle( Game );
     this.showFaces( Game );
-    Camera.centerOnPuzzle( Game, this );
+    Camera.centerOnPuzzle( Game, this, true );
     this.resetRemainingFails();
 }
 
