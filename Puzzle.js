@@ -297,18 +297,18 @@ function Puzzle(Game, setInfo, Camera )
         } else
         {
             StartFromLoc = Last;
-            StartFromLoc[2]++;
-            if ( StartFromLoc[2] >= this.getDimension( 2 ) )
+            StartFromLoc[0]++;
+            if ( StartFromLoc[0] >= this.getDimension( 0 ) )
             {
-                StartFromLoc[2] = 0;
+                StartFromLoc[0] = 0;
                 StartFromLoc[1] ++;
                 if( StartFromLoc[1] >= this.getDimension(1) )
                 {
                     StartFromLoc[1] = 0;
-                    StartFromLoc[ 0 ] ++;
-                    if ( StartFromLoc[0] >= this.getDimension(0) )
+                    StartFromLoc[2] ++;
+                    if ( StartFromLoc[2] >= this.getDimension(2) )
                     {
-                        StartFromLoc[0] = 0;
+                        StartFromLoc[2] = 0;
                     }
                 }
             }
@@ -335,29 +335,36 @@ function Puzzle(Game, setInfo, Camera )
         return null;
     }
 
+    this.buildUnguaranteedList = function( Game, Puzzle, Location, ExtraParams )
+    {
+        var Guaranteed = ExtraParams[ 0 ];
+        var SolidBlockLocs = ExtraParams[ 1 ];
+
+        if ( Guaranteed[ Location[ 0 ] ] == undefined  )
+        {
+            Guaranteed[ Location[ 0 ] ] = [];
+        }
+
+        if ( Guaranteed[ Location[ 0 ] ][ Location[ 1 ] ] == undefined )
+        {
+            Guaranteed[ Location[ 0 ] ][ Location[ 1 ] ] = [];
+        }
+
+        Guaranteed[ Location[ 0 ] ][ Location[ 1 ] ][ Location[ 2 ] ] = 0;
+        var Test = Puzzle.getBlock( Location );
+        if ( Test != null && Test.getSolid() )
+        {
+            SolidBlockLocs[ SolidBlockLocs.length ] = Location;
+        }
+    }
+
     this.showNeededFaces = function( Game )
     {
         document.getElementById("DebugLog").innerHTML = "";
 
-        var SolidBlockLocs = [];
-
         var Guaranteed = [];
-        for( var travX = 0; travX < this.getDimension( 2 ); travX ++)
-        {
-            Guaranteed[travX] = [];
-            for( var travY = 0; travY < this.getDimension( 1 ); travY ++)
-            {
-                Guaranteed[travX][travY] = [];
-                for( var travZ = 0; travZ < this.getDimension( 0 ).length; travZ++)
-                {
-                    Guaranteed[ travX ][ travY ][ travZ ] = 0;
-                    if ( this.getBlock( [ travX, travY, travZ ] ) != null && this.getBlock( [ travX, travY, travZ ] ).getSolid() )
-                    {
-                        SolidBlockLocs[ SolidBlockLocs.length ] = [ travX, travY, travZ ];
-                    }
-                }
-            }
-        }
+        var SolidBlockLocs = [];
+        this.travBlocks( Game, this.buildUnguaranteedList, [ Guaranteed, SolidBlockLocs ] );
 
         // first try to guarantee the Solid Blocks
         for ( var travSolid = 0; travSolid < SolidBlockLocs.length; travSolid ++ )

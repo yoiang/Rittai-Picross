@@ -101,6 +101,8 @@ function Game( ClientElements )
             this.mIngameOverlay.puzzleDestroyed( this );
         }
 
+        this.setEditMode( false );
+
         this.clearWonLost();
 
         this.doRender();
@@ -255,7 +257,6 @@ function Game( ClientElements )
         return mHideUnneededFaces;
     }
 }
-
 
 function getByDimIterator3( Array3, Location, Dimension, Iterator )
 {

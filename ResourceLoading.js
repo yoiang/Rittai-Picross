@@ -60,11 +60,6 @@ function loadPuzzle( URL )
         return;
     }
 
-    if ( gGame )
-    {
-        gGame.setEditMode( false );
-    }
-
     if ( gXMLHttp == null )
     {
         // Provide the XMLHttpRequest class for IE 5.x-6.x:
