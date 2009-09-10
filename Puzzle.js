@@ -5,7 +5,6 @@ function Puzzle(Game, setInfo, Camera )
     var mRemainingFails = 0;
     
     var mBlocks = null;
-    var mMax = null;
 
     var mTransform = null;
     var mTreeInfo = null;
@@ -24,7 +23,12 @@ function Puzzle(Game, setInfo, Camera )
 
         setCubeInfo.mPuzzle = this;
         setCubeInfo.mParentTransform = mTransform;
-        mBlocks[ setCubeInfo.mPuzzleLocation[0] ][ setCubeInfo.mPuzzleLocation[1] ][ setCubeInfo.mPuzzleLocation[2] ] = new Cube(Game, setCubeInfo, true );
+        this.setBlock( setCubeInfo.mPuzzleLocation, new Cube(Game, setCubeInfo, true ) );
+    }
+
+    this.addBlockFromTrav = function( Game, Puzzle, Location, ExtraParams )
+    {
+        Puzzle.addBlock( Game, ExtraParams[ Location[0] ][ Location[1] ][ Location[2] ] );
     }
 
     this.fillPuzzle = function(Game)
@@ -33,38 +37,87 @@ function Puzzle(Game, setInfo, Camera )
         mTransform.parent = Game.mClient.root;
 
         mBlocks = [];
-        mMax = [];
 
         BlocksDefinition = mInfo.mBlockDefinition;
-        
-        if ( mMax[ 0 ] == undefined || mBlocks.length > mMax[ 0 ] )
-        {
-            mMax[ 0 ] = BlocksDefinition.length;
-        }
 
-        for( var travX = 0; travX < BlocksDefinition.length; travX ++)
-        {
-            mBlocks[travX] = [];
-            if ( mMax[ 1 ] == undefined || BlocksDefinition[travX].length > mMax[ 1 ] )
-            {
-                mMax[ 1 ] = BlocksDefinition[travX].length;
-            }
-            for( var travY = 0; travY < BlocksDefinition[travX].length; travY ++)
-            {
-                mBlocks[travX][travY] = [];
-                if ( mMax[ 2 ] == undefined || BlocksDefinition[travX].length > mMax[ 2 ] )
-                {
-                    mMax[ 2 ] = BlocksDefinition[travX][travY].length;
-                }
-                for( var travZ = 0; travZ < BlocksDefinition[travX][travY].length; travZ++)
-                {
-                    this.addBlock( Game, BlocksDefinition[travX][travY][travZ] );
-                }
-            }
-        }
+        this.travBlocks( Game, this.addBlockFromTrav, BlocksDefinition );
 
         mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
         mTreeInfo.update();
+    }
+
+    this.totalSolidCounts = function( Game, Puzzle, Location, ExtraParams )
+    {
+        var SolidCountX = ExtraParams[ 0 ];
+        var SolidCountY = ExtraParams[ 1 ];
+        var SolidCountZ = ExtraParams[ 2 ];
+
+        if ( SolidCountX[ Location[ 1 ] ] == undefined )
+        {
+            SolidCountX[ Location[ 1 ] ] = [];
+        }
+        if ( SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] == undefined )
+        {
+            SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] = [];
+        }
+        if ( SolidCountY[ Location[ 0 ] ] == undefined )
+        {
+            SolidCountY[ Location[ 0 ] ] = [];
+        }
+        if ( SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] == undefined )
+        {
+            SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] = [];
+        }
+
+        if ( SolidCountZ[ Location[ 0 ] ] == undefined )
+        {
+            SolidCountZ[ Location[ 0 ] ] = [];
+        }
+        if ( SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] == undefined )
+        {
+            SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] = [];
+        }
+        if ( Puzzle.getBlock( Location ).getSolid() )
+        {
+            SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ][ SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ].length ] = 1;
+            SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ][ SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ].length ] = 1;
+            SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ][ SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ].length ] = 1;
+        } else
+        {
+            SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ][ SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ].length ] = 0;
+            SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ][ SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ].length ] = 0;
+            SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ][ SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ].length ] = 0;
+        }
+    }
+   
+    this.setRowOnBlock = function( Game, Puzzle, Location, ExtraParams )
+    {
+        var SolidCountX = ExtraParams[ 0 ];
+        var SolidCountY = ExtraParams[ 1 ];
+        var SolidCountZ = ExtraParams[ 2 ];
+
+        if ( SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] instanceof Array )
+        {
+            SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] = new RowInfo( SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ], 0 );
+        }
+        if ( SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] instanceof Array )
+        {
+            SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] = new RowInfo( SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ], 1 );
+        }
+        if ( SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] instanceof Array )
+        {
+            SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] = new RowInfo( SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ], 2 );
+        }
+
+        Puzzle.getBlock( Location ).setRows(
+            [ SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ],
+              SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ],
+              SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] ]
+        );
+
+        Puzzle.updateDimmedRow( Game, Location, SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] );
+        Puzzle.updateDimmedRow( Game, Location, SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] );
+        Puzzle.updateDimmedRow( Game, Location, SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] );
     }
 
     this.setRowInfos = function( Game )
@@ -74,89 +127,14 @@ function Puzzle(Game, setInfo, Camera )
             var SolidCountX = [];
             var SolidCountY = [];
             var SolidCountZ = [];
-            for( var travX = 0; travX < mBlocks.length; travX ++)
-            {
-                for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-                {
-                    for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                    {
-                        if ( SolidCountX[travY] == undefined )
-                        {
-                            SolidCountX[travY] = [];
-                        }
-                        if ( SolidCountX[travY][travZ] == undefined )
-                        {
-                            SolidCountX[travY][travZ] = [];
-                        }
-                        if ( SolidCountY[travX] == undefined )
-                        {
-                            SolidCountY[travX] = [];
-                        }
-                        if ( SolidCountY[travX][travZ] == undefined )
-                        {
-                            SolidCountY[travX][travZ] = [];
-                        }
-
-                        if ( SolidCountZ[travX] == undefined )
-                        {
-                            SolidCountZ[travX] = [];
-                        }
-                        if ( SolidCountZ[travX][travY] == undefined )
-                        {
-                            SolidCountZ[travX][travY] = [];
-                        }
-                        if ( mBlocks[travX][travY][travZ].getSolid() )
-                        {
-                            SolidCountX[travY][travZ][ SolidCountX[travY][travZ].length ] = 1;
-                            SolidCountY[travX][travZ][ SolidCountY[travX][travZ].length ] = 1;
-                            SolidCountZ[travX][travY][ SolidCountZ[travX][travY].length ] = 1;
-                        } else
-                        {
-                            SolidCountX[travY][travZ][ SolidCountX[travY][travZ].length ] = 0;
-                            SolidCountY[travX][travZ][ SolidCountY[travX][travZ].length ] = 0;
-                            SolidCountZ[travX][travY][ SolidCountZ[travX][travY].length ] = 0;
-                        }
-                    }
-                }
-            }
-
-            for( travX = 0; travX < mBlocks.length; travX ++)
-            {
-                for( travY = 0; travY < mBlocks[travX].length; travY ++)
-                {
-                    for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                    {
-                        if ( SolidCountX[travY][travZ] instanceof Array )
-                        {
-                            SolidCountX[ travY ][ travZ ] = new RowInfo( SolidCountX[travY][travZ], 0 );
-                        }
-                        if ( SolidCountY[travX][travZ] instanceof Array )
-                        {
-                            SolidCountY[ travX ][ travZ ] = new RowInfo( SolidCountY[travX][travZ], 1 );
-                        }
-                        if ( SolidCountZ[travX][travY] instanceof Array )
-                        {
-                            SolidCountZ[ travX ][ travY ] = new RowInfo( SolidCountZ[travX][travY], 2 );
-                        }
-
-                        mBlocks[travX][travY][travZ].setRows(
-                            [ SolidCountX[ travY ][ travZ ],
-                              SolidCountY[ travX ][ travZ ],
-                              SolidCountZ[ travX ][ travY ] ]
-                        );
-
-                        this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountX[ travY ][ travZ ] );
-                        this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountY[ travX ][ travZ ] );
-                        this.updateDimmedRow( Game, [ travX, travY, travZ ], SolidCountZ[ travX ][ travY ] );
-                    }
-                }
-            }
+            this.travBlocks( Game, this.totalSolidCounts, [ SolidCountX, SolidCountY, SolidCountZ ] );
+            this.travBlocks( Game, this.setRowOnBlock, [ SolidCountX, SolidCountY, SolidCountZ ] );
         }
     }
 
     this.showRowFaces = function( UnguaranteedLoc, Dimension )
     {
-        for( var trav = 0; trav < mMax[ Dimension ]; trav ++)
+        for( var trav = 0; trav < this.getDimension( Dimension ); trav ++)
         {
             var updateCube = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
             var Hide = updateCube.getHideNumbers();
@@ -172,7 +150,7 @@ function Puzzle(Game, setInfo, Camera )
     {
         /*/ skip find unguaranteed, always assume we are doing it on a row with at least one?
         var FoundUnguaranteed = false;
-        for( var trav = 0; trav < mMax[ Dimension ]; trav ++ )
+        for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
         {
             if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
             {
@@ -183,7 +161,7 @@ function Puzzle(Game, setInfo, Camera )
 
         if ( FoundUnguaranteed )*/
         {
-            for( var trav = 0; trav < mMax[ Dimension ]; trav ++ )
+            for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
             {
                 setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
             }
@@ -195,7 +173,7 @@ function Puzzle(Game, setInfo, Camera )
     this.checkIndirectGuaranteed = function( UnguaranteedLoc, Dimension, Guaranteed )
     {
         var NotGuaranteed = [];
-        for( var trav = 0; trav < mMax[ Dimension ]; trav ++ ) // check that all spaces in row are guaranteed
+        for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ ) // check that all spaces in row are guaranteed
         {
             var CheckSpace = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
             if ( !CheckSpace.getSolid() )
@@ -226,10 +204,10 @@ function Puzzle(Game, setInfo, Camera )
         // TODO: beginning and end should be offset by surrounding guaranteed
         var MoreGuaranteed = false;
         var GuaranteedCount = 0;
-        var Skip = mMax[ Dimension ] - RowNumber;
-        for( var trav = 0; trav < mMax[ Dimension ]; trav ++ )
+        var Skip = this.getDimension( Dimension ) - RowNumber;
+        for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
         {
-            if ( trav >= Skip && trav < mMax[ Dimension ] - Skip )
+            if ( trav >= Skip && trav < this.getDimension( Dimension ) - Skip )
             {
                 if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
                 {
@@ -245,7 +223,7 @@ function Puzzle(Game, setInfo, Camera )
         }
         if ( GuaranteedCount >= RowNumber )
         {
-            for( trav = 0; trav < mMax[ Dimension ]; trav ++ )
+            for( trav = 0; trav < this.getDimension( Dimension ); trav ++ )
             {
                 if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
                 {
@@ -279,7 +257,7 @@ function Puzzle(Game, setInfo, Camera )
 
             if ( SpacesHint == 0 )
             {
-                //if ( mMax[ Dimension ] / 2.0 < Number )
+                //if ( this.getDimension( Dimension ) / 2.0 < Number )
     //            {
                     MoreGuaranteed = this.attemptGuaranteeAdjacentRow( UnguaranteedLoc, Dimension, Guaranteed, RowNumber );
       //          }
@@ -292,7 +270,7 @@ function Puzzle(Game, setInfo, Camera )
 
     this.attemptGuaranteeLocation = function( UnguaranteedLoc, Guaranteed )
     {
-        var Unguaranteed = mBlocks[UnguaranteedLoc[0]][UnguaranteedLoc[1]][UnguaranteedLoc[2]];
+        var Unguaranteed = this.getBlock( UnguaranteedLoc );
 
         var Hidden = Unguaranteed.getHideNumbers();
         for( var Dimension = 0; Dimension < 3; Dimension ++ )
@@ -320,15 +298,15 @@ function Puzzle(Game, setInfo, Camera )
         {
             StartFromLoc = Last;
             StartFromLoc[2]++;
-            if ( StartFromLoc[2] >= mMax[2])
+            if ( StartFromLoc[2] >= this.getDimension( 2 ) )
             {
                 StartFromLoc[2] = 0;
                 StartFromLoc[1] ++;
-                if( StartFromLoc[1] >= mMax[1])
+                if( StartFromLoc[1] >= this.getDimension(1) )
                 {
                     StartFromLoc[1] = 0;
                     StartFromLoc[ 0 ] ++;
-                    if ( StartFromLoc[0] >= mMax[0] )
+                    if ( StartFromLoc[0] >= this.getDimension(0) )
                     {
                         StartFromLoc[0] = 0;
                     }
@@ -357,23 +335,23 @@ function Puzzle(Game, setInfo, Camera )
         return null;
     }
 
-    this.showNeededFaces = function( )
+    this.showNeededFaces = function( Game )
     {
         document.getElementById("DebugLog").innerHTML = "";
 
         var SolidBlockLocs = [];
 
         var Guaranteed = [];
-        for( var travX = 0; travX < mBlocks.length; travX ++)
+        for( var travX = 0; travX < this.getDimension( 2 ); travX ++)
         {
             Guaranteed[travX] = [];
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+            for( var travY = 0; travY < this.getDimension( 1 ); travY ++)
             {
                 Guaranteed[travX][travY] = [];
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
+                for( var travZ = 0; travZ < this.getDimension( 0 ).length; travZ++)
                 {
                     Guaranteed[ travX ][ travY ][ travZ ] = 0;
-                    if ( mBlocks[ travX ][ travY ][ travZ ] != null && mBlocks[ travX ][ travY ][ travZ ].getSolid() )
+                    if ( this.getBlock( [ travX, travY, travZ ] ) != null && this.getBlock( [ travX, travY, travZ ] ).getSolid() )
                     {
                         SolidBlockLocs[ SolidBlockLocs.length ] = [ travX, travY, travZ ];
                     }
@@ -409,34 +387,17 @@ function Puzzle(Game, setInfo, Camera )
         document.getElementById("DebugLog").innerHTML += "showNeededFaces Iterated: " + ItCount;
 
         var count = 0;
-        for( travX = 0; travX < mBlocks.length; travX ++)
-        {
-            for( travY = 0; travY < mBlocks[travX].length; travY ++)
-            {
-                for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
-                {
-                    if ( Guaranteed[ travX ][ travY ][ travZ ] == 0 )
-                    {
-                        count ++;
-                    }
-                }
-            }
-        }
+        this.travBlocks( Game, this.countUnguaranteed, [ Guaranteed, count ] );
+
         if ( count > 0 )
             document.getElementById("DebugLog").innerHTML += " " + count;
     }
 
-    this.showAllFaces = function( )
+    this.countUnguaranteed = function( Game, Puzzle, Location, ExtraParams )
     {
-        for( var travX = 0; travX < mBlocks.length; travX ++)
+        if ( ExtraParams[0] [ Location[ 0 ] ][ Location[ 1 ] ][ Location[ 2 ] ] == 0 )
         {
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-            {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
-                {
-                    mBlocks[travX][travY][travZ].setHideNumbers( [ 0, 0, 0 ] );
-                }
-            }
+            ExtraParams[1] ++;
         }
     }
 
@@ -445,10 +406,10 @@ function Puzzle(Game, setInfo, Camera )
         this.setRowInfos( Game );
         if ( Game.getHideUnneededFaces() )
         {
-            this.showNeededFaces( );
+            this.showNeededFaces( Game );
         } else
         {
-            this.showAllFaces( );
+            this.travBlocks( Game, showBlockFace )
         }
     }
 
@@ -461,7 +422,7 @@ function Puzzle(Game, setInfo, Camera )
             if ( Game.getOnlyDimIfPainted() )
             {
                 Painted = true;
-                for( var travRow = 0; travRow < mMax[ Dimension ]; travRow ++ )
+                for( var travRow = 0; travRow < this.getDimension( Dimension ); travRow ++ )
                 {
                     var Test = getByDimIterator3( mBlocks, PuzzleLocation, Dimension, travRow );
 
@@ -473,7 +434,7 @@ function Puzzle(Game, setInfo, Camera )
                 }
             }
 
-            for( travRow = 0; travRow < mMax[ Dimension ]; travRow ++ )
+            for( travRow = 0; travRow < this.getDimension( Dimension ); travRow ++ )
             {
                 Set = getByDimIterator3( mBlocks, PuzzleLocation, Dimension, travRow );
                 
@@ -501,7 +462,7 @@ function Puzzle(Game, setInfo, Camera )
         {
             var PuzzleLocation = breakMe.getPuzzleLocation();
 
-            mBlocks[ PuzzleLocation[0] ][ PuzzleLocation[1] ][ PuzzleLocation[2] ] = null;
+            this.setBlock( PuzzleLocation, null );
 
             var mRows = breakMe.getRows();
             mRows[ 0 ].setSpaces( mRows[ 0 ].getSpaces() - 1 );
@@ -598,99 +559,91 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    this.breakZeroRows = function( Game )
+    this.breakIfZero = function( Game, Puzzle, Location )
     {
-        for( var travX = 0; travX < mBlocks.length; travX ++)
+        var Test = Puzzle.getBlock( Location );
+        if ( Test != null )
         {
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
+            var HideNumbers = Test.getHideNumbers();
+            var Numbers = Test.getNumbers();
+            for( var travDims = 0; travDims < 3; travDims ++ )
             {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ++)
+                if ( HideNumbers[ travDims ] == 0 && Numbers[ travDims ] == 0 )
                 {
-                    if ( mBlocks[ travX ][ travY ][ travZ ] != null )
-                    {
-                        var HideNumbers = mBlocks[ travX ][ travY ][ travZ ].getHideNumbers();
-                        var Numbers = mBlocks[ travX ][ travY ][ travZ ].getNumbers();
-                        for( var travDims = 0; travDims < 3; travDims ++ )
-                        {
-                            if ( HideNumbers[ travDims ] == 0 && Numbers[ travDims ] == 0 )
-                            {
-                                this.breakSpace( Game, mBlocks[ travX ][ travY ][ travZ ], false );
-                                break;
-                            }
-                        }
-                    }
+                    Puzzle.breakSpace( Game, Test, false );
+                    break;
                 }
             }
         }
+    }
+
+    this.breakZeroRows = function( Game )
+    {
+        this.travBlocks( Game, this.breakIfZero );
         mTreeInfo.update();
+    }
+
+    this.setEditModeBlock = function( Game, Puzzle, Location, ExtraParams )
+    {
+        var EditMode = ExtraParams[ 0 ];
+
+        if ( EditMode )
+        {
+            var ResetStatus = Puzzle.getBlock( Location );
+            if ( ResetStatus != null )
+            {
+                if ( ResetStatus.getSolid() )
+                {
+                    ResetStatus.setFailedBreak( false );
+                    ResetStatus.setPainted( false );
+                    ResetStatus.setHideNumbers( [ 1, 1, 1 ] );
+                } else
+                {
+                    ExtraParams[ 1 ] = true;
+
+                    Puzzle.setBlock( Location, null );
+                    ResetStatus.destroy( Game );
+
+                    mSpaceBlocks --;
+                    Game.doRender();
+                }
+            }
+        } else
+        {
+            ResetStatus = Puzzle.getBlock( Location );
+            if ( ResetStatus == null )
+            {
+                ExtraParams[ 1 ] = true;
+
+                var Info = new CubeInfo();
+                Info.mSolid = false;
+                Info.mPuzzleLocation = Location;
+
+                Puzzle.addBlock( Game, Info );
+                Game.doRender();
+            } else
+            {
+            }
+        }
     }
     
     this.setEditMode = function( Game, Value )
     {
-        var NeedsUpdate = false;
+        var PassParams = [ Value, false ];
+        this.travBlocks( Game, this.setEditModeBlock, PassParams );
         if ( Value )
         {
-            for( var travX = 0; travX < mBlocks.length; travX ++)
-            {
-                for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-                {
-                    for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                    {
-                        if ( mBlocks[travX][travY][travZ] )
-                        {
-                            if ( mBlocks[travX][travY][travZ].getSolid() )
-                            {
-                                mBlocks[travX][travY][travZ].setFailedBreak( false );
-                                mBlocks[travX][travY][travZ].setPainted( false );
-                                mBlocks[travX][travY][travZ].setHideNumbers( [ 1, 1, 1 ] );
-                            } else
-                            {
-                                NeedsUpdate = true;
-
-                                var remove = mBlocks[travX][travY][travZ];
-                                mBlocks[travX][travY][travZ] = null;
-                                remove.destroy( Game );
-
-                                mSpaceBlocks --;
-                                Game.doRender();
-                            }
-                        }
-                    }
-                }
-            }
             gShapeTemplate.getMaterial().setFinished( true );
             document.getElementById("EditModePuzzleTitle").value = this.getTitle();
             document.getElementById("EditModePaintColor").value = ComponentToWebColor( this.getPaintColor() );
         } else
         {
-            for( travX = 0; travX < mBlocks.length; travX ++)
-            {
-                for( travY = 0; travY < mBlocks[travX].length; travY ++)
-                {
-                    for( travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                    {
-                        if ( mBlocks[travX][travY][travZ] == null )
-                        {
-                            NeedsUpdate = true;
-
-                            var Info = new CubeInfo();
-                            Info.mSolid = false;
-                            Info.mPuzzleLocation = [ travX, travY, travZ ];
-
-                            this.addBlock( Game, Info );
-                            Game.doRender();
-                        } else
-                        {
-                        }
-                    }
-                }
-            }
             gShapeTemplate.getMaterial().setFinished( false );
             this.setTitle( document.getElementById("EditModePuzzleTitle").value );
             this.setPaintColor( WebColorToComponent( document.getElementById("EditModePaintColor").value ) );
             this.showFaces( Game );
         }
-        if ( NeedsUpdate )
+        if ( PassParams[ 1 ] )
         {
             mTreeInfo.update();
         }
@@ -755,15 +708,15 @@ function Puzzle(Game, setInfo, Camera )
                 return;
             }
 
-            if ( addLoc[0] >= mMax[0] )
+            if ( addLoc[0] >= this.getDimension( 0 ) )
             {
                 return;
             }
-            if ( addLoc[1] >= mMax[1] )
+            if ( addLoc[1] >= this.getDimension( 1 ) )
             {
                 return;
             }
-            if ( addLoc[2] >= mMax[2] )
+            if ( addLoc[2] >= this.getDimension( 2 ) )
             {
                 return;
             }
@@ -785,9 +738,7 @@ function Puzzle(Game, setInfo, Camera )
         pickedCube = this.pickCube( Game, Event );
         if ( pickedCube != null && mBlocks != null)
         {
-            var PuzzleLoc = pickedCube.getPuzzleLocation();
-
-            mBlocks[ PuzzleLoc[0] ][ PuzzleLoc[1] ][ PuzzleLoc[2] ] = null;
+            this.setBlock( pickedCube.getPuzzleLocation(), null );
             pickedCube.destroy( Game );
 
             mSolidBlocks--;
@@ -866,6 +817,28 @@ function Puzzle(Game, setInfo, Camera )
 
         return Cube;
     }
+
+    this.appendCubeElement = function( Game, Puzzle, Location, ExtraParams )
+    {
+        var XMLDoc = ExtraParams[ 0 ];
+        var CubesElement = ExtraParams[ 1 ];
+        var BlankCubeInfo = ExtraParams[ 2 ];
+        
+        var Test = Puzzle.getBlock( Location );
+        if ( Test != null )
+        {
+            if ( Test.getSolid() )
+            {
+                CubesElement.appendChild( Puzzle.createCubeElement( XMLDoc, Test.getInfo() ) );
+            } else
+            {
+                CubesElement.appendChild( Puzzle.createCubeElement( XMLDoc, BlankCubeInfo ) );
+            }
+        } else
+        {
+            CubesElement.appendChild( Puzzle.createCubeElement( XMLDoc, BlankCubeInfo ) );
+        }
+    }
     
     this.generateXML = function( Game )
     {
@@ -890,28 +863,7 @@ function Puzzle(Game, setInfo, Camera )
         var BlankCubeInfo = new CubeInfo();
         BlankCubeInfo.mSolid = false;
 
-        for( var travX = 0; travX < mBlocks.length; travX ++)
-        {
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-            {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                {
-                    if ( mBlocks[travX][travY][travZ] != null )
-                    {
-                        if ( mBlocks[travX][travY][travZ].getSolid() )
-                        {
-                            CubesElement.appendChild( this.createCubeElement( XMLDoc, mBlocks[ travX ][ travY ][ travZ ].getInfo() ) );
-                        } else
-                        {
-                            CubesElement.appendChild( this.createCubeElement( XMLDoc, BlankCubeInfo ) );
-                        }
-                    } else
-                    {
-                        CubesElement.appendChild( this.createCubeElement( XMLDoc, BlankCubeInfo ) );
-                    }
-                }
-            }
-        }
+        this.travBlocks( Game, this.appendCubeElement, [ XMLDoc, CubesElement, BlankCubeInfo ] );
 
         PuzzleElement.appendChild( CubesElement );
 
@@ -942,16 +894,16 @@ function Puzzle(Game, setInfo, Camera )
             ODim1 = 0;
             ODim2 = 1;
         }
-        for ( var travODim1 = 0; travODim1 < mMax[ ODim1 ]; travODim1 ++ )
+        for ( var travODim1 = 0; travODim1 < this.getDimension( ODim1 ); travODim1 ++ )
         {
-            for ( var travODim2 = 0; travODim2 < mMax[ ODim2 ]; travODim2 ++ )
+            for ( var travODim2 = 0; travODim2 < this.getDimension( ODim2 ); travODim2 ++ )
             {
                 var CheckLocation = [];
                 CheckLocation[Dimension] = Location;
                 CheckLocation[ODim1] = travODim1;
                 CheckLocation[ODim2] = travODim2;
-                if ( mBlocks[ CheckLocation[0] ][ CheckLocation[1] ][ CheckLocation[2] ] != null &&
-                     mBlocks[ CheckLocation[0] ][ CheckLocation[1] ][ CheckLocation[2] ].getSolid() )
+                var Test = this.getBlock( CheckLocation );
+                if ( Test != null && Test.getSolid() )
                 {
                     return true;
                 }
@@ -962,7 +914,7 @@ function Puzzle(Game, setInfo, Camera )
 
     this.findSolidLeading = function( Dimension )
     {
-        for( var countTrim = 0; countTrim < mMax[ Dimension ]; countTrim ++ )
+        for( var countTrim = 0; countTrim < this.getDimension( Dimension ); countTrim ++ )
         {
             if ( this.checkForSolid( Dimension, countTrim ) )
             {
@@ -975,7 +927,7 @@ function Puzzle(Game, setInfo, Camera )
 
     this.findSolidTrailing = function( Dimension )
     {
-        for( var countTrim = mMax[ Dimension ] - 1; countTrim > 0; countTrim -- )
+        for( var countTrim = this.getDimension( Dimension ) - 1; countTrim > 0; countTrim -- )
         {
             if ( this.checkForSolid( Dimension, countTrim ) )
             {
@@ -985,7 +937,7 @@ function Puzzle(Game, setInfo, Camera )
         }
         if ( countTrim == 0 )
         {
-            return mMax[ Dimension ];
+            return this.getDimension( Dimension );
         }
         return countTrim;
     }
@@ -1003,14 +955,14 @@ function Puzzle(Game, setInfo, Camera )
         }
 
         var NewBlocks = [];
-        for( var travX = 0; travX < mMax[ 0 ]; travX ++)
+        for( var travX = 0; travX < this.getDimension( 0 ); travX ++)
         {
             if ( travX >= Leading[ 0 ] && travX < Trailing[ 0 ] )
             {
                 NewBlocks[travX - Leading [ 0 ] ] = [];
             }
 
-            for( var travY = 0; travY < mMax[ 1 ]; travY ++)
+            for( var travY = 0; travY < this.getDimension( 1 ); travY ++)
             {
                 if (
                     travX >= Leading[ 0 ] && travX < Trailing[ 0 ] &&
@@ -1020,36 +972,53 @@ function Puzzle(Game, setInfo, Camera )
                     NewBlocks[travX - Leading [ 0 ]][travY - Leading [ 1 ]] = [];
                 }
 
-                for( var travZ = 0; travZ < mMax[ 2 ]; travZ++)
+                for( var travZ = 0; travZ < this.getDimension( 2 ); travZ++)
                 {
+                    var Test = this.getBlock( [travX, travY, travZ ] );
                     if (
                         travX >= Leading[ 0 ] && travX < Trailing[ 0 ] &&
                         travY >= Leading[ 1 ] && travY < Trailing[ 1 ] &&
                         travZ >= Leading[ 2 ] && travZ < Trailing[ 2 ]
                         )
                     {
-                        var Move = mBlocks[travX][travY][travZ];
-                        if ( Move != null )
+                        if ( Test != null )
                         {
-                            Move.setPuzzleLocation( [ 
+                            Test.setPuzzleLocation( [
                                 travX - Leading[ 0 ],
                                 travY - Leading[ 1 ],
                                 travZ - Leading[ 2 ]
                             ]);
                         }
-                        NewBlocks[travX - Leading [ 0 ]][travY - Leading [ 1 ]][travZ - Leading[ 2 ] ] = Move;
-                    } else if ( mBlocks[travX][travY][travZ] != null )
+                        NewBlocks[travX - Leading [ 0 ]][travY - Leading [ 1 ]][travZ - Leading[ 2 ] ] = Test;
+                    } else if ( Test != null )
                     {
-                        mBlocks[travX][travY][travZ].destroy( Game );
+                        Test.destroy( Game );
                     }
-                    mBlocks[travX][travY][travZ] = null;
+                    this.setBlock( [travX, travY, travZ], null );
                 }
             }
         }
 
         mBlocks = NewBlocks;
-        mMax = NewMax;
-        this.getInfo().mDimensions = mMax;
+        this.getInfo().mDimensions = NewMax;
+    }
+
+    this.getBlock = function( PuzzleLocation )
+    {
+        return mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ];
+    }
+
+    this.setBlock = function( PuzzleLocation, Value )
+    {
+        if ( mBlocks[ PuzzleLocation[ 0 ] ] == undefined )
+        {
+            mBlocks[ PuzzleLocation[ 0 ] ] = [];
+        }
+        if ( mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ] == undefined )
+        {
+            mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ] = [];
+        }
+        mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ] = Value;
     }
 
     this.getInfo = function()
@@ -1120,28 +1089,20 @@ function Puzzle(Game, setInfo, Camera )
             gShapeTemplate.getMaterial().setPaintedColor( Value );
     }
 
-    this.getMax = function()
+    this.getDimensions = function()
     {
-        return mMax;
+        return this.getInfo().mDimensions;
+    }
+
+    this.getDimension = function( Dimension )
+    {
+        return this.getDimensions()[ Dimension ];
     }
 
     this.destroy = function( Game )
     {
-        for( var travX = 0; travX < mBlocks.length; travX ++)
-        {
-            for( var travY = 0; travY < mBlocks[travX].length; travY ++)
-            {
-                for( var travZ = 0; travZ < mBlocks[travX][travY].length; travZ ++)
-                {
-                    if ( mBlocks[travX][travY][travZ] )
-                    {
-                        mBlocks[travX][travY][travZ].destroy( Game );
-                        mBlocks[travX][travY][travZ] = null;
-                    }
-                }
-            }
-        }
-
+        this.travBlocks( Game, destroyBlock );
+        
         if ( mTransform != null )
         {
             Game.mPack.removeObject(mTransform);
@@ -1150,10 +1111,33 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    Camera.centerOn( Game, [ mInfo.mBlockDefinition.length, mInfo.mBlockDefinition[0].length, mInfo.mBlockDefinition[0][0].length], false );
+    this.travBlocks = function( Game, DoThis, ExtraParams, DoEvery0, DoEvery1 )
+    {
+        for( var trav0 = 0; trav0 < this.getDimension( 0 ); trav0 ++)
+        {
+            if ( DoEvery0 )
+            {
+                DoEvery0( Game, this, [ trav0, 0, 0 ], ExtraParams );
+            }
+
+            for( var trav1 = 0; trav1 < this.getDimension( 1 ); trav1 ++)
+            {
+                if ( DoEvery1 )
+                {
+                    DoEvery1( Game, this, [ trav0, trav1, 0 ], ExtraParams );
+                }
+
+                for( var trav2 = 0; trav2 < this.getDimension( 2 ); trav2 ++)
+                {
+                    DoThis( Game, this, [ trav0, trav1, trav2 ], ExtraParams );
+                }
+            }
+        }
+    }
+
+    Camera.centerOnPuzzle( Game, this, true );
     this.fillPuzzle( Game );
     this.showFaces( Game );
-    Camera.centerOnPuzzle( Game, this, true );
     this.resetRemainingFails();
 }
 
@@ -1167,4 +1151,19 @@ function PuzzleInfo()
     this.mBlockDefinition = null;
     
     this.mPaintColor = [ 0, 0, 1, 1 ];
+}
+
+function showBlockFace( Game, Puzzle, Location )
+{
+    Puzzle.getBlock( Location ).setHideNumbers( [ 0, 0, 0 ] );
+}
+
+function destroyBlock( Game, Puzzle, Location )
+{
+    var Test = Puzzle.getBlock( Location );
+    if ( Test != null )
+    {
+        Test.destroy( Game );
+        Puzzle.setBlock( Location, null);
+    }
 }

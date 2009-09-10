@@ -30,7 +30,7 @@ function TargetCamera( Game )
 
     this.centerOnPuzzle = function( Game, Puzzle, ResetAngle )
     {
-        this.centerOn( Game, Puzzle.getMax(), ResetAngle );
+        this.centerOn( Game, Puzzle.getDimensions(), ResetAngle );
     }
 
     this.centerOn = function( Game, Location, ResetAngle )

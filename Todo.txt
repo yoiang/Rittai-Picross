@@ -1,4 +1,3 @@
-- fix trimming, doesn't save properly
 - fix adjacent face guarenteeing
 - add circle and square face guarenteeing
 
@@ -22,7 +21,6 @@
     - additional add IngameOverlay to InputState notify list for keydown and up notifications?
 
 - mousewheel zoom
-- fix xyz iterate orders
 - allow resize of window
 - good camera
 - autozoom on load to fit puzzle

@@ -156,19 +156,16 @@ function loadPuzzleVersion1( PuzzleText )
     setPuzzleInfo.mDimensions = [ Values[1], Values[2], Values[3] ];
     setPuzzleInfo.mAllowedFails = parseInt( Values[0] );
 
-    var X = Values[1];
-    var Y = Values[2];
-    var Z = Values[3];
     var travValues = 4;
 
     var BlocksZ = [];
-    for( var travZ = 0; travZ < Z; travZ ++ )
+    for( var travZ = 0; travZ < setPuzzleInfo.mDimensions[0]; travZ ++ )
     {
         var BlocksY = [];
-        for( var travY = 0; travY < Y; travY ++ )
+        for( var travY = 0; travY < setPuzzleInfo.mDimensions[1]; travY ++ )
         {
             var BlocksX = [];
-            for( var travX = 0; travX < X; travX ++ )
+            for( var travX = 0; travX < setPuzzleInfo.mDimensions[2]; travX ++ )
             {
                 var Info = new CubeInfo();
                 Info.mSolid = Values[ travValues ] == 1;
@@ -182,7 +179,6 @@ function loadPuzzleVersion1( PuzzleText )
         BlocksZ[ travZ ] = BlocksY;
     }
 
-    setPuzzleInfo.mDimensions = [ X, Y, Z ];
     setPuzzleInfo.mBlockDefinition = BlocksZ;
 
     gGame.createPuzzle( setPuzzleInfo );
@@ -223,13 +219,13 @@ function loadPuzzleVersion2( PuzzleText )
 
     setPuzzleInfo.mBlockDefinition = [];
     var travBlockDefinition = 0;
-    for( var travZ = 0; travZ < setPuzzleInfo.mDimensions[2]; travZ ++ )
+    for( var travZ = 0; travZ < setPuzzleInfo.mDimensions[0]; travZ ++ )
     {
         var BlocksY = [];
         for( var travY = 0; travY < setPuzzleInfo.mDimensions[1]; travY ++ )
         {
             var BlocksX = [];
-            for( var travX = 0; travX < setPuzzleInfo.mDimensions[0]; travX ++ )
+            for( var travX = 0; travX < setPuzzleInfo.mDimensions[2]; travX ++ )
             {
                 var Info = new CubeInfo();
                 Info.mSolid = BlockDefinition[ travBlockDefinition ] == 1;
@@ -378,26 +374,26 @@ function readPuzzleXML3Cubes( CubesXML, Dimensions )
 {
     var BlockDefinition = [];
     var travCubesDefinition = 0;
-    for( var travZ = 0; travZ < Dimensions[2]; travZ ++ )
+    for( var trav0 = 0; trav0 < Dimensions[0]; trav0 ++ )
     {
-        var BlocksY = [];
-        for( var travY = 0; travY < Dimensions[1]; travY ++ )
+        var Blocks1 = [];
+        for( var trav1 = 0; trav1 < Dimensions[1]; trav1 ++ )
         {
-            var BlocksX = [];
-            for( var travX = 0; travX < Dimensions[0]; travX ++ )
+            var Blocks2 = [];
+            for( var trav2 = 0; trav2 < Dimensions[2]; trav2 ++ )
             {
                 if ( travCubesDefinition < CubesXML.childElementCount )
                 {
-                    BlocksX[ travX ] = readPuzzleXML3Cube( CubesXML.children[travCubesDefinition], [ travZ, travY, travX ] );
+                    Blocks2[ trav2 ] = readPuzzleXML3Cube( CubesXML.children[travCubesDefinition], [ trav0, trav1, trav2 ] );
                     travCubesDefinition ++;
                 } else
                 {
-                    BlocksX[ travX ] = null;
+                    Blocks2[ trav2 ] = null;
                 }
             }
-            BlocksY[ travY ] = BlocksX;
+            Blocks1[ trav1 ] = Blocks2;
         }
-        BlockDefinition[ travZ ] = BlocksY;
+        BlockDefinition[ trav0 ] = Blocks1;
     }
     return BlockDefinition;
 }
@@ -437,7 +433,7 @@ function fillPuzzleList()
     'puzzles/Debug/test2.xml',
     '',
     'puzzles/Tutorial/1 - Break a Block.rittai',
-    'puzzles/Tutorial/2 - Break a Block, Save a Block.rittai',
+    'puzzles/Tutorial/2 - Break a Block, Save a Block.xml',
     '',
     'puzzles/HollowCube.rittai',
     'puzzles/TakeNote.xml',

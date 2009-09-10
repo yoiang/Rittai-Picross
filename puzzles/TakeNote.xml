@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns1:Puzzle Version="3" Title="Take Note" XSize="7" YSize="7" ZSize="2" AllowedFails="5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns1="http://Rittai.Picross" xsi:schemaLocation="http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd">
+<ns1:Puzzle Version="3" Title="Take Note" XSize="2" YSize="7" ZSize="7" AllowedFails="5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns1="http://Rittai.Picross" xsi:schemaLocation="http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd">
     <ns1:PaintColor>
         <ns1:r>0</ns1:r>
         <ns1:g>0</ns1:g>
