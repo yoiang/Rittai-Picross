@@ -5,6 +5,7 @@
 float4x4 worldViewProjection : WorldViewProjection;
 
 bool IgnoreColorModifiers;
+bool EditMode;
 
 bool Solid;
 
@@ -92,13 +93,25 @@ float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 Tex
     return tex2D(SymbolTexSampler, SymbolTexUV );
 }
 
+float4 getBorderColor( in float2 TexUV )
+{
+    float2 BorderTex = float2( TexUV.x / 11.0, TexUV.y );
+    return tex2D(SymbolTexSampler, BorderTex );
+}
+
+float4 getFailedBreakColor( in float2 TexUV )
+{
+    float2 BorderTex = float2( TexUV.x / 11.0 + 3.0 / 11.0, TexUV.y );
+    return tex2D(SymbolTexSampler, BorderTex );
+}
+
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
     float4 Color = float4( 1, 1, 1, 1 );
 
     if ( !IgnoreColorModifiers )
     {
-        if ( !Finished )
+        if ( !Finished && !EditMode )
         {
             float Number = -1;
             float SpacesHint = 0;
@@ -143,8 +156,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
                 }
             }
 
-            float2 BorderTex = float2( input.tex.x / 11.0, input.tex.y );
-            Color = tex2D(SymbolTexSampler, BorderTex );
+            Color = Color * getBorderColor( input.tex );
 
             if ( !HideNumber )
             {
@@ -161,6 +173,11 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
             }
         } else
         {
+            if ( EditMode )
+            {
+                Color = Color * getBorderColor( input.tex );
+            }
+
             float Diffuse = 1.0;
             if ( input.normal.x != 0 )
             {
@@ -177,16 +194,12 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         }
     } else
     {
-        float2 BorderTex = float2( input.tex.x / 11.0, input.tex.y );
-        Color = tex2D(SymbolTexSampler, BorderTex );
+        Color = Color * getBorderColor( input.tex );
     }
 
     if ( FailedBreak )
     {
-        float2 SymbolTex = float2( input.tex.x / 11.0 + 3.0 / 11.0, input.tex.y );
-        float4 SymbolColor = tex2D(SymbolTexSampler, SymbolTex );
-
-        Color = Color * SymbolColor;
+        Color = Color * getFailedBreakColor( input.tex );
     }
 
     if ( Debug )

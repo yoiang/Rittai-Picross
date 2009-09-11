@@ -645,14 +645,14 @@ function Puzzle(Game, setInfo, Camera )
         this.travBlocks( Game, this.setEditModeBlock, PassParams );
         if ( Value )
         {
-            gShapeTemplate.getMaterial().setFinished( true );
+            gShapeTemplate.getMaterial().setEditMode( true );
             document.getElementById("EditModePuzzleTitle").value = this.getTitle();
             document.getElementById("EditModeAllowedFails").value = this.getAllowedFails();
             document.getElementById("EditModeBackgroundColor").value = ComponentToWebColor( this.getBackgroundColor() );
             document.getElementById("EditModePaintColor").value = ComponentToWebColor( this.getPaintColor() );
         } else
         {
-            gShapeTemplate.getMaterial().setFinished( false );
+            gShapeTemplate.getMaterial().setEditMode( false );
             this.setTitle( document.getElementById("EditModePuzzleTitle").value );
             this.setAllowedFails( parseInt( document.getElementById("EditModeAllowedFails").value ) );
             this.setBackgroundColor( WebColorToComponent( document.getElementById("EditModeBackgroundColor").value ) );

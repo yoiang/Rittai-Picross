@@ -499,6 +499,8 @@ function CubeMaterial( Game )
     var mMaterial = null;
     var mEffect = null;
 
+    var mEditModeParam = null;
+
     var mNumbersParam = null;
     var mSpacesHintsParam = null;
 
@@ -532,6 +534,9 @@ function CubeMaterial( Game )
         mMaterial.effect = mEffect;
 
         mEffect.createUniformParameters(mMaterial);
+
+        mEditModeParam = mMaterial.getParam('EditMode');
+        mEditModeParam.value = false;
 
         mNumbersParam = mMaterial.getParam('Numbers');
         mNumbersParam.value = [ -1, -1, -1 ];
@@ -586,6 +591,11 @@ function CubeMaterial( Game )
     this.getMaterial = function()
     {
         return mMaterial;
+    }
+
+    this.setEditMode = function( Value )
+    {
+        mEditModeParam.value = Value;
     }
 
     this.setNumbers = function( Value )
