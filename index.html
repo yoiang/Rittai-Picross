@@ -36,6 +36,22 @@
 
             var gIngameOverlay = null;
 
+            var gPuzzleNames = [
+                'puzzles/Debug/One.rittai',
+                'puzzles/Debug/Test.xml',
+                'puzzles/Debug/test2.xml',
+                '',
+                'puzzles/Tutorial/1 - Break a Block.rittai',
+                'puzzles/Tutorial/2 - Break a Block, Save a Block.xml',
+                '',
+                'puzzles/HollowCube.rittai',
+                'puzzles/TakeNote.xml',
+                'puzzles/SmallHeart.xml',
+                'puzzles/My Breakfast.xml',
+                '',
+                'puzzles/9x9x9.rittai'
+                ];
+
             function renderCallback(renderEvent)
             {
                 gGame.mClock += renderEvent.elapsedTime * gGame.mTimeMult;

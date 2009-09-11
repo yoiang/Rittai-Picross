@@ -422,26 +422,11 @@ function PuzzleManualSelect()
 
 function fillPuzzleList()
 {
-    var PuzzleNames = [
-    'puzzles/Debug/One.rittai',
-    'puzzles/Debug/Test.xml',
-    'puzzles/Debug/test2.xml',
-    '',
-    'puzzles/Tutorial/1 - Break a Block.rittai',
-    'puzzles/Tutorial/2 - Break a Block, Save a Block.xml',
-    '',
-    'puzzles/HollowCube.rittai',
-    'puzzles/TakeNote.xml',
-    'puzzles/SmallHeart.xml',
-    '',
-    'puzzles/9x9x9.rittai'
-    ];
-
     var Options = '<select id="puzzleSelect" name="puzzleSelect" onChange="selectPuzzle()">';
     Options += generatePuzzleOption( 'Select Puzzle' );
-    for( var travPuzzleNames = 0; travPuzzleNames < PuzzleNames.length; travPuzzleNames ++ )
+    for( var travPuzzleNames = 0; travPuzzleNames < gPuzzleNames.length; travPuzzleNames ++ )
     {
-        Options += generatePuzzleOption( PuzzleNames[ travPuzzleNames ] );
+        Options += generatePuzzleOption( gPuzzleNames[ travPuzzleNames ] );
     }
     Options += '</select>';
 
