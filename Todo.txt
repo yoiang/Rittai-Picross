@@ -20,6 +20,8 @@
 
     - additional add IngameOverlay to InputState notify list for keydown and up notifications?
 
+- switch everything from XYZ to 012
+- only use Solid and Space, Cube for geo, Block for game object
 - mousewheel zoom
 - allow resize of window
 - good camera
