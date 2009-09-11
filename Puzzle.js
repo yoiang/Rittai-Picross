@@ -408,6 +408,11 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
+    this.showBlockFace = function( Game, Puzzle, Location )
+    {
+        Puzzle.getBlock( Location ).setHideNumbers( [ 0, 0, 0 ] );
+    }
+
     this.showFaces = function( Game )
     {
         this.setRowInfos( Game );
@@ -416,7 +421,7 @@ function Puzzle(Game, setInfo, Camera )
             this.showNeededFaces( Game );
         } else
         {
-            this.travBlocks( Game, showBlockFace )
+            this.travBlocks( Game, this.showBlockFace )
         }
     }
 
@@ -642,13 +647,19 @@ function Puzzle(Game, setInfo, Camera )
         {
             gShapeTemplate.getMaterial().setFinished( true );
             document.getElementById("EditModePuzzleTitle").value = this.getTitle();
+            document.getElementById("EditModeAllowedFails").value = this.getAllowedFails();
+            document.getElementById("EditModeBackgroundColor").value = ComponentToWebColor( this.getBackgroundColor() );
             document.getElementById("EditModePaintColor").value = ComponentToWebColor( this.getPaintColor() );
         } else
         {
             gShapeTemplate.getMaterial().setFinished( false );
             this.setTitle( document.getElementById("EditModePuzzleTitle").value );
+            this.setAllowedFails( parseInt( document.getElementById("EditModeAllowedFails").value ) );
+            this.setBackgroundColor( WebColorToComponent( document.getElementById("EditModeBackgroundColor").value ) );
             this.setPaintColor( WebColorToComponent( document.getElementById("EditModePaintColor").value ) );
             this.showFaces( Game );
+
+            this.resetRemainingFails();
         }
         if ( PassParams[ 1 ] )
         {
@@ -864,6 +875,7 @@ function Puzzle(Game, setInfo, Camera )
         PuzzleElement.setAttribute( "xmlns:ns1", "http://Rittai.Picross" );
         PuzzleElement.setAttribute( "xsi:schemaLocation", "http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd" );
 
+        PuzzleElement.appendChild( this.createColorElement( XMLDoc, "ns1:BackgroundColor", this.getBackgroundColor() ) );
         PuzzleElement.appendChild( this.createColorElement( XMLDoc, "ns1:PaintColor", this.getPaintColor() ) );
         var CubesElement = XMLDoc.createElement( "ns1:Cubes" );
 
@@ -1045,7 +1057,7 @@ function Puzzle(Game, setInfo, Camera )
 
     this.getAllowedFails = function ()
     {
-        return mInfo.mAllowedFails;
+        return this.getInfo().mAllowedFails;
     }
 
     this.getRemainingFails = function ()
@@ -1055,7 +1067,12 @@ function Puzzle(Game, setInfo, Camera )
 
     this.resetRemainingFails = function ()
     {
-        mRemainingFails = mInfo.mAllowedFails;
+        mRemainingFails = this.getInfo().mAllowedFails;
+    }
+
+    this.setAllowedFails = function( Value )
+    {
+        this.getInfo().mAllowedFails = Value;
     }
 
     this.setDebug = function( Value )
@@ -1068,32 +1085,32 @@ function Puzzle(Game, setInfo, Camera )
 
     this.setTitle = function( Value )
     {
-        if ( mInfo )
-            mInfo.mTitle = Value;
+        this.getInfo().mTitle = Value;
     }
 
     this.getTitle = function( Value )
     {
-        if ( mInfo )
-            return mInfo.mTitle;
-        return "";
+        return this.getInfo().mTitle;
     }
 
     this.getPaintColor = function()
     {
-        if ( mInfo )
-            return mInfo.mPaintColor;
-        if ( gShapeTemplate )
-            return gShapeTemplate.getMaterial().getPaintedColor();
-        return [ 0.0, 0.0, 1.0, 1.0 ];
+        return this.getInfo().mPaintColor;
     }
 
     this.setPaintColor = function( Value )
     {
-        if ( mInfo )
-            mInfo.mPaintColor = Value;
-        if ( gShapeTemplate )
-            gShapeTemplate.getMaterial().setPaintedColor( Value );
+        this.getInfo().mPaintColor = Value;
+    }
+
+    this.getBackgroundColor = function()
+    {
+        return this.getInfo().mBackgroundColor;
+    }
+
+    this.setBackgroundColor = function( Value )
+    {
+        this.getInfo().mBackgroundColor = Value;
     }
 
     this.getDimensions = function()
@@ -1106,9 +1123,19 @@ function Puzzle(Game, setInfo, Camera )
         return this.getDimensions()[ Dimension ];
     }
 
+    this.destroyBlock = function( Game, Puzzle, Location )
+    {
+        var Test = Puzzle.getBlock( Location );
+        if ( Test != null )
+        {
+            Test.destroy( Game );
+            Puzzle.setBlock( Location, null);
+        }
+    }
+
     this.destroy = function( Game )
     {
-        this.travBlocks( Game, destroyBlock );
+        this.travBlocks( Game, this.destroyBlock );
         
         if ( mTransform != null )
         {
@@ -1158,19 +1185,5 @@ function PuzzleInfo()
     this.mBlockDefinition = null;
     
     this.mPaintColor = [ 0, 0, 1, 1 ];
-}
-
-function showBlockFace( Game, Puzzle, Location )
-{
-    Puzzle.getBlock( Location ).setHideNumbers( [ 0, 0, 0 ] );
-}
-
-function destroyBlock( Game, Puzzle, Location )
-{
-    var Test = Puzzle.getBlock( Location );
-    if ( Test != null )
-    {
-        Test.destroy( Game );
-        Puzzle.setBlock( Location, null);
-    }
+    this.mBackgroundColor = [ 1, 1, 1, 1 ];
 }

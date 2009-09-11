@@ -82,9 +82,12 @@ function Game( ClientElements )
         {
             this.mPuzzle.resetRemainingFails();
             this.mIngameOverlay.updateRemainingFails( this, this.mPuzzle );
+            this.mCamera.getViewInfo().clearBuffer.clearColor = this.mPuzzle.getBackgroundColor();
+        } else
+        {
+            this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];
         }
 
-        this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];
         if ( gShapeTemplate )
         {
             gShapeTemplate.getMaterial().setFinished( false );
@@ -109,7 +112,7 @@ function Game( ClientElements )
 
         this.mPuzzle = new Puzzle( this, setPuzzleInfo, this.mCamera );
 
-        this.mIngameOverlay.finishedCreatePuzzle( this, this.mPuzzle );
+        this.clearWonLost();
 
         this.doRender();
 
@@ -186,6 +189,10 @@ function Game( ClientElements )
                 this.mPuzzle.setEditMode( this, true );
             }
 
+            this.mIngameOverlay.destroyRemainingFails( this );
+
+            this.doRender();
+
             document.getElementById("Subtitle").innerHTML = "Edit Mode";
 
             var ControlsString = "<table class=\"Controls\">\n";
@@ -204,14 +211,12 @@ function Game( ClientElements )
             this.mInputState.removeNotify( mEditInput );
             this.mInputState.addNotify( mGameInput, 0 );
             
-            this.clearWonLost();
-
-            this.doRender();
-
             if ( this.mPuzzle )
             {
                 this.mPuzzle.setEditMode( this, false );
             }
+
+            this.clearWonLost();
 
             if ( this.mPuzzle && this.mPuzzle.getTitle() != "" )
             {
@@ -231,6 +236,10 @@ function Game( ClientElements )
 
             document.getElementById("EditMode").className = "hidden";
             document.getElementById("EditModeUI").className = "hidden";
+
+            this.clearWonLost();
+
+            this.doRender();
         }
     }
 

@@ -143,12 +143,16 @@
                             <br/>
                             Title:<br/>
                             <textarea id="EditModePuzzleTitle"></textarea><br/>
+                            Allowed Fails:<br/>
+                            <textarea id="EditModeAllowedFails">2</textarea><br/>
+                            BG Color:<br/>
+                            #<textarea id="EditModeBackgroundColor" class="color" onchange="javascript:checkColorText('EditModeBackgroundColor')">ffffff</textarea><br/>
                             Paint Color:<br/>
-                            #<textarea id="EditModePaintColor" onchange="javascript:checkColorText('EditModePaintColor')">000000</textarea><br/>
+                            #<textarea id="EditModePaintColor" class="color" onchange="javascript:checkColorText('EditModePaintColor')">000000</textarea><br/>
                             <br/>
                             New Cube...<br/>
                             Finished Color:<br/>
-                            #<textarea id="EditModeFinishedColor" onchange="javascript:checkColorText('EditModeFinishedColor')">ffffff</textarea><br/>
+                            #<textarea id="EditModeFinishedColor" class="color" onchange="javascript:checkColorText('EditModeFinishedColor')">ffffff</textarea><br/>
                         </div>
                     </td>
                 </tr>

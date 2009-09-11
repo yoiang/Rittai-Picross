@@ -6,7 +6,7 @@
     <xsd:element name="Puzzle">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:element name="PaintColor" type="tns:Color"/>
+                <xsd:element name="PaintColor" type="tns:Color" minOccurs="0"/>
                 <xsd:element name="Cubes">
                     <xsd:complexType>
                         <xsd:sequence>
@@ -14,6 +14,7 @@
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
+                <xsd:element name="BackgroundColor" type="tns:Color" minOccurs="0"/>
             </xsd:sequence>
             <xsd:attribute name="Title" type="xsd:string"/>
             <xsd:attribute name="XSize" type="xsd:integer" use="required"/>
@@ -45,6 +46,7 @@
         </xsd:sequence>
     </xsd:complexType>
 </xsd:schema>
+
 
 
 

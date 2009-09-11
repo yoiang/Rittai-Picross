@@ -348,7 +348,10 @@ function loadPuzzleXML3( PuzzleXML )
 
     for ( var travChildren = 0; travChildren < PuzzleXML.childElementCount; travChildren ++ )
     {
-        if ( PuzzleXML.children[travChildren].localName == "PaintColor" )
+        if ( PuzzleXML.children[travChildren].localName == "BackgroundColor" )
+        {
+            setPuzzleInfo.mBackgroundColor = readPuzzleXML3Color( PuzzleXML.children[travChildren] );
+        } else if ( PuzzleXML.children[travChildren].localName == "PaintColor" )
         {
             setPuzzleInfo.mPaintColor = readPuzzleXML3Color( PuzzleXML.children[travChildren] );
         } else if ( PuzzleXML.children[travChildren].localName == "Cubes" )

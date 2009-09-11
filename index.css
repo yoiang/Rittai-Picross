@@ -109,7 +109,7 @@ textarea#EditModePuzzleTitle
     height: 28px;
 }
 
-textarea#EditModePaintColor, textarea#EditModeFinishedColor
+textarea.color, textarea#EditModeAllowedFails
 {
     width: 50px;
     height: 12px;

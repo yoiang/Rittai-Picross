@@ -61,10 +61,18 @@ function IngameOverlay( Game )
         this.update( Game );
     }
 
-    this.finishedCreatePuzzle = function( Game, Puzzle )
-    {        
-        mAllowedFails = [];
+    this.createRemainingFails = function( Game, Puzzle )
+    {
+        if ( mAllowedFails != null )
+        {
+            this.destroyRemainingFails( Game );
+        }
 
+        if ( Puzzle == null )
+        {
+            return;
+        }
+        mAllowedFails = [];
         for (var travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
         {
             var Info = new CubeInfo();
@@ -82,6 +90,10 @@ function IngameOverlay( Game )
         if ( Puzzle == null )
         {
             return;
+        }
+        if ( mAllowedFails == null )
+        {
+            this.createRemainingFails( Game, Puzzle );
         }
         for (var travAllowedFails = 0; travAllowedFails < Puzzle.getAllowedFails(); travAllowedFails ++)
         {
@@ -142,7 +154,7 @@ function IngameOverlay( Game )
         Game.doRender();
     }
 
-    this.puzzleDestroyed = function( Game )
+    this.destroyRemainingFails = function( Game )
     {
         if ( mAllowedFails != null )
         {
@@ -153,6 +165,11 @@ function IngameOverlay( Game )
             }
             mAllowedFails = null;
         }
+    }
+
+    this.puzzleDestroyed = function( Game )
+    {
+        this.destroyRemainingFails( Game );
         /*if ( mTransform != null )
         {
             mTransform.parent = null;
