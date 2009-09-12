@@ -1443,7 +1443,7 @@ function ArrowShape( Game )
 
         mStreamBank = Game.mPack.createObject('StreamBank');
 
-        mPrimitive.numberVertices = 24;
+        mPrimitive.numberVertices = 6;
         mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game ), 0);
         mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game ), 0);
         mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game ), 0 );
@@ -1457,37 +1457,12 @@ function ArrowShape( Game )
         var VerticesBuffer = Game.mPack.createObject('VertexBuffer');
         var VertexArray = VerticesBuffer.createField('FloatField', 3);
         VerticesBuffer.set([
-                0.5, 0.75, 0.5,
                 0, 0.5, 0.5,
+                0.5, 0.25, 0.5,
+                1, 0.5, 0.5,
+                0.5, 0.75, 0.5,
+                0.5, 0.5, 0.25,
                 0.5, 0.5, 0.75
-                ,
-                0.5, 0.5, 0.25,
-                0, 0.5, 0.5,
-                0.5, 0.75, 0.5
-                ,
-                0.5, 0.5, 0.75,
-                0, 0.5, 0.5,
-                0.5, 0.25, 0.5
-                ,
-                0.5, 0.25, 0.5,
-                0, 0.5, 0.5,
-                0.5, 0.5, 0.25
-                ,
-                0.5, 0.5, 0.75,
-                1, 0.5, 0.5,
-                0.5, 0.75, 0.5
-                ,
-                0.5, 0.5, 0.75,
-                0.5, 0.25, 0.5,
-                1, 0.5, 0.5
-                ,
-                0.5, 0.5, 0.25,
-                0.5, 0.75, 0.5,
-                1, 0.5, 0.5
-                ,
-                0.5, 0.5, 0.25,
-                1, 0.5, 0.5,
-                0.5, 0.25, 0.5
                  ]);
 
         return VertexArray;
@@ -1497,21 +1472,21 @@ function ArrowShape( Game )
     {
         var IndicesBuffer = Game.mPack.createObject('IndexBuffer');
         IndicesBuffer.set([
-            0, 1, 2
+            0, 4, 1
             ,
-            3, 4, 5
+            0, 3, 4
             ,
-            6, 7, 8
+            0, 1, 5
             ,
-            9, 10, 11
+            0, 5, 3
             ,
-            12, 13, 14
+            2, 4, 3
             ,
-            15, 16, 17
+            2, 1, 4
             ,
-            18, 19, 20
+            2, 5, 1
             ,
-            21, 22, 23
+            2, 3, 5
         ]);
         return IndicesBuffer;
     }
