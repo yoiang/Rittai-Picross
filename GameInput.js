@@ -1,8 +1,22 @@
 function GameInput()
 {
+    this.handleMouseUp = function( Game, Event )
+    {
+        if ( Game.mPuzzle && Game.mPuzzle.getArrowGrabbed() )
+        {
+            Game.mPuzzle.stopArrowGrabbed( Game );
+        }
+        return false;
+    }
+    
     this.handleMouseDown = function( Game, Event )
     {
-        if ( Game.mPuzzle && ( Game.getLost() || Game.getWon() ) )
+        if ( !Game.mPuzzle )
+        {
+            return false;
+        }
+
+        if ( Game.getLost() || Game.getWon() )
         {
             return false;
         }
@@ -18,12 +32,18 @@ function GameInput()
             Game.mPuzzle.tryBreak( Game, Event );
             return true;
         }
-        return false;
+
+        return Game.mPuzzle.tryGrabArrow( Game, Event );
     }
 
     this.handleMouseMove = function( Game, Event )
     {
-        if ( Game.mPuzzle && ( Game.getLost() || Game.getWon() ) )
+        if ( ! Game.mPuzzle )
+        {
+            return false;
+        }
+        
+        if ( Game.getLost() || Game.getWon() )
         {
             return false;
         }
@@ -37,6 +57,13 @@ function GameInput()
         {
             return true;
         }
+
+        if ( Game.mPuzzle.getArrowGrabbed() )
+        {
+            Game.mPuzzle.moveArrow( Game, Event );
+            return true;
+        }
+        
         return false;
     }
 

@@ -4,10 +4,12 @@
 
 float4x4 worldViewProjection : WorldViewProjection;
 
+bool Solid;
+
 bool IgnoreColorModifiers;
 bool EditMode;
 
-bool Solid;
+bool PeerThrough;
 
 float3 Numbers;
 float3 DimNumbers;
@@ -105,9 +107,44 @@ float4 getFailedBreakColor( in float2 TexUV )
     return tex2D(SymbolTexSampler, BorderTex );
 }
 
+float4 getFinishedColor( in float3 Normal )
+{
+    float Diffuse = 1.0;
+    if ( Normal.x != 0 )
+    {
+        Diffuse = 1.0;
+    } else if ( Normal.y != 0 )
+    {
+        Diffuse = 0.9;
+    } else if ( Normal.z != 0 )
+    {
+        Diffuse = 0.8;
+    }
+
+    float4 Color;
+    Color.x = FinishedColor.x * Diffuse;
+    Color.y = FinishedColor.y * Diffuse;
+    Color.z = FinishedColor.z * Diffuse;
+    Color.a = FinishedColor.a;
+    return Color;
+}
+
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
     float4 Color = float4( 1, 1, 1, 1 );
+
+    if ( PeerThrough )
+    {
+        Color = getBorderColor( input.tex );
+        if ( Color.x == 1 && Color.y == 1 && Color.z == 1 )
+        {
+            Color.a = 0.0;
+        } else
+        {
+            Color.a = 0.2;
+        }
+        return Color;
+    }
 
     if ( !IgnoreColorModifiers )
     {
@@ -156,7 +193,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
                 }
             }
 
-            Color = Color * getBorderColor( input.tex );
+            Color = getBorderColor( input.tex );
 
             if ( !HideNumber )
             {
@@ -175,22 +212,10 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
         {
             if ( EditMode )
             {
-                Color = Color * getBorderColor( input.tex );
+                Color = getBorderColor( input.tex );
             }
 
-            float Diffuse = 1.0;
-            if ( input.normal.x != 0 )
-            {
-                Diffuse = 1.0;
-            } else if ( input.normal.y != 0 )
-            {
-                Diffuse = 0.9;
-            } else if ( input.normal.z != 0 )
-            {
-                Diffuse = 0.8;
-            }
-
-            Color = Color * FinishedColor * Diffuse;
+            Color = Color * getFinishedColor( input.normal );
         }
     } else
     {

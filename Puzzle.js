@@ -765,7 +765,8 @@ function Puzzle(Game, setInfo, Camera )
             Game.doRender();
         }
     }
-    
+
+
     this.pickShape = function( Game, Event )
     {
         var Ray = o3djs.picking.clientPositionToWorldRay(
@@ -1137,6 +1138,13 @@ function Puzzle(Game, setInfo, Camera )
     {
         this.travBlocks( Game, this.destroyBlock );
         
+        if ( mArrowTransform != null )
+        {
+            Game.mPack.removeObject( mArrowTransform );
+            mArrowTransform.parent = null;
+            mArrowTransform = null;
+        }
+
         if ( mTransform != null )
         {
             Game.mPack.removeObject(mTransform);
@@ -1169,9 +1177,231 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
+    var mArrowTransform = null;
+    var mArrowShape = null;
+    var mArrowLastLoc = null;
+    var mArrowGrabbed = null;
+
+    var mPeeringDimension = null;
+    var mPeeringDirection = null;
+    var mPeeringTrav = 0;
+
+    this.getPeeringDimension = function()
+    {
+        return mPeeringDimension;
+    }
+
+    this.getPeeringDirection = function()
+    {
+        return mPeeringDirection;
+    }
+
+    this.getPeeringTrav = function()
+    {
+        return mPeeringTrav;
+    }
+
+    this.setupArrow = function( Game )
+    {
+        mArrowTransform = Game.mPack.createObject('Transform');
+        mArrowTransform.parent = Game.mClient.root;
+
+        mArrowShape = new ArrowShape( Game );
+        mArrowTransform.addShape( mArrowShape.getShape() );
+        this.updateArrowLocation( Game );
+    }
+
+    var QuarterRot = Math.PI / 2.0;
+    this.updateArrowLocation = function( Game )
+    {
+        if ( mPeeringTrav == 0 && Game.mCamera )
+        {
+            var Rotate = false;
+            var RotZ = Game.mCamera.getEye().rotZ;
+            var NewLoc = null;
+            if ( RotZ >= 0 && RotZ < QuarterRot )
+            {
+                NewLoc = [ -1, 0, this.getDimension( 2 ) ];
+                Rotate = true;
+            } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
+            {
+                NewLoc = [ -1, 0, -1 ];
+            } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
+            {
+                NewLoc = [ this.getDimension( 0 ), 0, -1 ];
+                Rotate = true;
+            } else
+            {
+                NewLoc = [ this.getDimension( 0 ), 0, this.getDimension( 2 ) ];
+            }
+            if ( mArrowLastLoc == null || mArrowLastLoc[0] != NewLoc[0] || mArrowLastLoc[1] != NewLoc[1] || mArrowLastLoc[2] != NewLoc[2] )
+            {
+                mArrowTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( NewLoc ));
+                mArrowLastLoc = NewLoc;
+            }
+        }
+    }
+
+    this.tryGrabArrow = function( Game, Event )
+    {
+        var Ray = o3djs.picking.clientPositionToWorldRay(
+            Event.x,
+            Event.y,
+            Game.mCamera.getViewInfo().drawContext,
+            Game.mClient.width,
+            Game.mClient.height);
+
+        var ArrowTree = o3djs.picking.createTransformInfo( mArrowTransform, null);
+        ArrowTree.update();
+
+        var PickInfo = ArrowTree.pick(Ray);
+        if ( PickInfo && PickInfo.shapeInfo.parent.transform == mArrowTransform )
+        {
+            mArrowGrabbed = [ Event.x, Event.y ];
+
+            if ( mPeeringTrav == 0 )
+            {
+                var RotZ = Game.mCamera.getEye().rotZ;
+                if ( RotZ >= 0 && RotZ < QuarterRot )
+                {
+                    mPeeringDimension = 2;
+                    mPeeringDirection = -1;
+                } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
+                {
+                    mPeeringDimension = 0;
+                    mPeeringDirection = 1;
+                } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
+                {
+                    mPeeringDimension = 2;
+                    mPeeringDirection = 1;
+                } else
+                {
+                    mPeeringDimension = 0;
+                    mPeeringDirection = -1;
+                }
+            }
+
+
+            return true;
+        }
+        return false;
+
+        Game.doRender();
+    }
+
+    this.getArrowGrabbed = function()
+    {
+        return mArrowGrabbed != null;
+    }
+
+    this.moveArrow = function( Game, Event )
+    {
+        /*var RotZ = Game.mCamera.getEye().rotZ;
+        if ( RotZ >= 0 && RotZ < QuarterRot )
+        {
+            if ( mPeeringDimension != 2 || mPeeringDirection != -1 )
+            {
+                return;
+            }
+        } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
+        {
+            if ( mPeeringDimension != 0 || mPeeringDirection != 1 )
+            {
+                return;
+            }
+        } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
+        {
+            if ( mPeeringDimension != 2 || mPeeringDirection != 1 )
+            {
+                return;
+            }
+        } else
+        {
+            if ( mPeeringDimension != 0 || mPeeringDirection != -1 )
+            {
+                return;
+            }
+        }*/
+        var Delta = [ Event.x - mArrowGrabbed[ 0 ], Event.y - mArrowGrabbed[ 1 ] ];
+        var MinDistance = 100.0;
+        Change = [ Delta[0] / MinDistance, Delta[1] / MinDistance];
+
+        var ODim1, ODim2;
+        if ( mPeeringDimension == 0 )
+        {
+            ODim1 = 1;
+            ODim2 = 2;
+        } else  if ( mPeeringDimension == 1 )
+        {
+            ODim1 = 0;
+            ODim2 = 2;
+        } else
+        {
+            ODim1 = 0;
+            ODim2 = 1;
+        }
+
+        while( Math.floor( Math.abs( Change[ 0 ] ) ) != 0 )
+        {
+            var Location = [];
+            if ( mPeeringDirection == 1 )
+            {
+                Location[ mPeeringDimension ] = mPeeringTrav;
+            } else
+            {
+                Location[ mPeeringDimension ] = this.getDimension( mPeeringDimension ) - 1 - mPeeringTrav;
+            }
+            if ( Location[ mPeeringDimension ] >= 0 && Location[ mPeeringDimension ] < this.getDimension( mPeeringDimension ) )
+            {
+                for( var travODim1 = 0; travODim1 < this.getDimension( ODim1 ); travODim1 ++ )
+                {
+                    for( var travODim2 = 0; travODim2 < this.getDimension( ODim2 ); travODim2 ++ )
+                    {
+                        Location[ ODim1 ] = travODim1;
+                        Location[ ODim2 ] = travODim2;
+                        var HideBlock = this.getBlock( Location );
+                        if ( HideBlock != null )
+                        {
+                            if ( Change[ 0 ] < 0 )
+                            {
+                                HideBlock.setPeerThrough( true );
+                            } else if ( Change[ 0 ] > 0 )
+                            {
+                                HideBlock.setPeerThrough( false );
+                            }
+                        }
+                    }
+                }
+
+            }
+            if ( Change[ 0 ] < 0 )
+            {
+                if ( mPeeringTrav < this.getDimension( mPeeringDimension ) - 1 )
+                    mPeeringTrav ++;
+                Change[ 0 ] ++;
+            } else
+            {
+                if ( mPeeringTrav > 0 )
+                    mPeeringTrav --;
+                Change[ 0 ] --;
+            }
+        }
+
+        mArrowGrabbed = [ Event.x - Delta[0] % MinDistance, Event.y - Delta[0] % MinDistance ];
+
+        Game.doRender();
+    }
+
+    this.stopArrowGrabbed = function( Game, Event )
+    {
+        mArrowGrabbed = null;
+        Game.doRender();
+    }
+
     Camera.centerOnPuzzle( Game, this, true );
     this.fillPuzzle( Game );
     this.showFaces( Game );
+    this.setupArrow( Game );
     this.resetRemainingFails();
 }
 
@@ -1187,3 +1417,197 @@ function PuzzleInfo()
     this.mPaintColor = [ 0, 0, 1, 1 ];
     this.mBackgroundColor = [ 1, 1, 1, 1 ];
 }
+
+function ArrowShape( Game )
+{
+    var mShape = null;
+    var mMaterial = null;
+    var mPrimitive = null;
+    var mDrawElement = null;
+    var mStreamBank = null;
+
+    this.init = function( Game )
+    {
+        mShape = Game.mPack.createObject('Shape');
+        mMaterial = new CubeMaterial( Game );
+
+        mPrimitive = Game.mPack.createObject('Primitive');
+        mPrimitive.owner = mShape;
+
+        mPrimitive.material = mMaterial.getMaterial();
+
+        mDrawElement = mPrimitive.createDrawElement(Game.mPack, null);
+
+        mPrimitive.primitiveType = Game.mO3d.Primitive.TRIANGLELIST;
+        mPrimitive.numberPrimitives = 8;
+
+        mStreamBank = Game.mPack.createObject('StreamBank');
+
+        mPrimitive.numberVertices = 24;
+        mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game ), 0);
+        mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game ), 0);
+        mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game ), 0 );
+        mPrimitive.indexBuffer = this.getIndicesBuffer( Game );
+
+        mPrimitive.streamBank = mStreamBank;
+    }
+
+    this.getVerticesArray = function( Game )
+    {
+        var VerticesBuffer = Game.mPack.createObject('VertexBuffer');
+        var VertexArray = VerticesBuffer.createField('FloatField', 3);
+        VerticesBuffer.set([
+                0.5, 0.75, 0.5,
+                0, 0.5, 0.5,
+                0.5, 0.5, 0.75
+                ,
+                0.5, 0.5, 0.25,
+                0, 0.5, 0.5,
+                0.5, 0.75, 0.5
+                ,
+                0.5, 0.5, 0.75,
+                0, 0.5, 0.5,
+                0.5, 0.25, 0.5
+                ,
+                0.5, 0.25, 0.5,
+                0, 0.5, 0.5,
+                0.5, 0.5, 0.25
+                ,
+                0.5, 0.5, 0.75,
+                1, 0.5, 0.5,
+                0.5, 0.75, 0.5
+                ,
+                0.5, 0.5, 0.75,
+                0.5, 0.25, 0.5,
+                1, 0.5, 0.5
+                ,
+                0.5, 0.5, 0.25,
+                0.5, 0.75, 0.5,
+                1, 0.5, 0.5
+                ,
+                0.5, 0.5, 0.25,
+                1, 0.5, 0.5,
+                0.5, 0.25, 0.5
+                 ]);
+
+        return VertexArray;
+    }
+
+    this.getIndicesBuffer = function( Game )
+    {
+        var IndicesBuffer = Game.mPack.createObject('IndexBuffer');
+        IndicesBuffer.set([
+            0, 1, 2
+            ,
+            3, 4, 5
+            ,
+            6, 7, 8
+            ,
+            9, 10, 11
+            ,
+            12, 13, 14
+            ,
+            15, 16, 17
+            ,
+            18, 19, 20
+            ,
+            21, 22, 23
+        ]);
+        return IndicesBuffer;
+    }
+
+    this.getTexCoordBuffer = function( Game )
+    {
+        var texCoordsBuffer = Game.mPack.createObject('VertexBuffer');
+        var texCoordsField = texCoordsBuffer.createField('FloatField', 2);
+        texCoordsBuffer.set([
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+            ,
+            0, 0,
+            1, 0,
+            1, 1
+        ]);
+        return texCoordsField;
+    }
+
+    this.getNormalsBuffer = function( Game )
+    {
+        var NormalsBuffer = Game.mPack.createObject('VertexBuffer');
+        var NormalsField = NormalsBuffer.createField('FloatField', 3);
+
+        NormalsBuffer.set( [
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1
+            ,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0
+            ,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1
+            ,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0
+            ,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0
+            ,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0
+            ,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0
+            ,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0
+        ] );
+        return NormalsField;
+    }
+
+    this.getShape = function()
+    {
+        return mShape;
+    }
+
+    this.getMaterial = function()
+    {
+        return mMaterial;
+    }
+
+    this.init( Game );
+}
+
+

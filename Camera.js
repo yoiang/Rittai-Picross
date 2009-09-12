@@ -44,7 +44,7 @@ function TargetCamera( Game )
             mEye.rotZ = -0.76;
             mEye.rotH = 46;
         }
-        mEye.distanceFromTarget = o3djs.math.distanceSquared( [0,0,0], [mTarget[0], mTarget[1], mTarget[2]] ) + 5;
+        mEye.distanceFromTarget = o3djs.math.distanceSquared( [0,0,0], [mTarget[0], mTarget[1], mTarget[2]] ) + 10;
 
         this.update( Game );
     }
@@ -75,7 +75,11 @@ function TargetCamera( Game )
         var EyeV = [mEye.x, mEye.y, mEye.z];
         mViewInfo.drawContext.view = o3djs.math.matrix4.lookAt(EyeV, mTarget, mUp);
 
-        Game.doRender();
+        if ( Game && Game.mPuzzle )
+        {
+            Game.mPuzzle.updateArrowLocation( Game );
+            Game.doRender();
+        }
     }
 
     this.getTarget = function()

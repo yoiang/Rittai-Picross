@@ -57,6 +57,14 @@ function DebugOverlay( Game )
             this.drawText('Target: ( ' + Game.mCamera.getTarget()[0].toFixed(3) + ', ' + Game.mCamera.getTarget()[1].toFixed(3) + ', ' + Game.mCamera.getTarget()[2].toFixed(3) + ' )', 20, Y += 13);
             this.drawText('Eye - rotZ: ' + Game.mCamera.getEye().rotZ.toFixed(3) + '   rotH: ' + Game.mCamera.getEye().rotH.toFixed(3) + '   dFT: ' + Game.mCamera.getEye().distanceFromTarget.toFixed(3) + '   Location: ( ' + Game.mCamera.getEye().x.toFixed(3) + ', ' + Game.mCamera.getEye().y.toFixed(3) + ', ' + Game.mCamera.getEye().z.toFixed(3) + ' )', 20, Y += 13);
 
+            if ( Game.mPuzzle != null )
+            {
+                this.mCanvasPaint.color = [0, 0, 1, 1 ];
+                this.drawText('Peering', 10, Y += 13, this.mCanvasPaint);
+                this.drawText('Arrow Grabbed: ' + Game.mPuzzle.getArrowGrabbed(), 20, Y += 13);
+                this.drawText('Peering - Dimension: ' + Game.mPuzzle.getPeeringDimension() + '   Direction: ' + Game.mPuzzle.getPeeringDirection() + '   Trav: ' + Game.mPuzzle.getPeeringTrav(), 20, Y += 13 );
+            }
+
             if ( mPickedCubePuzzleLocation != null )
             {
                 this.mCanvasPaint.color = [0, 0.5, 1, 1];

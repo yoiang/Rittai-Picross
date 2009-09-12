@@ -22,6 +22,8 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     var mFinishedColorParam = null;
 
+    var mPeerThroughParam = null;
+
     this.createShape = function(Game, AssociateWithTransform)
     {
         if ( gShapeTemplate == null )
@@ -55,6 +57,9 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
         mFinishedColorParam = mTransform.createParam('FinishedColor', 'ParamFloat4' );
         this.setFinishedColor( mCubeInfo.mFinishedColor );
+
+        mPeerThroughParam = mTransform.createParam( 'PeerThrough', 'ParamBoolean' );
+        this.setPeerThrough( false );
 
         if ( AssociateWithTransform )
         {
@@ -183,6 +188,11 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     {
         this.getInfo().mPuzzleLocation = Value;
         mTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( this.getInfo().mPuzzleLocation ));
+    }
+
+    this.setPeerThrough = function( Value )
+    {
+        mPeerThroughParam.value = Value;
     }
 
     this.destroy = function( Game )
@@ -527,7 +537,7 @@ function CubeMaterial( Game )
     {
         mMaterial = Game.mPack.createObject('Material');
         
-        mMaterial.drawList = Game.mCamera.getViewInfo().performanceDrawList;
+        mMaterial.drawList = Game.mCamera.getViewInfo().zOrderedDrawList;//performanceDrawList;
 
         mEffect = Game.mPack.createObject('Effect');
         o3djs.effect.loadEffect( mEffect, 'Cube.shader');
