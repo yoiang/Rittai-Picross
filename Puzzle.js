@@ -1288,12 +1288,12 @@ function Puzzle(Game, setInfo, Camera )
                 }
             }
 
-
+            mArrowShape.getMaterial().setGrabbed( true );
+            Game.doRender();
             return true;
         }
-        return false;
-
         Game.doRender();
+        return false;
     }
 
     this.getArrowGrabbed = function()
@@ -1421,6 +1421,8 @@ function Puzzle(Game, setInfo, Camera )
     this.stopArrowGrabbed = function( Game, Event )
     {
         mArrowGrabbed = null;
+        mArrowShape.getMaterial().setGrabbed( false );
+
         Game.doRender();
     }
 
@@ -1443,172 +1445,3 @@ function PuzzleInfo()
     this.mPaintColor = [ 0, 0, 1, 1 ];
     this.mBackgroundColor = [ 1, 1, 1, 1 ];
 }
-
-function ArrowShape( Game )
-{
-    var mShape = null;
-    var mMaterial = null;
-    var mPrimitive = null;
-    var mDrawElement = null;
-    var mStreamBank = null;
-
-    this.init = function( Game )
-    {
-        mShape = Game.mPack.createObject('Shape');
-        mMaterial = new CubeMaterial( Game );
-
-        mPrimitive = Game.mPack.createObject('Primitive');
-        mPrimitive.owner = mShape;
-
-        mPrimitive.material = mMaterial.getMaterial();
-
-        mDrawElement = mPrimitive.createDrawElement(Game.mPack, null);
-
-        mPrimitive.primitiveType = Game.mO3d.Primitive.TRIANGLELIST;
-        mPrimitive.numberPrimitives = 8;
-
-        mStreamBank = Game.mPack.createObject('StreamBank');
-
-        mPrimitive.numberVertices = 6;
-        mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game ), 0);
-        mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game ), 0);
-        mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game ), 0 );
-        mPrimitive.indexBuffer = this.getIndicesBuffer( Game );
-
-        mPrimitive.streamBank = mStreamBank;
-    }
-
-    this.getVerticesArray = function( Game )
-    {
-        var VerticesBuffer = Game.mPack.createObject('VertexBuffer');
-        var VertexArray = VerticesBuffer.createField('FloatField', 3);
-        VerticesBuffer.set([
-                0, 0.5, 0.5,
-                0.5, 0.25, 0.5,
-                1, 0.5, 0.5,
-                0.5, 0.75, 0.5,
-                0.5, 0.5, 0.25,
-                0.5, 0.5, 0.75
-                 ]);
-
-        return VertexArray;
-    }
-
-    this.getIndicesBuffer = function( Game )
-    {
-        var IndicesBuffer = Game.mPack.createObject('IndexBuffer');
-        IndicesBuffer.set([
-            0, 4, 1
-            ,
-            0, 3, 4
-            ,
-            0, 1, 5
-            ,
-            0, 5, 3
-            ,
-            2, 4, 3
-            ,
-            2, 1, 4
-            ,
-            2, 5, 1
-            ,
-            2, 3, 5
-        ]);
-        return IndicesBuffer;
-    }
-
-    this.getTexCoordBuffer = function( Game )
-    {
-        var texCoordsBuffer = Game.mPack.createObject('VertexBuffer');
-        var texCoordsField = texCoordsBuffer.createField('FloatField', 2);
-        texCoordsBuffer.set([
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1
-        ]);
-        return texCoordsField;
-    }
-
-    this.getNormalsBuffer = function( Game )
-    {
-        var NormalsBuffer = Game.mPack.createObject('VertexBuffer');
-        var NormalsField = NormalsBuffer.createField('FloatField', 3);
-
-        NormalsBuffer.set( [
-            0, 0, 1,
-            0, 0, 1,
-            0, 0, 1
-            ,
-            0, 1, 0,
-            0, 1, 0,
-            0, 1, 0
-            ,
-            0, 0, -1,
-            0, 0, -1,
-            0, 0, -1
-            ,
-            0, -1, 0,
-            0, -1, 0,
-            0, -1, 0
-            ,
-            1, 0, 0,
-            1, 0, 0,
-            1, 0, 0
-            ,
-            -1, 0, 0,
-            -1, 0, 0,
-            -1, 0, 0
-            ,
-            -1, 0, 0,
-            -1, 0, 0,
-            -1, 0, 0
-            ,
-            -1, 0, 0,
-            -1, 0, 0,
-            -1, 0, 0
-        ] );
-        return NormalsField;
-    }
-
-    this.getShape = function()
-    {
-        return mShape;
-    }
-
-    this.getMaterial = function()
-    {
-        return mMaterial;
-    }
-
-    this.init( Game );
-}
-
-
