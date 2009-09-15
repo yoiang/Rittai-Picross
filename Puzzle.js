@@ -1180,11 +1180,12 @@ function Puzzle(Game, setInfo, Camera )
     var mArrowTransform = null;
     var mArrowShape = null;
     var mArrowLastLoc = null;
+    var mArrowLastRemained = null;
     var mArrowGrabbed = null;
 
     var mPeeringDimension = null;
     var mPeeringDirection = null;
-    var mPeeringTrav = 0;
+    var mPeeringTrav = -1;
 
     this.getPeeringDimension = function()
     {
@@ -1214,7 +1215,7 @@ function Puzzle(Game, setInfo, Camera )
     var QuarterRot = Math.PI / 2.0;
     this.updateArrowLocation = function( Game )
     {
-        if ( mPeeringTrav == 0 && Game.mCamera )
+        if ( mPeeringTrav == -1 && Game.mCamera )
         {
             var Rotate = false;
             var RotZ = Game.mCamera.getEye().rotZ;
@@ -1259,7 +1260,7 @@ function Puzzle(Game, setInfo, Camera )
         {
             mArrowGrabbed = [ Event.x, Event.y ];
 
-            if ( mPeeringTrav == 0 )
+            if ( mPeeringTrav == -1 )
             {
                 var RotZ = Game.mCamera.getEye().rotZ;
                 if ( RotZ >= 0 && RotZ < QuarterRot )
@@ -1298,8 +1299,23 @@ function Puzzle(Game, setInfo, Camera )
     {
  
         var Delta = [ Event.x - mArrowGrabbed[ 0 ], Event.y - mArrowGrabbed[ 1 ] ];
-        var MinDistance = Game.mClient.width / 10;
-        Change = [ Delta[0] / MinDistance, Delta[1] / MinDistance];
+        var MinDistance = Game.mClient.width / 5.0;
+        var TotalDelta = Math.floor( Math.sqrt( Math.pow(Delta[0], 2) + Math.pow(Delta[1], 2)) );
+        if ( mArrowLastRemained != null )
+        {
+            TotalDelta += mArrowLastRemained;
+        }
+        var Sign = ( TotalDelta < MinDistance )? " < " :" > ";
+
+        Change = TotalDelta / MinDistance;
+        if ( Delta[0] < 0 )
+        {
+            Change *= -1;
+        } else if ( Delta[0] == 0)
+        {
+            if ( Delta[1] < 0)
+                Change *= -1;
+        }
 
         var ODim1, ODim2;
         if ( mPeeringDimension == 0 )
@@ -1316,8 +1332,15 @@ function Puzzle(Game, setInfo, Camera )
             ODim2 = 1;
         }
 
-        while( Math.floor( Math.abs( Change[ 0 ] ) ) != 0 )
+        while( Math.floor( Math.abs( Change ) ) != 0 )
         {
+            if ( Change < 0 )
+            {
+                if ( mPeeringTrav < this.getDimension( mPeeringDimension ) - 1 )
+                    mPeeringTrav ++;
+            } else
+            {
+            }
             var Location = [];
             if ( mPeeringDirection == 1 )
             {
@@ -1337,32 +1360,30 @@ function Puzzle(Game, setInfo, Camera )
                         var HideBlock = this.getBlock( Location );
                         if ( HideBlock != null )
                         {
-                            if ( Change[ 0 ] < 0 )
+                            if ( Change < 0 )
                             {
                                 HideBlock.setPeerThrough( true );
-                            } else if ( Change[ 0 ] > 0 )
+                            } else if ( Change > 0 )
                             {
                                 HideBlock.setPeerThrough( false );
                             }
                         }
                     }
                 }
-
             }
-            if ( Change[ 0 ] < 0 )
+            if ( Change < 0 )
             {
-                if ( mPeeringTrav < this.getDimension( mPeeringDimension ) - 1 )
-                    mPeeringTrav ++;
-                Change[ 0 ] ++;
-            } else
+                Change ++;
+            } else if ( Change > 0 )
             {
-                if ( mPeeringTrav > 0 )
+                if ( mPeeringTrav >= 0 )
                     mPeeringTrav --;
-                Change[ 0 ] --;
+                Change --;
             }
         }
 
-        mArrowGrabbed = [ Event.x - Delta[0] % MinDistance, Event.y - Delta[0] % MinDistance ];
+        mArrowGrabbed = [ Event.x, Event.y ];
+        mArrowLastRemained = TotalDelta % MinDistance;
 
         Game.doRender();
     }
