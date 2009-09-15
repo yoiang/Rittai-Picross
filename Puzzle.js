@@ -1138,33 +1138,6 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    this.destroy = function( Game )
-    {
-        this.travBlocks( Game, this.destroyBlock );
-        
-        if ( mArrowTransform != null )
-        {
-            mArrowTransform.parent = Game.mClient.root;
-            Game.mPack.removeObject( mArrowTransform );
-            mArrowTransform.parent = null;
-            mArrowTransform = null;
-        }
-
-        if ( mHiddenTransform != null )
-        {
-            Game.mPack.removeObject(mHiddenTransform);
-            mHiddenTransform.parent = null;
-            mHiddenTransform = null;
-        }
-
-        if ( mTransform != null )
-        {
-            Game.mPack.removeObject(mTransform);
-            mTransform.parent = null;
-            mTransform = null;
-        }
-    }
-
     this.travBlocks = function( Game, DoThis, ExtraParams, DoEvery0, DoEvery1 )
     {
         for( var trav0 = 0; trav0 < this.getDimension( 0 ); trav0 ++)
@@ -1191,10 +1164,12 @@ function Puzzle(Game, setInfo, Camera )
 
     var mArrowTree = null;
     var mArrowTransform = null;
+    var mArrowAdjust = null;
     var mArrowShape = null;
     var mArrowLastLoc = null;
     var mArrowLastRemained = null;
     var mArrowGrabbed = null;
+    var mArrowRotate = null;
 
     var mPeeringDimension = null;
     var mPeeringDirection = null;
@@ -1220,11 +1195,14 @@ function Puzzle(Game, setInfo, Camera )
         mArrowTransform = Game.mPack.createObject('Transform');
         mArrowTransform.parent = Game.mClient.root;
 
+        mArrowAdjust = Game.mPack.createObject('Transform');
+        mArrowAdjust.parent = mArrowTransform;
+
         mArrowTree = o3djs.picking.createTransformInfo( mArrowTransform, null);
         mArrowTree.update();
 
         mArrowShape = new ArrowShape( Game );
-        mArrowTransform.addShape( mArrowShape.getShape() );
+        mArrowAdjust.addShape( mArrowShape.getShape() );
         this.updateArrowLocation( Game );
     }
 
@@ -1244,26 +1222,34 @@ function Puzzle(Game, setInfo, Camera )
     {
         if ( mPeeringTrav == -1 && Game.mCamera )
         {
-            var Rotate = false;
+            mArrowRotate = false;
             var RotZ = Game.mCamera.getEye().rotZ;
+            var Target = Game.mCamera.getTarget();
             var NewLoc = null;
             if ( RotZ >= 0 && RotZ < QuarterRot )
             {
-                NewLoc = [ -1, 0, this.getDimension( 2 ) ];
-                Rotate = true;
+                NewLoc = [ Target[0] + Target[0] * -1.5, 0, Target[2] + Target[2] * 1.5 ];
+                mArrowRotate = true;
             } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
             {
-                NewLoc = [ -1, 0, -1 ];
+                NewLoc = [ Target[0] + Target[0] * -1.5, 0, Target[2] + Target[2] * -1.5 ];
             } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
             {
-                NewLoc = [ this.getDimension( 0 ), 0, -1 ];
-                Rotate = true;
+                NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * -1.5 ];
+                mArrowRotate = true;
             } else
             {
-                NewLoc = [ this.getDimension( 0 ), 0, this.getDimension( 2 ) ];
+                NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * 1.5 ];
             }
             if ( mArrowLastLoc == null || mArrowLastLoc[0] != NewLoc[0] || mArrowLastLoc[1] != NewLoc[1] || mArrowLastLoc[2] != NewLoc[2] )
             {
+                if ( mArrowRotate )
+                {
+                    mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.rotationY( Math.PI / 2.0 ));
+                } else
+                {
+                    mArrowAdjust.localMatrix = o3djs.math.matrix4.identity();
+                }
                 mArrowTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( NewLoc ));
                 mArrowLastLoc = NewLoc;
                 mArrowTree.update();
@@ -1281,7 +1267,7 @@ function Puzzle(Game, setInfo, Camera )
             Game.mClient.height);
 
         var PickInfo = mArrowTree.pick(Ray);
-        if ( PickInfo && PickInfo.shapeInfo.parent.transform == mArrowTransform )
+        if ( PickInfo && PickInfo.shapeInfo.parent.transform == mArrowAdjust )
         {
             mArrowGrabbed = [ Event.x, Event.y ];
 
@@ -1306,6 +1292,8 @@ function Puzzle(Game, setInfo, Camera )
                     mPeeringDirection = -1;
                 }
             }
+
+            mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(mArrowAdjust.localMatrix, o3djs.math.matrix4.scaling([ 0.95, 0.95, 0.95 ]));
 
             mArrowShape.getMaterial().setGrabbed( true );
             Game.doRender();
@@ -1440,9 +1428,43 @@ function Puzzle(Game, setInfo, Camera )
     this.stopArrowGrabbed = function( Game, Event )
     {
         mArrowGrabbed = null;
+        if ( mArrowRotate )
+        {
+            mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.rotationY( Math.PI / 2.0 ));
+        } else
+        {
+            mArrowAdjust.localMatrix = o3djs.math.matrix4.identity();
+        }
         mArrowShape.getMaterial().setGrabbed( false );
 
         Game.doRender();
+    }
+
+    this.destroy = function( Game )
+    {
+        this.travBlocks( Game, this.destroyBlock );
+
+        if ( mArrowTransform != null )
+        {
+            mArrowTransform.parent = Game.mClient.root;
+            Game.mPack.removeObject( mArrowTransform );
+            mArrowTransform.parent = null;
+            mArrowTransform = null;
+        }
+
+        if ( mHiddenTransform != null )
+        {
+            Game.mPack.removeObject(mHiddenTransform);
+            mHiddenTransform.parent = null;
+            mHiddenTransform = null;
+        }
+
+        if ( mTransform != null )
+        {
+            Game.mPack.removeObject(mTransform);
+            mTransform.parent = null;
+            mTransform = null;
+        }
     }
 
     Camera.centerOnPuzzle( Game, this, true );
