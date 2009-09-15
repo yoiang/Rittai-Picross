@@ -1296,34 +1296,9 @@ function Puzzle(Game, setInfo, Camera )
 
     this.moveArrow = function( Game, Event )
     {
-        /*var RotZ = Game.mCamera.getEye().rotZ;
-        if ( RotZ >= 0 && RotZ < QuarterRot )
-        {
-            if ( mPeeringDimension != 2 || mPeeringDirection != -1 )
-            {
-                return;
-            }
-        } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
-        {
-            if ( mPeeringDimension != 0 || mPeeringDirection != 1 )
-            {
-                return;
-            }
-        } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
-        {
-            if ( mPeeringDimension != 2 || mPeeringDirection != 1 )
-            {
-                return;
-            }
-        } else
-        {
-            if ( mPeeringDimension != 0 || mPeeringDirection != -1 )
-            {
-                return;
-            }
-        }*/
+ 
         var Delta = [ Event.x - mArrowGrabbed[ 0 ], Event.y - mArrowGrabbed[ 1 ] ];
-        var MinDistance = 100.0;
+        var MinDistance = Game.mClient.width / 10;
         Change = [ Delta[0] / MinDistance, Delta[1] / MinDistance];
 
         var ODim1, ODim2;
