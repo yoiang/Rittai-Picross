@@ -66,7 +66,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
             gTransformToCube[ gTransformToCube.length ] = [ mTransform, this ];
         }
 
-        mTransform.parent = mCubeInfo.mParentTransform;
+        this.setParentTransform( mCubeInfo.mParentTransform );
 
         mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation( mCubeInfo.mPuzzleLocation ));
     };
@@ -193,6 +193,14 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     this.setPeerThrough = function( Value )
     {
         mPeerThroughParam.value = Value;
+    }
+
+    this.setParentTransform = function( Value )
+    {
+        if ( mTransform != null )
+        {
+            mTransform.parent = Value;
+        }
     }
 
     this.destroy = function( Game )

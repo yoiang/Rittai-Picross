@@ -7,6 +7,7 @@ function Puzzle(Game, setInfo, Camera )
     var mBlocks = null;
 
     var mTransform = null;
+    var mHiddenTransform = null;
     var mTreeInfo = null;
 
     var mInfo = setInfo;
@@ -35,6 +36,9 @@ function Puzzle(Game, setInfo, Camera )
     {
         mTransform = Game.mPack.createObject('Transform');
         mTransform.parent = Game.mClient.root;
+
+        mHiddenTransform = Game.mPack.createObject('Transform');
+        mHiddenTransform.parent = Game.mClient.root;
 
         mBlocks = [];
 
@@ -1177,6 +1181,7 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
+    var mArrowTree = null;
     var mArrowTransform = null;
     var mArrowShape = null;
     var mArrowLastLoc = null;
@@ -1206,6 +1211,9 @@ function Puzzle(Game, setInfo, Camera )
     {
         mArrowTransform = Game.mPack.createObject('Transform');
         mArrowTransform.parent = Game.mClient.root;
+
+        mArrowTree = o3djs.picking.createTransformInfo( mArrowTransform, null);
+        mArrowTree.update();
 
         mArrowShape = new ArrowShape( Game );
         mArrowTransform.addShape( mArrowShape.getShape() );
@@ -1239,6 +1247,7 @@ function Puzzle(Game, setInfo, Camera )
             {
                 mArrowTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( NewLoc ));
                 mArrowLastLoc = NewLoc;
+                mArrowTree.update();
             }
         }
     }
@@ -1252,10 +1261,7 @@ function Puzzle(Game, setInfo, Camera )
             Game.mClient.width,
             Game.mClient.height);
 
-        var ArrowTree = o3djs.picking.createTransformInfo( mArrowTransform, null);
-        ArrowTree.update();
-
-        var PickInfo = ArrowTree.pick(Ray);
+        var PickInfo = mArrowTree.pick(Ray);
         if ( PickInfo && PickInfo.shapeInfo.parent.transform == mArrowTransform )
         {
             mArrowGrabbed = [ Event.x, Event.y ];
@@ -1297,7 +1303,6 @@ function Puzzle(Game, setInfo, Camera )
 
     this.moveArrow = function( Game, Event )
     {
- 
         var Delta = [ Event.x - mArrowGrabbed[ 0 ], Event.y - mArrowGrabbed[ 1 ] ];
         var MinDistance = Game.mClient.width / 5.0;
         var TotalDelta = Math.floor( Math.sqrt( Math.pow(Delta[0], 2) + Math.pow(Delta[1], 2)) );
@@ -1332,6 +1337,7 @@ function Puzzle(Game, setInfo, Camera )
             ODim2 = 1;
         }
 
+        var UpdateTree = false;
         while( Math.floor( Math.abs( Change ) ) != 0 )
         {
             if ( Change < 0 )
@@ -1363,10 +1369,13 @@ function Puzzle(Game, setInfo, Camera )
                             if ( Change < 0 )
                             {
                                 HideBlock.setPeerThrough( true );
+                                HideBlock.setParentTransform( mHiddenTransform );
                             } else if ( Change > 0 )
                             {
                                 HideBlock.setPeerThrough( false );
+                                HideBlock.setParentTransform( mTransform );
                             }
+                            UpdateTree = true;
                         }
                     }
                 }
@@ -1380,6 +1389,11 @@ function Puzzle(Game, setInfo, Camera )
                     mPeeringTrav --;
                 Change --;
             }
+        }
+
+        if ( UpdateTree )
+        {
+            mTreeInfo.update();
         }
 
         mArrowGrabbed = [ Event.x, Event.y ];
