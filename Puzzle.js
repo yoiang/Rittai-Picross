@@ -1144,9 +1144,17 @@ function Puzzle(Game, setInfo, Camera )
         
         if ( mArrowTransform != null )
         {
+            mArrowTransform.parent = Game.mClient.root;
             Game.mPack.removeObject( mArrowTransform );
             mArrowTransform.parent = null;
             mArrowTransform = null;
+        }
+
+        if ( mHiddenTransform != null )
+        {
+            Game.mPack.removeObject(mHiddenTransform);
+            mHiddenTransform.parent = null;
+            mHiddenTransform = null;
         }
 
         if ( mTransform != null )
@@ -1218,6 +1226,17 @@ function Puzzle(Game, setInfo, Camera )
         mArrowShape = new ArrowShape( Game );
         mArrowTransform.addShape( mArrowShape.getShape() );
         this.updateArrowLocation( Game );
+    }
+
+    this.hideArrow = function( Value )
+    {
+        if ( Value )
+        {
+            mArrowTransform.parent = null;
+        } else
+        {
+            mArrowTransform.parent = Game.mClient.root;
+        }
     }
 
     var QuarterRot = Math.PI / 2.0;

@@ -53,6 +53,7 @@ function Game( ClientElements )
         {
             this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
             this.mPuzzle.unhideAllBlocks();
+            this.mPuzzle.hideArrow( true );
             if ( gShapeTemplate )
             {
                 gShapeTemplate.getMaterial().setFinished( true );
