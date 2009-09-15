@@ -1322,12 +1322,22 @@ function Puzzle(Game, setInfo, Camera )
                 Change *= -1;
         }
 
+        this.updateHidden( Change < 0, mPeeringDimension, mPeeringDirection, Math.floor( Math.abs( Change ) ) );
+
+        mArrowGrabbed = [ Event.x, Event.y ];
+        mArrowLastRemained = TotalDelta % MinDistance;
+
+        Game.doRender();
+    }
+
+    this.updateHidden = function( Hide, Dimension, Direction, Count )
+    {
         var ODim1, ODim2;
-        if ( mPeeringDimension == 0 )
+        if ( Dimension == 0 )
         {
             ODim1 = 1;
             ODim2 = 2;
-        } else  if ( mPeeringDimension == 1 )
+        } else  if ( Dimension == 1 )
         {
             ODim1 = 0;
             ODim2 = 2;
@@ -1338,24 +1348,22 @@ function Puzzle(Game, setInfo, Camera )
         }
 
         var UpdateTree = false;
-        while( Math.floor( Math.abs( Change ) ) != 0 )
+        while( Count != 0 )
         {
-            if ( Change < 0 )
+            if ( Hide )
             {
-                if ( mPeeringTrav < this.getDimension( mPeeringDimension ) - 1 )
+                if ( mPeeringTrav < this.getDimension( Dimension ) - 1 )
                     mPeeringTrav ++;
-            } else
-            {
             }
             var Location = [];
-            if ( mPeeringDirection == 1 )
+            if ( Direction == 1 )
             {
-                Location[ mPeeringDimension ] = mPeeringTrav;
+                Location[ Dimension ] = mPeeringTrav;
             } else
             {
-                Location[ mPeeringDimension ] = this.getDimension( mPeeringDimension ) - 1 - mPeeringTrav;
+                Location[ Dimension ] = this.getDimension( Dimension ) - 1 - mPeeringTrav;
             }
-            if ( Location[ mPeeringDimension ] >= 0 && Location[ mPeeringDimension ] < this.getDimension( mPeeringDimension ) )
+            if ( Location[ Dimension ] >= 0 && Location[ Dimension ] < this.getDimension( Dimension ) )
             {
                 for( var travODim1 = 0; travODim1 < this.getDimension( ODim1 ); travODim1 ++ )
                 {
@@ -1366,11 +1374,11 @@ function Puzzle(Game, setInfo, Camera )
                         var HideBlock = this.getBlock( Location );
                         if ( HideBlock != null )
                         {
-                            if ( Change < 0 )
+                            if ( Hide )
                             {
                                 HideBlock.setPeerThrough( true );
                                 HideBlock.setParentTransform( mHiddenTransform );
-                            } else if ( Change > 0 )
+                            } else
                             {
                                 HideBlock.setPeerThrough( false );
                                 HideBlock.setParentTransform( mTransform );
@@ -1380,14 +1388,12 @@ function Puzzle(Game, setInfo, Camera )
                     }
                 }
             }
-            if ( Change < 0 )
-            {
-                Change ++;
-            } else if ( Change > 0 )
+            Count --;
+            if ( !Hide )
             {
                 if ( mPeeringTrav >= 0 )
                     mPeeringTrav --;
-                Change --;
+
             }
         }
 
@@ -1395,11 +1401,6 @@ function Puzzle(Game, setInfo, Camera )
         {
             mTreeInfo.update();
         }
-
-        mArrowGrabbed = [ Event.x, Event.y ];
-        mArrowLastRemained = TotalDelta % MinDistance;
-
-        Game.doRender();
     }
 
     this.stopArrowGrabbed = function( Game, Event )
