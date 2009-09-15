@@ -1374,15 +1374,8 @@ function Puzzle(Game, setInfo, Camera )
                         var HideBlock = this.getBlock( Location );
                         if ( HideBlock != null )
                         {
-                            if ( Hide )
-                            {
-                                HideBlock.setPeerThrough( true );
-                                HideBlock.setParentTransform( mHiddenTransform );
-                            } else
-                            {
-                                HideBlock.setPeerThrough( false );
-                                HideBlock.setParentTransform( mTransform );
-                            }
+                            this.hideBlock( HideBlock, Hide );
+
                             UpdateTree = true;
                         }
                     }
@@ -1400,6 +1393,28 @@ function Puzzle(Game, setInfo, Camera )
         if ( UpdateTree )
         {
             mTreeInfo.update();
+        }
+    }
+
+    this.hideBlock = function( Block, Value )
+    {
+        if ( Value )
+        {
+            Block.setPeerThrough( true );
+            Block.setParentTransform( mHiddenTransform );
+        } else
+        {
+            Block.setPeerThrough( false );
+            Block.setParentTransform( mTransform );
+        }
+    }
+
+    this.unhideAllBlocks = function()
+    {
+        if ( mPeeringTrav != -1 )
+        {
+            var Count = mPeeringTrav + 1;
+            this.updateHidden( false, mPeeringDimension, mPeeringDirection, Count );
         }
     }
 

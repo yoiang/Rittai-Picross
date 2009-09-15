@@ -52,6 +52,7 @@ function Game( ClientElements )
         if ( Value )
         {
             this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
+            this.mPuzzle.unhideAllBlocks();
             if ( gShapeTemplate )
             {
                 gShapeTemplate.getMaterial().setFinished( true );
