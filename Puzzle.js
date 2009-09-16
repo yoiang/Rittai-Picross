@@ -1166,7 +1166,7 @@ function Puzzle(Game, setInfo, Camera )
     var mArrowTransform = null;
     var mArrowAdjust = null;
     var mArrowShape = null;
-    var mArrowLastLoc = null;
+    var mArrowGrabLoc = null;
     var mArrowLastRemained = null;
     var mArrowGrabbed = null;
     var mArrowRotate = null;
@@ -1241,19 +1241,29 @@ function Puzzle(Game, setInfo, Camera )
             {
                 NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * 1.5 ];
             }
-            if ( mArrowLastLoc == null || mArrowLastLoc[0] != NewLoc[0] || mArrowLastLoc[1] != NewLoc[1] || mArrowLastLoc[2] != NewLoc[2] )
+            if ( mArrowGrabLoc == null || mArrowGrabLoc[0] != NewLoc[0] || mArrowGrabLoc[1] != NewLoc[1] || mArrowGrabLoc[2] != NewLoc[2] )
             {
-                if ( mArrowRotate )
-                {
-                    mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.rotationY( Math.PI / 2.0 ));
-                } else
-                {
-                    mArrowAdjust.localMatrix = o3djs.math.matrix4.identity();
-                }
-                mArrowTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( NewLoc ));
-                mArrowLastLoc = NewLoc;
-                mArrowTree.update();
+                mArrowGrabLoc = NewLoc;
+                this.updateArrowTransform( true );
             }
+        }
+    }
+
+    this.updateArrowTransform = function( UpdateTree )
+    {
+        if ( mArrowRotate )
+        {
+            mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.rotationY( Math.PI / 2.0 ));
+        } else
+        {
+            mArrowAdjust.localMatrix = o3djs.math.matrix4.identity();
+        }
+
+        mArrowTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( mArrowGrabLoc ));
+
+        if ( UpdateTree )
+        {
+            mArrowTree.update();
         }
     }
 
@@ -1317,7 +1327,6 @@ function Puzzle(Game, setInfo, Camera )
         {
             TotalDelta += mArrowLastRemained;
         }
-        var Sign = ( TotalDelta < MinDistance )? " < " :" > ";
 
         Change = TotalDelta / MinDistance;
         if ( Delta[0] < 0 )
@@ -1330,6 +1339,19 @@ function Puzzle(Game, setInfo, Camera )
         }
 
         this.updateHidden( Change < 0, mPeeringDimension, mPeeringDirection, Math.floor( Math.abs( Change ) ) );
+        if ( Math.floor( Math.abs( Change ) ) > 0 )
+        {
+            if ( Change > 0)
+            {
+                this.updateArrowTransform( false );
+                mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(mArrowAdjust.localMatrix, o3djs.math.matrix4.translation( [ 0.1, 0, 0] ) );
+            } else if ( Change < 0)
+            {
+                this.updateArrowTransform( false );
+                mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(mArrowAdjust.localMatrix, o3djs.math.matrix4.translation( [ -0.1, 0, 0] ) );
+            }
+
+        }
 
         mArrowGrabbed = [ Event.x, Event.y ];
         mArrowLastRemained = TotalDelta % MinDistance;
@@ -1428,13 +1450,7 @@ function Puzzle(Game, setInfo, Camera )
     this.stopArrowGrabbed = function( Game, Event )
     {
         mArrowGrabbed = null;
-        if ( mArrowRotate )
-        {
-            mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.rotationY( Math.PI / 2.0 ));
-        } else
-        {
-            mArrowAdjust.localMatrix = o3djs.math.matrix4.identity();
-        }
+        this.updateArrowTransform( false );
         mArrowShape.getMaterial().setGrabbed( false );
 
         Game.doRender();
