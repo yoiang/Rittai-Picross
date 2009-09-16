@@ -1,5 +1,7 @@
-function Puzzle(Game, setInfo, Camera )
+function Puzzle(Game, setInfo )
 {
+    var mInfo = setInfo;
+
     var mSolidBlocks = 0;
     var mSpaceBlocks = 0;
     var mRemainingFails = 0;
@@ -10,7 +12,36 @@ function Puzzle(Game, setInfo, Camera )
     var mHiddenTransform = null;
     var mTreeInfo = null;
 
-    var mInfo = setInfo;
+    var mPeeringArrow = null;
+    var mPeeringDimension = null;
+    var mPeeringDirection = null;
+    var mPeeringTrav = -1;
+
+    this.init = function(Game)
+    {
+        Game.mCamera.centerOnPuzzle( Game, this, true );
+        mTransform = Game.mPack.createObject('Transform');
+        mTransform.parent = Game.mClient.root;
+
+        mHiddenTransform = Game.mPack.createObject('Transform');
+        mHiddenTransform.parent = Game.mClient.root;
+
+        mBlocks = [];
+
+        BlocksDefinition = mInfo.mBlockDefinition;
+
+        this.travBlocks( Game, this.addBlockFromTrav, BlocksDefinition );
+
+        mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
+        mTreeInfo.update();
+
+        this.showFaces( Game );
+
+        mPeeringArrow = new PeeringArrow( Game, this );
+        this.updatePeeringArrowLocation( Game );
+
+        this.resetRemainingFails();
+    }
 
     this.addBlock = function( Game, setCubeInfo )
     {
@@ -30,24 +61,6 @@ function Puzzle(Game, setInfo, Camera )
     this.addBlockFromTrav = function( Game, Puzzle, Location, ExtraParams )
     {
         Puzzle.addBlock( Game, ExtraParams[ Location[0] ][ Location[1] ][ Location[2] ] );
-    }
-
-    this.fillPuzzle = function(Game)
-    {
-        mTransform = Game.mPack.createObject('Transform');
-        mTransform.parent = Game.mClient.root;
-
-        mHiddenTransform = Game.mPack.createObject('Transform');
-        mHiddenTransform.parent = Game.mClient.root;
-
-        mBlocks = [];
-
-        BlocksDefinition = mInfo.mBlockDefinition;
-
-        this.travBlocks( Game, this.addBlockFromTrav, BlocksDefinition );
-
-        mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
-        mTreeInfo.update();
     }
 
     this.totalSolidCounts = function( Game, Puzzle, Location, ExtraParams )
@@ -1162,211 +1175,14 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    var mArrowTree = null;
-    var mArrowTransform = null;
-    var mArrowAdjust = null;
-    var mArrowShape = null;
-    var mArrowGrabLoc = null;
-    var mArrowLastRemained = null;
-    var mArrowGrabbed = null;
-    var mArrowRotate = null;
-
-    var mPeeringDimension = null;
-    var mPeeringDirection = null;
-    var mPeeringTrav = -1;
-
-    this.getPeeringDimension = function()
-    {
-        return mPeeringDimension;
-    }
-
-    this.getPeeringDirection = function()
-    {
-        return mPeeringDirection;
-    }
-
-    this.getPeeringTrav = function()
-    {
-        return mPeeringTrav;
-    }
-
-    this.setupArrow = function( Game )
-    {
-        mArrowTransform = Game.mPack.createObject('Transform');
-        mArrowTransform.parent = Game.mClient.root;
-
-        mArrowAdjust = Game.mPack.createObject('Transform');
-        mArrowAdjust.parent = mArrowTransform;
-
-        mArrowTree = o3djs.picking.createTransformInfo( mArrowTransform, null);
-        mArrowTree.update();
-
-        mArrowShape = new ArrowShape( Game );
-        mArrowAdjust.addShape( mArrowShape.getShape() );
-        this.updateArrowLocation( Game );
-    }
-
-    this.hideArrow = function( Value )
-    {
-        if ( Value )
-        {
-            mArrowTransform.parent = null;
-        } else
-        {
-            mArrowTransform.parent = Game.mClient.root;
-        }
-    }
-
-    var QuarterRot = Math.PI / 2.0;
-    this.updateArrowLocation = function( Game )
-    {
-        if ( mPeeringTrav == -1 && Game.mCamera )
-        {
-            mArrowRotate = false;
-            var RotZ = Game.mCamera.getEye().rotZ;
-            var Target = Game.mCamera.getTarget();
-            var NewLoc = null;
-            if ( RotZ >= 0 && RotZ < QuarterRot )
-            {
-                NewLoc = [ Target[0] + Target[0] * -1.5, 0, Target[2] + Target[2] * 1.5 ];
-                mArrowRotate = true;
-            } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
-            {
-                NewLoc = [ Target[0] + Target[0] * -1.5, 0, Target[2] + Target[2] * -1.5 ];
-            } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
-            {
-                NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * -1.5 ];
-                mArrowRotate = true;
-            } else
-            {
-                NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * 1.5 ];
-            }
-            if ( mArrowGrabLoc == null || mArrowGrabLoc[0] != NewLoc[0] || mArrowGrabLoc[1] != NewLoc[1] || mArrowGrabLoc[2] != NewLoc[2] )
-            {
-                mArrowGrabLoc = NewLoc;
-                this.updateArrowTransform( true );
-            }
-        }
-    }
-
-    this.updateArrowTransform = function( UpdateTree )
-    {
-        if ( mArrowRotate )
-        {
-            mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.rotationY( Math.PI / 2.0 ));
-        } else
-        {
-            mArrowAdjust.localMatrix = o3djs.math.matrix4.identity();
-        }
-
-        mArrowTransform.localMatrix = o3djs.math.matrix4.mul(o3djs.math.matrix4.identity(), o3djs.math.matrix4.translation( mArrowGrabLoc ));
-
-        if ( UpdateTree )
-        {
-            mArrowTree.update();
-        }
-    }
-
-    this.tryGrabArrow = function( Game, Event )
-    {
-        var Ray = o3djs.picking.clientPositionToWorldRay(
-            Event.x,
-            Event.y,
-            Game.mCamera.getViewInfo().drawContext,
-            Game.mClient.width,
-            Game.mClient.height);
-
-        var PickInfo = mArrowTree.pick(Ray);
-        if ( PickInfo && PickInfo.shapeInfo.parent.transform == mArrowAdjust )
-        {
-            mArrowGrabbed = [ Event.x, Event.y ];
-
-            if ( mPeeringTrav == -1 )
-            {
-                var RotZ = Game.mCamera.getEye().rotZ;
-                if ( RotZ >= 0 && RotZ < QuarterRot )
-                {
-                    mPeeringDimension = 2;
-                    mPeeringDirection = -1;
-                } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
-                {
-                    mPeeringDimension = 0;
-                    mPeeringDirection = 1;
-                } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
-                {
-                    mPeeringDimension = 2;
-                    mPeeringDirection = 1;
-                } else
-                {
-                    mPeeringDimension = 0;
-                    mPeeringDirection = -1;
-                }
-            }
-
-            mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(mArrowAdjust.localMatrix, o3djs.math.matrix4.scaling([ 0.95, 0.95, 0.95 ]));
-
-            mArrowShape.getMaterial().setGrabbed( true );
-            Game.doRender();
-            return true;
-        }
-        Game.doRender();
-        return false;
-    }
-
-    this.getArrowGrabbed = function()
-    {
-        return mArrowGrabbed != null;
-    }
-
-    this.moveArrow = function( Game, Event )
-    {
-        var Delta = [ Event.x - mArrowGrabbed[ 0 ], Event.y - mArrowGrabbed[ 1 ] ];
-        var MinDistance = Game.mClient.width / 5.0;
-        var TotalDelta = Math.floor( Math.sqrt( Math.pow(Delta[0], 2) + Math.pow(Delta[1], 2)) );
-        if ( mArrowLastRemained != null )
-        {
-            TotalDelta += mArrowLastRemained;
-        }
-
-        Change = TotalDelta / MinDistance;
-        if ( Delta[0] < 0 )
-        {
-            Change *= -1;
-        } else if ( Delta[0] == 0)
-        {
-            if ( Delta[1] < 0)
-                Change *= -1;
-        }
-
-        this.updateHidden( Change < 0, mPeeringDimension, mPeeringDirection, Math.floor( Math.abs( Change ) ) );
-        if ( Math.floor( Math.abs( Change ) ) > 0 )
-        {
-            if ( Change > 0)
-            {
-                this.updateArrowTransform( false );
-                mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(mArrowAdjust.localMatrix, o3djs.math.matrix4.translation( [ 0.1, 0, 0] ) );
-            } else if ( Change < 0)
-            {
-                this.updateArrowTransform( false );
-                mArrowAdjust.localMatrix = o3djs.math.matrix4.mul(mArrowAdjust.localMatrix, o3djs.math.matrix4.translation( [ -0.1, 0, 0] ) );
-            }
-
-        }
-
-        mArrowGrabbed = [ Event.x, Event.y ];
-        mArrowLastRemained = TotalDelta % MinDistance;
-
-        Game.doRender();
-    }
-
-    this.updateHidden = function( Hide, Dimension, Direction, Count )
+    this.updateHidden = function( Hide, Count )
     {
         var ODim1, ODim2;
-        if ( Dimension == 0 )
+        if ( mPeeringDimension == 0 )
         {
             ODim1 = 1;
             ODim2 = 2;
-        } else  if ( Dimension == 1 )
+        } else  if ( mPeeringDimension == 1 )
         {
             ODim1 = 0;
             ODim2 = 2;
@@ -1381,18 +1197,18 @@ function Puzzle(Game, setInfo, Camera )
         {
             if ( Hide )
             {
-                if ( mPeeringTrav < this.getDimension( Dimension ) - 1 )
+                if ( mPeeringTrav < this.getDimension( mPeeringDimension ) - 1 )
                     mPeeringTrav ++;
             }
             var Location = [];
-            if ( Direction == 1 )
+            if ( mPeeringDirection == 1 )
             {
-                Location[ Dimension ] = mPeeringTrav;
+                Location[ mPeeringDimension ] = mPeeringTrav;
             } else
             {
-                Location[ Dimension ] = this.getDimension( Dimension ) - 1 - mPeeringTrav;
+                Location[ mPeeringDimension ] = this.getDimension( mPeeringDimension ) - 1 - mPeeringTrav;
             }
-            if ( Location[ Dimension ] >= 0 && Location[ Dimension ] < this.getDimension( Dimension ) )
+            if ( Location[ mPeeringDimension ] >= 0 && Location[ mPeeringDimension ] < this.getDimension( mPeeringDimension ) )
             {
                 for( var travODim1 = 0; travODim1 < this.getDimension( ODim1 ); travODim1 ++ )
                 {
@@ -1447,13 +1263,75 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    this.stopArrowGrabbed = function( Game, Event )
+    this.getPeeringArrow = function()
     {
-        mArrowGrabbed = null;
-        this.updateArrowTransform( false );
-        mArrowShape.getMaterial().setGrabbed( false );
+        return mPeeringArrow;
+    }
 
-        Game.doRender();
+    this.getPeeringDimension = function()
+    {
+        return mPeeringDimension;
+    }
+
+    this.getPeeringDirection = function()
+    {
+        return mPeeringDirection;
+    }
+
+    this.getPeeringTrav = function()
+    {
+        return mPeeringTrav;
+    }
+
+    var QuarterRot = Math.PI / 2.0;
+
+    this.updatePeeringArrowLocation = function( Game )
+    {
+        if ( mPeeringTrav == -1 && Game.mCamera )
+        {
+            var Rotate = false;
+            var RotZ = Game.mCamera.getEye().rotZ;
+            var Target = Game.mCamera.getTarget();
+            var NewLoc = null;
+
+            if ( RotZ >= 0 && RotZ < QuarterRot )
+            {
+                NewLoc = [ Target[0] + Target[0] * -1.5, 0, Target[2] + Target[2] * 1.5 ];
+                Rotate = QuarterRot * 3;
+
+                mPeeringDimension = 2;
+                mPeeringDirection = -1;
+            } else if ( RotZ >= QuarterRot && RotZ < QuarterRot * 2 )
+            {
+                NewLoc = [ Target[0] + Target[0] * -1.5, 0, Target[2] + Target[2] * -1.5 ];
+                Rotate = QuarterRot * 2;
+
+                mPeeringDimension = 0;
+                mPeeringDirection = 1;
+
+            } else if (  RotZ >= QuarterRot * 2 && RotZ < QuarterRot * 3 )
+            {
+                NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * -1.5 ];
+                Rotate = QuarterRot;
+
+                mPeeringDimension = 2;
+                mPeeringDirection = 1;
+
+            } else
+            {
+                NewLoc = [ Target[0] + Target[0] * 1.5, 0, Target[2] + Target[2] * 1.5 ];
+                Rotate = 0;
+
+                mPeeringDimension = 0;
+                mPeeringDirection = -1;
+
+            }
+            var OldLoc = mPeeringArrow.getGrabbedLocation();;
+            if ( OldLoc == null || OldLoc[0] != NewLoc[0] || OldLoc[1] != NewLoc[1] || OldLoc[2] != NewLoc[2] )
+            {
+                mPeeringArrow.updateTransform( true, NewLoc, Rotate );
+            }
+        }
     }
 
     this.destroy = function( Game )
@@ -1483,11 +1361,7 @@ function Puzzle(Game, setInfo, Camera )
         }
     }
 
-    Camera.centerOnPuzzle( Game, this, true );
-    this.fillPuzzle( Game );
-    this.showFaces( Game );
-    this.setupArrow( Game );
-    this.resetRemainingFails();
+    this.init( Game );
 }
 
 function PuzzleInfo()

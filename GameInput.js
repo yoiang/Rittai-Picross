@@ -2,9 +2,10 @@ function GameInput()
 {
     this.handleMouseUp = function( Game, Event )
     {
-        if ( Game.mPuzzle && Game.mPuzzle.getArrowGrabbed() )
+        if ( Game.mPuzzle )
         {
-            Game.mPuzzle.stopArrowGrabbed( Game );
+            if ( Game.mPuzzle.getPeeringArrow().getGrabbed() )
+                Game.mPuzzle.getPeeringArrow().stopGrabbed( Game );
         }
         return false;
     }
@@ -33,7 +34,7 @@ function GameInput()
             return true;
         }
 
-        return Game.mPuzzle.tryGrabArrow( Game, Event );
+        return Game.mPuzzle.getPeeringArrow().tryGrab( Game, Event );
     }
 
     this.handleMouseMove = function( Game, Event )
@@ -58,9 +59,9 @@ function GameInput()
             return true;
         }
 
-        if ( Game.mPuzzle.getArrowGrabbed() )
+        if ( Game.mPuzzle.getPeeringArrow().getGrabbed() )
         {
-            Game.mPuzzle.moveArrow( Game, Event );
+            Game.mPuzzle.getPeeringArrow().move( Game, Event );
             return true;
         }
         

@@ -77,7 +77,7 @@ function TargetCamera( Game )
 
         if ( Game && Game.mPuzzle )
         {
-            Game.mPuzzle.updateArrowLocation( Game );
+            Game.mPuzzle.updatePeeringArrowLocation( Game );
             Game.doRender();
         }
     }
