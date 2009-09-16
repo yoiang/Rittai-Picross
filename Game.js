@@ -30,7 +30,7 @@ function Game( ClientElements )
 
     var mOnlyDimIfPainted = true;
 
-    var mHideUnneededFaces = true;
+    var mHideUnneededFaces = false;
     
     this.initView = function()
     {
@@ -232,6 +232,7 @@ function Game( ClientElements )
             ControlsString += generateControlEntry( "Drag Mouse", "Rotate puzzle" );
             ControlsString += generateControlEntry( "Hold W, Click Mouse", "<span class=\"bold\">PAINT</span> block" );
             ControlsString += generateControlEntry( "Hold X, Click Mouse", "<span class=\"bold\">BREAK</span> block" );
+            ControlsString += generateControlEntry( "Press Z", "<span class=\"bold\">BREAK</span> all blocks with a 0 face" );
             ControlsString += generateControlEntry( "Press E", "Toggle Edit Mode" );
             ControlsString += "</table>";
             document.getElementById("ControlsBody").innerHTML = ControlsString;
