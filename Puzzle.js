@@ -584,7 +584,7 @@ function Puzzle(Game, setInfo, Camera )
             var Numbers = Test.getNumbers();
             for( var travDims = 0; travDims < 3; travDims ++ )
             {
-                if ( HideNumbers[ travDims ] == 0 && Numbers[ travDims ] == 0 )
+                if ( ( HideNumbers[ travDims ] == 0 || Game.mDebug ) && Numbers[ travDims ] == 0 )
                 {
                     Puzzle.breakSpace( Game, Test, false );
                     break;
