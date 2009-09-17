@@ -210,12 +210,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
             mCubeInfo.destroy();
             mCubeInfo = null;
         }
-        if( mTransform != null )
-        {
-            mTransform.parent = null;
-            Game.mPack.removeObject(mTransform);
-            mTransform = null;
-        }
+        destroyTransform( Game, mTransform );
     }
 
     this.createShape( Game, AssociateWithTransform );

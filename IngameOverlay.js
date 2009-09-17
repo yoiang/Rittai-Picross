@@ -38,7 +38,6 @@ function IngameOverlay( Game )
 
 
         mTransform = Game.mPack.createObject('Transform');
-//        mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation([0,0,0]));
         mTransform.parent = Game.mClient.root;
 
        this.mFailsViewInfo = o3djs.rendergraph.createExtraView(Game.mCamera.getViewInfo(), [0.0, 0.8, 1.0, 0.2 ], [ 1, 0, 0, 1 ], 10000 ); //createView(Game.mPack, mTransform, Game.mClient.renderGraphRoot);
@@ -170,12 +169,6 @@ function IngameOverlay( Game )
     this.puzzleDestroyed = function( Game )
     {
         this.destroyRemainingFails( Game );
-        /*if ( mTransform != null )
-        {
-            mTransform.parent = null;
-            Game.mPack.removeObject(mTransform);
-            mTransform = null;
-        }*/
     }
 
     this.destroy = function( Game )
@@ -187,6 +180,7 @@ function IngameOverlay( Game )
         this.mCanvas = null;
         this.mCanvasPaint = null;
         this.mDisplayQuad = null;
+        destroyTransform( Game, mTransform );
     }
 
     this.init( Game );

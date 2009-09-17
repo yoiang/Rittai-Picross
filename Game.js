@@ -53,7 +53,7 @@ function Game( ClientElements )
         {
             this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
             this.mPuzzle.unhideAllBlocks();
-            this.mPuzzle.hideArrow( true );
+            this.mPuzzle.hidePeeringArrow( true );
             if ( gShapeTemplate )
             {
                 gShapeTemplate.getMaterial().setFinished( true );
@@ -392,4 +392,15 @@ function ComponentToWebColor( From )
         DecToHex( From[1] * 255, 2 ) +
         DecToHex( From[2] * 255, 2 )
     );
+}
+
+function destroyTransform( Game, Transform )
+{
+    if ( Game != null && Transform != null )
+    {
+        Transform.parent = Game.mClient.root;
+        Game.mPack.removeObject( Transform );
+        Transform.parent = null;
+        Transform = null;
+    }
 }

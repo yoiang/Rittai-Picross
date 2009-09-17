@@ -1334,31 +1334,19 @@ function Puzzle(Game, setInfo )
         }
     }
 
+    this.hidePeeringArrow = function( Hide )
+    {
+        mPeeringArrow.hide( Hide );
+    }
+
     this.destroy = function( Game )
     {
         this.travBlocks( Game, this.destroyBlock );
 
-        if ( mArrowTransform != null )
-        {
-            mArrowTransform.parent = Game.mClient.root;
-            Game.mPack.removeObject( mArrowTransform );
-            mArrowTransform.parent = null;
-            mArrowTransform = null;
-        }
+        mPeeringArrow.destroy( Game );
 
-        if ( mHiddenTransform != null )
-        {
-            Game.mPack.removeObject(mHiddenTransform);
-            mHiddenTransform.parent = null;
-            mHiddenTransform = null;
-        }
-
-        if ( mTransform != null )
-        {
-            Game.mPack.removeObject(mTransform);
-            mTransform.parent = null;
-            mTransform = null;
-        }
+        destroyTransform( Game, mHiddenTransform );
+        destroyTransform( Game, mTransform );
     }
 
     this.init( Game );

@@ -145,6 +145,13 @@ function PeeringArrow( Game, Puzzle )
         return mGrabLoc;
     }
 
+    this.destroy = function( Game )
+    {
+        destroyTransform( Game, mTransform );
+        destroyTransform( Game, mNudgeTransform );
+        destroyTransform( Game, mRotateTransform );
+    }
+
     this.init( Game, Puzzle );
 }
 
