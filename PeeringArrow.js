@@ -122,7 +122,6 @@ function PeeringArrow( Game, Puzzle )
                 this.updateTransform( false, mGrabLoc, mRotate );
                 mNudgeTransform.localMatrix = o3djs.math.matrix4.mul(mNudgeTransform.localMatrix, o3djs.math.matrix4.translation( [ -0.1, 0, 0] ) );
             }
-
         }
 
         mGrabbed = [ Event.x, Event.y ];
@@ -136,6 +135,10 @@ function PeeringArrow( Game, Puzzle )
         mGrabbed = null;
         this.updateTransform( false, mGrabLoc, mRotate );
         mShape.getMaterial().setGrabbed( false );
+        if ( mPuzzle.getPeeringTrav() == -1 )
+        {
+            mPuzzle.updatePeeringArrowLocation( Game );
+        }
 
         Game.doRender();
     }
