@@ -626,6 +626,8 @@ function Puzzle(Game, setInfo )
                     ResetStatus.setFailedBreak( false );
                     ResetStatus.setPainted( false );
                     ResetStatus.setHideNumbers( [ 1, 1, 1 ] );
+
+                    Puzzle.hideBlock( ResetStatus, false );
                 } else
                 {
                     ExtraParams[ 1 ] = true;
@@ -652,6 +654,7 @@ function Puzzle(Game, setInfo )
                 Game.doRender();
             } else
             {
+                Puzzle.hideBlock( ResetStatus, false );
             }
         }
     }
@@ -678,6 +681,8 @@ function Puzzle(Game, setInfo )
 
             this.resetRemainingFails();
         }
+
+        mPeeringTrav = -1;
         if ( PassParams[ 1 ] )
         {
             mTreeInfo.update();
@@ -770,7 +775,7 @@ function Puzzle(Game, setInfo )
 
     this.editRemove = function( Game, Event )
     {
-        pickedCube = this.pickCube( Game, Event );
+        var pickedCube = this.pickCube( Game, Event );
         if ( pickedCube != null && mBlocks != null)
         {
             this.setBlock( pickedCube.getPuzzleLocation(), null );
