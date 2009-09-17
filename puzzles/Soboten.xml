@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns1:Puzzle Version="3" Title=" by Nintendo" XSize="2" YSize="7" ZSize="7" AllowedFails="5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns1="http://Rittai.Picross" xsi:schemaLocation="http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd">
-    <ns1:PaintColor>
+<ns1:Puzzle Version="3" Title="" XSize="3" YSize="8" ZSize="4" AllowedFails="5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns1="http://Rittai.Picross" xsi:schemaLocation="http://Rittai.Picross file:/Users/Ian/workspace/Personal/Netbeans/Rittai%20Picross/src/js/Puzzle.xsd">
+    <ns1:BackgroundColor>
         <ns1:r>0</ns1:r>
         <ns1:g>0</ns1:g>
-        <ns1:b>1</ns1:b>
+        <ns1:b>0.4</ns1:b>
+        <ns1:a>1</ns1:a>
+    </ns1:BackgroundColor>
+    <ns1:PaintColor>
+        <ns1:r>1</ns1:r>
+        <ns1:g>0</ns1:g>
+        <ns1:b>0.8</ns1:b>
         <ns1:a>1</ns1:a>
     </ns1:PaintColor>
     <ns1:Cubes>
@@ -15,51 +21,11 @@
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -89,33 +55,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -145,9 +87,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -161,33 +103,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -201,33 +119,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -241,25 +135,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -273,9 +151,25 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -289,41 +183,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -353,113 +215,57 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.8</ns1:g>
+                <ns1:b>0.4</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
-        <ns1:Cube Solid="false">
+        <ns1:Cube Solid="true">
             <ns1:FinishedColor>
                 <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
-        <ns1:Cube Solid="false">
+        <ns1:Cube Solid="true">
             <ns1:FinishedColor>
                 <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
+                <ns1:g>0.8</ns1:g>
+                <ns1:b>0.4</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
-        <ns1:Cube Solid="false">
+        <ns1:Cube Solid="true">
             <ns1:FinishedColor>
                 <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
+                <ns1:g>0.8</ns1:g>
+                <ns1:b>0.4</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -633,17 +439,9 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -652,62 +450,6 @@
                 <ns1:r>1</ns1:r>
                 <ns1:g>1</ns1:g>
                 <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="false">
-            <ns1:FinishedColor>
-                <ns1:r>1</ns1:r>
-                <ns1:g>1</ns1:g>
-                <ns1:b>1</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
-                <ns1:a>1</ns1:a>
-            </ns1:FinishedColor>
-        </ns1:Cube>
-        <ns1:Cube Solid="true">
-            <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -745,17 +487,41 @@
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
         <ns1:Cube Solid="true">
             <ns1:FinishedColor>
-                <ns1:r>0.3</ns1:r>
-                <ns1:g>0.3</ns1:g>
-                <ns1:b>0.3</ns1:b>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.8</ns1:g>
+                <ns1:b>0.4</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.8</ns1:g>
+                <ns1:b>0.4</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
@@ -788,6 +554,230 @@
                 <ns1:r>1</ns1:r>
                 <ns1:g>1</ns1:g>
                 <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>0</ns1:r>
+                <ns1:g>0.4</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="false">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>1</ns1:g>
+                <ns1:b>1</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
+                <ns1:a>1</ns1:a>
+            </ns1:FinishedColor>
+        </ns1:Cube>
+        <ns1:Cube Solid="true">
+            <ns1:FinishedColor>
+                <ns1:r>1</ns1:r>
+                <ns1:g>0.6</ns1:g>
+                <ns1:b>0</ns1:b>
                 <ns1:a>1</ns1:a>
             </ns1:FinishedColor>
         </ns1:Cube>
