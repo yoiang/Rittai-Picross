@@ -1,8 +1,23 @@
 function EditInput()
 {
+    this.handleMouseUp = function( Game, Event )
+    {
+        if ( Game.mPuzzle )
+        {
+            if ( Game.mPuzzle.getPeeringArrow().getGrabbed() )
+                Game.mPuzzle.getPeeringArrow().stopGrabbed( Game );
+        }
+        return false;
+    }
+
     this.handleMouseDown = function( Game, Event )
     {
-        if ( Game.mPuzzle && ( Game.getLost() || Game.getWon() ) )
+        if ( Game == null || Game.mPuzzle == null )
+        {
+            return false;
+        }
+        
+        if ( Game.getLost() || Game.getWon() )
         {
             return false;
         }
@@ -19,7 +34,7 @@ function EditInput()
             return true;
         }
 
-        return false;
+        return Game.mPuzzle.getPeeringArrow().tryGrab( Game, Event );
     }
 
     this.handleMouseMove = function( Game, Event )
@@ -38,11 +53,23 @@ function EditInput()
         {
             return true;
         }
+
+        if ( Game.mPuzzle.getPeeringArrow().getGrabbed() )
+        {
+            Game.mPuzzle.getPeeringArrow().move( Game, Event );
+            return true;
+        }
+
         return false;
     }
 
     this.handleKeyDown = function( Game, Event, KeyCode )
     {
+        if ( Game == null || Game.mPuzzle == null )
+        {
+            return false;
+        }
+
         if ( KeyCode == 68 ) // D
         {
             Game.toggleDebug();
@@ -63,13 +90,17 @@ function EditInput()
             Game.mCamera.centerOnPuzzle( Game, Game.mPuzzle, false );
         }
 
-
         Game.mIngameOverlay.update( Game );
         return false;
     }
 
     this.handleKeyUp = function( Game, Event, KeyCode )
     {
+        if ( Game == null )
+        {
+            return false;
+        }
+
         Game.mIngameOverlay.update( Game );
         return false;
     }

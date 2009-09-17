@@ -2,6 +2,11 @@ function GameInput()
 {
     this.handleMouseUp = function( Game, Event )
     {
+        if ( Game == null || Game.mPuzzle == null )
+        {
+            return false;
+        }
+
         if ( Game.mPuzzle )
         {
             if ( Game.mPuzzle.getPeeringArrow().getGrabbed() )
@@ -12,7 +17,7 @@ function GameInput()
     
     this.handleMouseDown = function( Game, Event )
     {
-        if ( !Game.mPuzzle )
+        if ( Game == null || Game.mPuzzle == null )
         {
             return false;
         }
@@ -39,7 +44,7 @@ function GameInput()
 
     this.handleMouseMove = function( Game, Event )
     {
-        if ( ! Game.mPuzzle )
+        if ( Game == null || Game.mPuzzle == null )
         {
             return false;
         }
@@ -70,6 +75,11 @@ function GameInput()
 
     this.handleKeyDown = function( Game, Event, KeyCode )
     {
+        if ( Game == null || Game.mPuzzle == null )
+        {
+            return false;
+        }
+
         if ( KeyCode == 68 )
         {
             Game.toggleDebug();
@@ -91,6 +101,11 @@ function GameInput()
 
     this.handleKeyUp = function( Game, Event, KeyCode )
     {
+        if ( Game == null )
+        {
+            return false;
+        }
+
         Game.mIngameOverlay.update( Game );
         return false;
     }
