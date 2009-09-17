@@ -59,16 +59,17 @@ function DebugOverlay( Game )
 
             if ( Game.mPuzzle != null )
             {
+                var PeeringArrow = Game.mPuzzle.getPeeringArrow();
                 this.mCanvasPaint.color = [0, 0, 1, 1 ];
                 this.drawText('Peering', 10, Y += 13, this.mCanvasPaint);
-                this.drawText('Arrow Grabbed: ' + Game.mPuzzle.getArrowGrabbed(), 20, Y += 13);
+                this.drawText('Arrow Grabbed: ' + PeeringArrow.getGrabbed(), 20, Y += 13);
                 this.drawText('Peering - Dimension: ' + Game.mPuzzle.getPeeringDimension() + '   Direction: ' + Game.mPuzzle.getPeeringDirection() + '   Trav: ' + Game.mPuzzle.getPeeringTrav(), 20, Y += 13 );
             }
 
             if ( mPickedCubePuzzleLocation != null )
             {
                 this.mCanvasPaint.color = [0, 0.5, 1, 1];
-                this.drawText('Picked Cube: (' + mPickedCubePuzzleLocation[0] + ', ' + mPickedCubePuzzleLocation[1] + ', ' + mPickedCubePuzzleLocation[2] + ' )', 10, Y += 13, this.mCanvasPaint);
+                this.drawText('Picked Cube: ( ' + mPickedCubePuzzleLocation[0] + ', ' + mPickedCubePuzzleLocation[1] + ', ' + mPickedCubePuzzleLocation[2] + ' )', 10, Y += 13, this.mCanvasPaint);
             }
         }
         this.mDisplayQuad.updateTexture();
