@@ -206,7 +206,7 @@ function Puzzle(Game, setInfo )
         return SolidSets;
     }
  
-// perhaps add a passive and aggressive guaranteeing, if passive isn't complete do agressive, skip Dimension == RowNumber in passive, etc etc
+    // perhaps add a passive and aggressive guaranteeing, if passive isn't complete do agressive, skip Dimension == RowNumber in passive, etc etc
     this.attemptGuaranteeAdjacentRow = function( UnguaranteedLoc, Dimension, Guaranteed, RowNumber )
     {
         var SolidSets = this.findPossibleSolidSets( UnguaranteedLoc, Dimension, Guaranteed );

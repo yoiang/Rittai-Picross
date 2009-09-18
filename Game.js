@@ -30,7 +30,7 @@ function Game( ClientElements )
 
     var mOnlyDimIfPainted = true;
 
-    var mHideUnneededFaces = false;
+    var mHideUnneededFaces = true;
     
     this.initView = function()
     {
@@ -264,9 +264,19 @@ function Game( ClientElements )
         return mOnlyDimIfPainted;
     }
 
+    this.setOnlyDimIfPainted = function( Value )
+    {
+        mOnlyDimIfPainted = Value;
+    }
+
     this.getHideUnneededFaces = function()
     {
         return mHideUnneededFaces;
+    }
+
+    this.setHideUnneededFaces = function( Value )
+    {
+        mHideUnneededFaces = Value;
     }
 }
 

@@ -70,8 +70,10 @@
             }
 
             function initStep2(clientElements)
-            {
+            {                
                 gGame = new Game( clientElements );
+
+                initOptions( gGame );
 
                 loadTextures(gGame);
             }
@@ -125,6 +127,91 @@
             {
                 return "<tr><td class=\"ControlsKey\">" + Key + " - </td><td class=\"ControlsFunction\">" + Function + "</td></tr>";
             }
+
+            function initOptions( Game )
+            {
+                var setHideUnneededFaces = getCookie( "HideUnneededFaces" );
+                if ( setHideUnneededFaces != null )
+                {
+                    if ( setHideUnneededFaces == "true" )
+                        Game.setHideUnneededFaces( true );
+                    else
+                        Game.setHideUnneededFaces( false );
+                }
+                var HideUnneededFacesControl = document.getElementById("HideUnneededFaces");
+                if ( Game.getHideUnneededFaces() )
+                {
+                    HideUnneededFacesControl.checked = true;
+                } else
+                {
+                    HideUnneededFacesControl.checked = false;
+                }
+
+                var setOnlyDimIfPainted = getCookie( "OnlyDimIfPainted" );
+                if ( setOnlyDimIfPainted != null )
+                {
+                    if ( setOnlyDimIfPainted == "true" )
+                        Game.setOnlyDimIfPainted( true );
+                    else
+                        Game.setOnlyDimIfPainted( false );
+                }
+                var OnlyDimIfPaintedControl = document.getElementById("OnlyDimIfPainted");
+                if ( Game.getOnlyDimIfPainted() )
+                {
+                    OnlyDimIfPaintedControl.checked = true;
+                } else
+                {
+                    OnlyDimIfPaintedControl.checked = false;
+                }
+            }
+
+            function changedOption( ControlName )
+            {
+                var Control = document.getElementById(ControlName);
+                setCookie( ControlName, Control.checked, 9909, 12, 31 );
+            }
+            
+            // cookie code from http://www.elated.com/articles/javascript-and-cookies/
+            function setCookie ( name, value, exp_y, exp_m, exp_d, path, domain, secure )
+            {
+              var cookie_string = name + "=" + escape ( value );
+
+              if ( exp_y )
+              {
+                var expires = new Date ( exp_y, exp_m, exp_d );
+                cookie_string += "; expires=" + expires.toGMTString();
+              }
+
+              if ( path )
+                    cookie_string += "; path=" + escape ( path );
+
+              if ( domain )
+                    cookie_string += "; domain=" + escape ( domain );
+
+              if ( secure )
+                    cookie_string += "; secure";
+
+              document.cookie = cookie_string;
+            }
+
+            function getCookie ( cookie_name )
+            {
+              var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
+
+              if ( results )
+                return ( unescape ( results[2] ) );
+              else
+                return null;
+            }
+
+            function deleteCookie ( cookie_name )
+            {
+              var cookie_date = new Date ( );  // current date & time
+              cookie_date.setTime ( cookie_date.getTime() - 1 );
+              document.cookie = cookie_name += "=; expires=" + cookie_date.toGMTString();
+            }
+
+
         </script>
 
         <link href="index.css" type="text/css" rel="stylesheet"/>
@@ -162,6 +249,8 @@
             </table>
             <form name="puzzleSelectForm">
                 <span id="puzzleSelectDiv"></span> <input type="text" id="url" size="60"> <input type="button" id="updateButton" onclick="PuzzleManualSelect();" value="Load Puzzle"><br/>
+                <input type="checkbox" id="HideUnneededFaces" onClick="changedOption('HideUnneededFaces')">Hide Unneeded Faces</input> <input type="checkbox" id="OnlyDimIfPainted" onClick="changedOption('OnlyDimIfPainted')">Only Dim Faces If Paint</input><br/>
+                please refresh page if you've changed an option, require cookies<br/>
             </form>
             <br/>
             <div class="BackgroundInfo">based on a game by HAL Laboratory / Nintendo, show your support and buy the game or request that Nintendo publish it outside of Japan!</div>
