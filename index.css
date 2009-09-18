@@ -116,7 +116,7 @@ textarea.color, textarea#EditModeAllowedFails
     height: 12px;
 }
 
-table#main
+table#main, table#OptionsTable
 {
     margin-left: auto;
     margin-right: auto;
