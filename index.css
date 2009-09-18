@@ -122,6 +122,12 @@ table#main, table#OptionsTable
     margin-right: auto;
 }
 
+div#OptionsBody
+{
+    font-size:x-small;
+    font-weight:bold;
+}
+
 td#o3d
 {
     width: 600px;

@@ -163,6 +163,45 @@
                 {
                     OnlyDimIfPaintedControl.checked = false;
                 }
+
+                initCheckedCookiedHidden( "DebugLog", "ShowDebugLog", true );
+
+                initCheckedCookiedHidden( "OptionsBody", "ToggleOptions", false );
+            }
+
+            function initCheckedCookiedHidden( Hidden, ControlName, DefaultHidden )
+            {
+                var Cookie = getCookie( ControlName );
+                var HiddenElement = document.getElementById( Hidden );
+
+                if ( DefaultHidden )
+                {
+                    if ( Cookie != null && Cookie == "true" )
+                        HiddenElement.className = 'unhidden';
+                    else
+                        HiddenElement.className = 'hidden';
+                } else
+                {
+                    if ( Cookie != null && Cookie == "false" )
+                        HiddenElement.className = 'hidden';
+                    else
+                        HiddenElement.className = 'unhidden';
+                }
+
+                var Control = document.getElementById( ControlName );
+                if ( HiddenElement.className == 'unhidden' )
+                {
+                    Control.checked = true;
+                } else
+                {
+                    Control.checked = false;
+                }
+            }
+
+            function toggleCheckedCookiedHidden( Hidden, ControlName )
+            {
+                toggleHidden(Hidden);
+                changedOption(ControlName);
             }
 
             function changedOption( ControlName )
@@ -250,13 +289,13 @@
             <table id="OptionsTable">
                 <tr>
                     <td>
-                        <a href="javascript:toggleHidden('OptionsBody');" class="toggleHidden">+</a>
+                        <input type="checkbox" id="ToggleOptions" onClick="toggleCheckedCookiedHidden('OptionsBody', 'ToggleOptions')" checked></input>
                     </td>
                     <td>
                         <div id="OptionsBody">
                         <form name="puzzleSelectForm">
                             <span id="puzzleSelectDiv"></span> <input type="text" id="url" size="60"> <input type="button" id="updateButton" onclick="PuzzleManualSelect();" value="Load Puzzle"><br/>
-                            <input type="checkbox" id="HideUnneededFaces" onClick="changedOption('HideUnneededFaces')">Hide Unneeded Faces</input> <input type="checkbox" id="OnlyDimIfPainted" onClick="changedOption('OnlyDimIfPainted')">Only Dim Faces If Paint</input><br/>
+                            <input type="checkbox" id="HideUnneededFaces" onClick="changedOption('HideUnneededFaces')">Hide Unneeded Faces</input> <input type="checkbox" id="OnlyDimIfPainted" onClick="changedOption('OnlyDimIfPainted')">Only Dim Faces If Paint</input> <input type="checkbox" id="ShowDebugLog" onClick="toggleCheckedCookiedHidden('DebugLog','ShowDebugLog')">Show Debug Log</input><br/>
                             please refresh page if you've changed an option, require cookies<br/>
                         </form>
                         </div>
