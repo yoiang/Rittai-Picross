@@ -163,126 +163,117 @@ function Puzzle(Game, setInfo )
         }
     }
     
-    this.attemptGuaranteeZeroRow = function( UnguaranteedLoc, Dimension, Guaranteed )
+    this.guaranteeZeroRow = function( UnguaranteedLoc, Dimension, Guaranteed )
     {
-        /*/ skip find unguaranteed, always assume we are doing it on a row with at least one?
-        var FoundUnguaranteed = false;
         for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
         {
-            if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
-            {
-                FoundUnguaranteed = true;
-                break;
-            }
-        }
-
-        if ( FoundUnguaranteed )*/
-        {
-            for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
-            {
-                setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
-            }
-            return true;
-        }
-//        return false;
-    }
-
-    this.checkIndirectGuaranteed = function( UnguaranteedLoc, Dimension, Guaranteed )
-    {
-        var NotGuaranteed = [];
-        for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ ) // check that all spaces in row are guaranteed
-        {
-            var CheckSpace = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
-            if ( !CheckSpace.getSolid() )
-            {
-                if ( !getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) )
-                {
-                    return false;
-                }
-            } else
-            {
-                if ( !getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) )
-                {
-                    NotGuaranteed[ NotGuaranteed.length ] = trav;
-                }
-            }
-        }
-
-        // if so whole row is guaranteed
-        for( trav = 0; trav < NotGuaranteed.length; trav ++ )
-        {
-            setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, NotGuaranteed[ trav ], 1 );
+            setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
         }
         return true;
     }
+
+    this.findPossibleSolidSets = function( Location, Dimension, Guaranteed )
+    {
+        var SolidSets = [];
+        var NewSet = true;
+        for( var travBlocks = 0; travBlocks < this.getDimension( Dimension ); travBlocks ++ )
+        {
+            var Block = getByDimIterator3( mBlocks, Location, Dimension, travBlocks );
+            if ( Block.getSolid() )
+            {
+                if ( NewSet )
+                {
+                    SolidSets[ SolidSets.length ] = [ travBlocks, 1 ];
+                    NewSet = false;
+                } else
+                {
+                    SolidSets[ SolidSets.length - 1 ][ 1 ] ++;
+                }
+            } else
+            {
+                if ( !NewSet )
+                {
+                    if ( getByDimIterator3( Guaranteed, Location, Dimension, travBlocks ) )
+                    {
+                        NewSet = true;
+                    } else
+                    {
+                        SolidSets[ SolidSets.length - 1 ][ 1 ] ++;
+                    }
+                }
+            }
+        }
+        return SolidSets;
+    }
  
+// perhaps add a passive and aggressive guaranteeing, if passive isn't complete do agressive, skip Dimension == RowNumber in passive, etc etc
     this.attemptGuaranteeAdjacentRow = function( UnguaranteedLoc, Dimension, Guaranteed, RowNumber )
     {
-        // TODO: beginning and end should be offset by surrounding guaranteed
-        var MoreGuaranteed = false;
-        var GuaranteedCount = 0;
-        var Skip = this.getDimension( Dimension ) - RowNumber;
-        for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
+        var SolidSets = this.findPossibleSolidSets( UnguaranteedLoc, Dimension, Guaranteed );
+        var PossibleSets = [];
+        for( var travSolidSets = 0 ; travSolidSets < SolidSets.length; travSolidSets ++ )
         {
-            if ( trav >= Skip && trav < this.getDimension( Dimension ) - Skip )
+            if ( SolidSets[ travSolidSets ][ 1 ] >= RowNumber )
             {
-                if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
+                PossibleSets[ PossibleSets.length ] = SolidSets[ travSolidSets ];
+            } else
+            {
+                for( var trav = SolidSets[ travSolidSets ][ 0 ]; trav < SolidSets[ travSolidSets ][ 0 ] + SolidSets[ travSolidSets ][ 1 ]; trav ++ )
                 {
                     setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
-                    MoreGuaranteed = true;
                 }
             }
+        }
 
-            if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 1 )
-            {
-                GuaranteedCount ++;
-            }
-        }
-        if ( GuaranteedCount >= RowNumber )
+        if ( PossibleSets.length != 1 )
         {
-            for( trav = 0; trav < this.getDimension( Dimension ); trav ++ )
+            return false;
+        }
+
+        var Skip = PossibleSets[ 0 ][ 1 ] - RowNumber;
+        if ( Skip >= RowNumber )
+        {
+            return false;
+        }
+
+        var ShowFaces = false;
+        for( trav = PossibleSets[ 0 ][ 0 ] + Skip; trav < PossibleSets[ 0 ][ 0 ] + PossibleSets[ 0 ][ 1 ] - Skip; trav ++ )
+        {
+            if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
             {
-                if ( getByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav ) == 0 )
-                {
-                    setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
-                    MoreGuaranteed = true;
-                }
+                setByDimIterator3( Guaranteed, UnguaranteedLoc, Dimension, trav, 1 );
+                ShowFaces = true;
             }
         }
-        return MoreGuaranteed;
+        return ShowFaces;
     }
-
     
-    this.checkMoreGuaranteed = function( UnguaranteedLoc, Dimension, Guaranteed )
+    this.attemptGuaranteeRow = function( UnguaranteedLoc, Dimension, Guaranteed )
     {
-        var MoreGuaranteed = false;
+        var ShowFaces = false;
         
         var firstCube = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, 0 );
         var Row = firstCube.getRows()[ Dimension ];
 
-        var SpacesHint = Row.getSpacesHint();
         var RowNumber = Row.getNumber();
         if ( RowNumber == 0 )
         {
-            MoreGuaranteed = this.attemptGuaranteeZeroRow( UnguaranteedLoc, Dimension, Guaranteed );
+            ShowFaces = this.guaranteeZeroRow( UnguaranteedLoc, Dimension, Guaranteed );
         } else
         {
-            if ( Row.getSpaces() > 0 && this.checkIndirectGuaranteed( UnguaranteedLoc, Dimension, Guaranteed ) )
-            {
-                return false; // since whole row guaranteed break out and don't show faces
-            }
-
+            var SpacesHint = Row.getSpacesHint();
             if ( SpacesHint == 0 )
             {
-                //if ( this.getDimension( Dimension ) / 2.0 < Number )
-    //            {
-                    MoreGuaranteed = this.attemptGuaranteeAdjacentRow( UnguaranteedLoc, Dimension, Guaranteed, RowNumber );
-      //          }
-            } //todo: other spaces hints
+                ShowFaces = this.attemptGuaranteeAdjacentRow( UnguaranteedLoc, Dimension, Guaranteed, RowNumber );
+            } else
+            {
+                // for now always show more complex rows
+                ShowFaces = true;
+            }
             
         }
 
-        return MoreGuaranteed;
+        return ShowFaces;
     }
 
     this.attemptGuaranteeLocation = function( UnguaranteedLoc, Guaranteed )
@@ -294,7 +285,7 @@ function Puzzle(Game, setInfo )
         {
             if ( Hidden[ Dimension ] == 1 )
             {
-                if ( this.checkMoreGuaranteed( UnguaranteedLoc, Dimension, Guaranteed ))
+                if ( this.attemptGuaranteeRow( UnguaranteedLoc, Dimension, Guaranteed ))
                 {
                     this.showRowFaces( UnguaranteedLoc, Dimension );
 
@@ -392,7 +383,7 @@ function Puzzle(Game, setInfo )
         var ItCount = 0;
         var NoImprovement = true;
         var UnguaranteedLoc = this.findUnguaranteedCubeLoc( Guaranteed, null );
-        while ( UnguaranteedLoc != null || !NoImprovement)
+        while ( ( UnguaranteedLoc != null || !NoImprovement ) && ItCount < 1000 )
         {
             if ( UnguaranteedLoc != null && this.attemptGuaranteeLocation( UnguaranteedLoc, Guaranteed ) )
             {
@@ -410,19 +401,22 @@ function Puzzle(Game, setInfo )
 
         document.getElementById("DebugLog").innerHTML += "showNeededFaces Iterated: " + ItCount;
 
-        var count = 0;
-        this.travBlocks( Game, this.countUnguaranteed, [ Guaranteed, count ] );
+        var ExtraParams = [ Guaranteed, 0 ];
+        this.travBlocks( Game, this.countUnguaranteed, ExtraParams );
 
-        if ( count > 0 )
-            document.getElementById("DebugLog").innerHTML += " " + count;
+        if ( ExtraParams[ 1 ] > 0 )
+            document.getElementById("DebugLog").innerHTML += " Remaining: " + ExtraParams[ 1 ];
     }
 
     this.countUnguaranteed = function( Game, Puzzle, Location, ExtraParams )
     {
-        if ( ExtraParams[0] [ Location[ 0 ] ][ Location[ 1 ] ][ Location[ 2 ] ] == 0 )
+        var Guaranteed = ExtraParams[ 0 ];
+        var Count = ExtraParams[ 1 ];
+        if ( Guaranteed [ Location[ 0 ] ][ Location[ 1 ] ][ Location[ 2 ] ] == 0 )
         {
-            ExtraParams[1] ++;
+            Count ++;
         }
+        ExtraParams[ 1 ] = Count;
     }
 
     this.showBlockFace = function( Game, Puzzle, Location )
