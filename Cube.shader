@@ -129,13 +129,30 @@ float4 getFinishedColor( in float3 Normal )
     return Color;
 }
 
+float4 getDebugColor()
+{
+    if ( Solid )
+    {
+        return DebugSolidColor;
+    } else
+    {
+        return DebugSpaceColor;
+    }
+}
+
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
-    float4 Color = float4( 1, 1, 1, 1 );
+    float4 Color;
+    if ( !IgnoreColorModifiers && ( !Finished || EditMode ) || IgnoreColorModifiers )
+    {
+        Color = getBorderColor( input.tex );
+    } else
+    {
+        Color = float4( 1, 1, 1, 1 );
+    }
 
     if ( PeerThrough )
     {
-        Color = getBorderColor( input.tex );
         if ( Color.x == 1 && Color.y == 1 && Color.z == 1 )
         {
             Color.a = 0.0;
@@ -193,8 +210,6 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
                 }
             }
 
-            Color = getBorderColor( input.tex );
-
             if ( !HideNumber )
             {
                 Color = Color * getNumberColor( Number, DimNumber, input.tex );
@@ -210,16 +225,8 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
             }
         } else
         {
-            if ( EditMode )
-            {
-                Color = getBorderColor( input.tex );
-            }
-
             Color = Color * getFinishedColor( input.normal );
         }
-    } else
-    {
-        Color = Color * getBorderColor( input.tex );
     }
 
     if ( FailedBreak )
@@ -229,14 +236,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
 
     if ( Debug )
     {
-        float4 colorMult;
-        if ( Solid )
-        {
-            Color = Color * DebugSolidColor;
-        } else
-        {
-            Color = Color * DebugSpaceColor;
-        }
+        Color = Color * getDebugColor();
     }
 
     return Color;
