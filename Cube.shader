@@ -28,6 +28,9 @@ bool Debug;
 float4 DebugSolidColor;
 float4 DebugSpaceColor;
 
+bool ShowGuaranteed;
+bool Guaranteed;
+
 sampler NumberTexSampler;
 sampler SymbolTexSampler;
 
@@ -237,6 +240,11 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     if ( Debug )
     {
         Color = Color * getDebugColor();
+    }
+
+    if ( ShowGuaranteed && Guaranteed )
+    {
+        Color = Color * float4( 0.8, 0, 0.8, 1 );
     }
 
     return Color;

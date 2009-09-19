@@ -24,6 +24,8 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     var mPeerThroughParam = null;
 
+    var mGuaranteedParam = null;
+
     this.createShape = function(Game, AssociateWithTransform)
     {
         if ( gShapeTemplate == null )
@@ -60,6 +62,9 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
         mPeerThroughParam = mTransform.createParam( 'PeerThrough', 'ParamBoolean' );
         this.setPeerThrough( false );
+
+        mGuaranteedParam = mTransform.createParam( 'Guaranteed', 'ParamBoolean' );
+        this.setGuaranteed( false );
 
         if ( AssociateWithTransform )
         {
@@ -201,6 +206,15 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         {
             mTransform.parent = Value;
         }
+    }
+
+    this.setGuaranteed = function( Value )
+    {
+        mGuaranteedParam.value = Value;
+    }
+    this.getGuaranteed = function()
+    {
+        return mGuaranteedParam.value;
     }
 
     this.destroy = function( Game )
@@ -536,6 +550,8 @@ function CubeMaterial( Game )
     var mDebugSolidColorParam = null;
     var mDebugSpaceColorParam = null;
 
+    var mShowGuaranteedParam = null;
+
     this.init = function(Game)
     {
         mMaterial = Game.mPack.createObject('Material');
@@ -599,6 +615,9 @@ function CubeMaterial( Game )
         mDebugSolidColorParam.value = [ 0.8, 1.0, 0.8, 1.0 ]; // move to puzzle file?
         mDebugSpaceColorParam = mMaterial.getParam('DebugSpaceColor');
         mDebugSpaceColorParam.value = [ 1.0, 0.8, 0.8, 1.0 ]; // move to puzzle file?
+
+        mShowGuaranteedParam = mMaterial.getParam('ShowGuaranteed');
+        mShowGuaranteedParam.value = false;
     }
 
     this.getMaterial = function()
@@ -704,5 +723,17 @@ function CubeMaterial( Game )
         mDebugSpaceColorParam.value = Value;
     }
 
+    this.setShowGuaranteed = function( Value )
+    {
+        mShowGuaranteedParam.value = Value;
+    }
+    this.getShowGuaranteed = function()
+    {
+        return mShowGuaranteedParam.value;
+    }
+    this.toggleShowGuaranteed = function()
+    {
+        this.setShowGuaranteed(!this.getShowGuaranteed());
+    }
     this.init(Game);
 }

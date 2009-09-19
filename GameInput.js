@@ -85,6 +85,11 @@ function GameInput()
             Game.toggleDebug();
             return true;
         }
+        if ( KeyCode == 71 )
+        {
+            Game.mPuzzle.toggleShowGuaranteed();
+            return true;
+        }
         if ( KeyCode == 69 )
         {
             Game.toggleEditMode();
@@ -93,6 +98,7 @@ function GameInput()
         if ( KeyCode == 90 )
         {
             Game.mPuzzle.breakZeroRows( Game );
+            return true;
         }
 
         Game.mIngameOverlay.update( Game );
