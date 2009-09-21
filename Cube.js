@@ -1,4 +1,5 @@
 var gTransformToCube = []; // associate a transform with a cube
+var gShapeTemplateMaterial = null;
 var gShapeTemplate = null;
 
 function Cube( Game, setCubeInfo, AssociateWithTransform )
@@ -8,6 +9,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     var mRows = null;
 
     var mTransform = null;
+    var mFaceTransforms = null;
 
     var mIgnoreColorModifiersParam = null;
 
@@ -30,12 +32,23 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     {
         if ( gShapeTemplate == null )
         {
-            gShapeTemplate = new CubeShape( Game );
+            gShapeTemplateMaterial = new CubeMaterial( Game );
+            gShapeTemplate = [];
+            for( var travFaces = 0; travFaces < 6; travFaces ++ )
+            {
+                gShapeTemplate[ travFaces ] = new CubeShape( Game, travFaces );
+            }
         }
 
         // Create a new transform and parent the Shape under it.
         mTransform = Game.mPack.createObject('Transform');
-        mTransform.addShape(gShapeTemplate.getShape());
+        mFaceTransforms = [];
+        for( travFaces = 0; travFaces < 6 ; travFaces ++ )
+        {
+            mFaceTransforms[ travFaces ] = Game.mPack.createObject('Transform');
+            mFaceTransforms[ travFaces ].addShape(gShapeTemplate[ travFaces ].getShape());
+            mFaceTransforms[ travFaces ].parent = mTransform;
+        }
 
         mIgnoreColorModifiersParam = mTransform.createParam( 'IgnoreColorModifiers', 'ParamBoolean' );
         this.setIgnoreColorModifiers( false );
@@ -78,12 +91,12 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.setNumbersTexture = function( Value )
     {
-        gShapeTemplate.getMaterial().setNumbersTexture( Value );
+        gShapeTemplateMaterial.setNumbersTexture( Value );
     }
 
     this.setSymbolsTexture = function( Value )
     {
-        gShapeTemplate.getMaterial().setSymbolsTexture( Value );
+        gShapeTemplateMaterial.setSymbolsTexture( Value );
     }
 
     this.setRows = function( setRows )
@@ -246,7 +259,7 @@ function CubeInfo( )
     }
 }
 
-function CubeShape( Game )
+function CubeShape( Game, FaceIndex )
 {
     var mShape = null;
     var mMaterial = null;
@@ -254,10 +267,10 @@ function CubeShape( Game )
     var mDrawElement = null;
     var mStreamBank = null;
 
-    this.init = function( Game )
+    this.init = function( Game, FaceIndex )
     {
         mShape = Game.mPack.createObject('Shape');
-        mMaterial = new CubeMaterial( Game );
+        mMaterial = gShapeTemplateMaterial;
 
         mPrimitive = Game.mPack.createObject('Primitive');
         mPrimitive.owner = mShape;
@@ -267,157 +280,149 @@ function CubeShape( Game )
         mDrawElement = mPrimitive.createDrawElement(Game.mPack, null);
 
         mPrimitive.primitiveType = Game.mO3d.Primitive.TRIANGLELIST;
-        mPrimitive.numberPrimitives = 12;
+        mPrimitive.numberPrimitives = 2;
 
         mStreamBank = Game.mPack.createObject('StreamBank');
 
-        mPrimitive.numberVertices = 24;
-        mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game ), 0);
-        mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game ), 0);
-        mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game ), 0 );
-        mPrimitive.indexBuffer = this.getIndicesBuffer( Game );
+        mPrimitive.numberVertices = 4;
+        mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game, FaceIndex ), 0);
+        mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game, FaceIndex ), 0);
+        mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game, FaceIndex ), 0 );
+        mPrimitive.indexBuffer = this.getIndicesBuffer( Game, FaceIndex );
 
         mPrimitive.streamBank = mStreamBank;
     }
 
-    this.getVerticesArray = function( Game )
+    this.getVerticesArray = function( Game, FaceIndex )
     {
         var VerticesBuffer = Game.mPack.createObject('VertexBuffer');
         var VertexArray = VerticesBuffer.createField('FloatField', 3);
+
+                switch( FaceIndex )
+        {
+            case 0:
         VerticesBuffer.set([
                 1, 1, 1,
                 0, 1, 1,
                 0, 0, 1,
-                1, 0, 1
-                ,
+                1, 0, 1 ] );
+                break;
+            case 1:
+        VerticesBuffer.set([
                 0, 1, 1,
                 1, 1, 1,
                 1, 1, 0,
-                0, 1, 0
-                ,
+                0, 1, 0 ] );
+                break;
+            case 2:
+        VerticesBuffer.set([
                 0, 1, 0,
                 1, 1, 0,
                 1, 0, 0,
-                0, 0, 0
-                ,
+                0, 0, 0 ] );
+                break;
+            case 3:
+        VerticesBuffer.set([
                 0, 0, 0,
                 1, 0, 0,
                 1, 0, 1,
-                0, 0, 1
-                ,
+                0, 0, 1 ] );
+                break;
+            case 4:
+        VerticesBuffer.set([
                 1, 1, 0,
                 1, 1, 1,
                 1, 0, 1,
-                1, 0, 0
-                ,
+                1, 0, 0 ] );
+                break;
+            case 5:
+        VerticesBuffer.set([
                 0, 1, 1,
                 0, 1, 0,
                 0, 0, 0,
                 0, 0, 1
                  ]);
+                break;
+        }
 
         return VertexArray;
     }
 
-    this.getIndicesBuffer = function( Game )
+    this.getIndicesBuffer = function( Game, FaceIndex )
     {
         var IndicesBuffer = Game.mPack.createObject('IndexBuffer');
+
         IndicesBuffer.set([
             0, 1, 2,
-            0, 2, 3
-            ,
-            4, 5, 6,
-            4, 6, 7
-            ,
-            8, 9, 10,
-            8, 10, 11
-            ,
-            12, 13, 14,
-            12, 14, 15
-            ,
-            16, 17, 18,
-            16, 18, 19
-            ,
-            20, 21, 22,
-            20, 22, 23
-        ]);
+            0, 2, 3 ] );
+
         return IndicesBuffer;
     }
 
-    this.getTexCoordBuffer = function( Game )
+    this.getTexCoordBuffer = function( Game, FaceIndex )
     {
         var texCoordsBuffer = Game.mPack.createObject('VertexBuffer');
         var texCoordsField = texCoordsBuffer.createField('FloatField', 2);
+
         texCoordsBuffer.set([
             0, 0,
             1, 0,
             1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-        ]);
+            0, 1 ] );
         return texCoordsField;
     }
 
-    this.getNormalsBuffer = function( Game )
+    this.getNormalsBuffer = function( Game, FaceIndex )
     {
         var NormalsBuffer = Game.mPack.createObject('VertexBuffer');
         var NormalsField = NormalsBuffer.createField('FloatField', 3);
-        
+
+        switch ( FaceIndex )
+        {
+            case 0:
+                NormalsBuffer.set( [
+                    0, 0, 1,
+                    0, 0, 1,
+                    0, 0, 1,
+                    0, 0, 1 ] );
+                break;
+            case 1:
         NormalsBuffer.set( [
-            0, 0, 1,
-            0, 0, 1,
-            0, 0, 1,
-            0, 0, 1
-            ,
             0, 1, 0,
             0, 1, 0,
             0, 1, 0,
-            0, 1, 0
-            ,
+            0, 1, 0 ] );
+                break;
+            case 2:
+        NormalsBuffer.set( [
             0, 0, -1,
             0, 0, -1,
             0, 0, -1,
-            0, 0, -1
-            ,
+            0, 0, -1 ] );
+                break;
+            case 3:
+        NormalsBuffer.set( [
             0, -1, 0,
             0, -1, 0,
             0, -1, 0,
-            0, -1, 0
-            ,
+            0, -1, 0 ] );
+                break;
+            case 4:
+        NormalsBuffer.set( [
             1, 0, 0,
             1, 0, 0,
             1, 0, 0,
-            1, 0, 0
-            ,
+            1, 0, 0 ] );
+                break;
+            case 5:
+        NormalsBuffer.set( [
             -1, 0, 0,
             -1, 0, 0,
             -1, 0, 0,
             -1, 0, 0
         ] );
+                break;
+        }
         return NormalsField;
     }
 
@@ -431,7 +436,7 @@ function CubeShape( Game )
         return mMaterial;
     }
 
-    this.init( Game );
+    this.init( Game, FaceIndex );
 }
 
 function RowInfo( setRowDefinition, setDimension )

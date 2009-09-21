@@ -429,7 +429,8 @@ function Puzzle(Game, setInfo )
 
     this.toggleShowGuaranteed = function()
     {
-        gShapeTemplate.getMaterial().toggleShowGuaranteed();
+        if ( gShapeTemplateMaterial )
+            gShapeTemplateMaterial.toggleShowGuaranteed();
     }
 
     this.showBlockFace = function( Game, Puzzle, Location )
@@ -678,7 +679,7 @@ function Puzzle(Game, setInfo )
         this.travBlocks( Game, this.setEditModeBlock, PassParams );
         if ( Value )
         {
-            gShapeTemplate.getMaterial().setEditMode( true );
+            gShapeTemplateMaterial.setEditMode( true );
             document.getElementById("EditModePuzzleTitle").value = this.getTitle();
             document.getElementById("EditModeAllowedFails").value = this.getAllowedFails();
             document.getElementById("EditModeBackgroundColor").value = ComponentToWebColor( this.getBackgroundColor() );
@@ -686,7 +687,7 @@ function Puzzle(Game, setInfo )
             this.hidePeeringArrow( false );
         } else
         {
-            gShapeTemplate.getMaterial().setEditMode( false );
+            gShapeTemplateMaterial.setEditMode( false );
             this.setTitle( document.getElementById("EditModePuzzleTitle").value );
             this.setAllowedFails( parseInt( document.getElementById("EditModeAllowedFails").value ) );
             this.setBackgroundColor( WebColorToComponent( document.getElementById("EditModeBackgroundColor").value ) );
@@ -1022,9 +1023,9 @@ function Puzzle(Game, setInfo )
 
     this.setDebug = function( Value )
     {
-        if ( gShapeTemplate != null )
+        if ( gShapeTemplateMaterial != null )
         {
-            gShapeTemplate.getMaterial().setDebug( Value );
+            gShapeTemplateMaterial.setDebug( Value );
         }
     }
 
