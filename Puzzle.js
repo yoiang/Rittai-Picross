@@ -5,10 +5,9 @@ function Puzzle(Game, setInfo )
     var mSolidBlocks = 0;
     var mSpaceBlocks = 0;
     var mRemainingFails = 0;
-    
+
     var mBlocks = null;
 
-    var mTransform = null;
     var mHiddenTransform = null;
     var mTreeInfo = null;
 
@@ -17,22 +16,22 @@ function Puzzle(Game, setInfo )
     var mPeeringDirection = null;
     var mPeeringTrav = -1;
 
+    var mOctTree = null;
+
     this.init = function(Game)
     {
         Game.mCamera.centerOnPuzzle( Game, this, true );
-        mTransform = Game.mPack.createObject('Transform');
-        mTransform.parent = Game.mClient.root;
 
         mHiddenTransform = Game.mPack.createObject('Transform');
         mHiddenTransform.parent = Game.mClient.root;
 
-        mBlocks = [];
+        mOctTree = new OctTreeNode( Game, Game.mClient.root, [ 0, 0, 0 ], this.getDimensions() );
 
         BlocksDefinition = mInfo.mBlockDefinition;
-
+        mBlocks = [];
         this.travBlocks( Game, this.addBlockFromTrav, BlocksDefinition );
 
-        mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
+        mTreeInfo = o3djs.picking.createTransformInfo( mOctTree.getTransform(), null);
         mTreeInfo.update();
 
         this.showFaces( Game );
@@ -54,8 +53,7 @@ function Puzzle(Game, setInfo )
         }
 
         setCubeInfo.mPuzzle = this;
-        setCubeInfo.mParentTransform = mTransform;
-        this.setBlock( setCubeInfo.mPuzzleLocation, new Cube(Game, setCubeInfo, true ) );
+        this.setBlock( Game, setCubeInfo.mPuzzleLocation, new Cube(Game, setCubeInfo, true ) );
     }
 
     this.addBlockFromTrav = function( Game, Puzzle, Location, ExtraParams )
@@ -106,7 +104,7 @@ function Puzzle(Game, setInfo )
             SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ][ SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ].length ] = 0;
         }
     }
-   
+
     this.setRowOnBlock = function( Game, Puzzle, Location, ExtraParams )
     {
         var SolidCountX = ExtraParams[ 0 ];
@@ -171,7 +169,7 @@ function Puzzle(Game, setInfo )
             }
         }
     }
-    
+
     this.guaranteeZeroRow = function( UnguaranteedLoc, Dimension )
     {
         var RowLocation = dupArray( UnguaranteedLoc );
@@ -218,7 +216,7 @@ function Puzzle(Game, setInfo )
         }
         return SolidSets;
     }
- 
+
     // perhaps add a passive and aggressive guaranteeing, if passive isn't complete do agressive, skip Dimension == RowNumber in passive, etc etc
     this.attemptGuaranteeAdjacentRow = function( UnguaranteedLoc, Dimension, RowNumber )
     {
@@ -265,7 +263,7 @@ function Puzzle(Game, setInfo )
         }
         return ShowFaces;
     }
-    
+
     this.attemptGuaranteeRow = function( UnguaranteedLoc, Dimension )
     {
         var ShowFaces = false;
@@ -288,7 +286,7 @@ function Puzzle(Game, setInfo )
                 // for now always show more complex rows
                 ShowFaces = true;
             }
-            
+
         }
 
         return ShowFaces;
@@ -339,7 +337,7 @@ function Puzzle(Game, setInfo )
                 }
             }
         }
-        
+
         var travX = StartFromLoc[0];
         var travY = StartFromLoc[1];
         var travZ = StartFromLoc[2];
@@ -398,7 +396,7 @@ function Puzzle(Game, setInfo )
             {
                 NoImprovement = false;
             }
-            
+
             UnguaranteedLoc = this.findUnguaranteedCubeLoc( UnguaranteedLoc );
             if ( UnguaranteedLoc == null && NoImprovement == false )
             {
@@ -479,7 +477,7 @@ function Puzzle(Game, setInfo )
             {
                 travLocation[ Dimension ] = travRow;
                 Set = this.getBlock(travLocation);
-                
+
                 if ( Set != null )
                 {
                     var Dim = Set.getDimNumbers();
@@ -504,7 +502,7 @@ function Puzzle(Game, setInfo )
         {
             var PuzzleLocation = breakMe.getPuzzleLocation();
 
-            this.setBlock( PuzzleLocation, null );
+            this.setBlock( Game, PuzzleLocation, null );
 
             var mRows = breakMe.getRows();
             mRows[ 0 ].setSpaces( mRows[ 0 ].getSpaces() - 1 );
@@ -512,7 +510,7 @@ function Puzzle(Game, setInfo )
             mRows[ 2 ].setSpaces( mRows[ 2 ].getSpaces() - 1 );
 
             this.updateDimmed( Game, PuzzleLocation, mRows );
-            
+
             breakMe.destroy( Game );
 
             mSpaceBlocks--;
@@ -555,11 +553,6 @@ function Puzzle(Game, setInfo )
         {
             Game.setWon( true );
         }
-    }
-
-    this.getTransform = function()
-    {
-        return mTransform;
     }
 
     this.tryPaint = function( Game, Event )
@@ -645,7 +638,7 @@ function Puzzle(Game, setInfo )
                 {
                     ExtraParams[ 1 ] = true;
 
-                    Puzzle.setBlock( Location, null );
+                    Puzzle.setBlock( Game, Location, null );
                     ResetStatus.destroy( Game );
 
                     mSpaceBlocks --;
@@ -671,7 +664,7 @@ function Puzzle(Game, setInfo )
             }
         }
     }
-    
+
     this.setEditMode = function( Game, Value )
     {
         var PassParams = [ Value, false ];
@@ -792,7 +785,7 @@ function Puzzle(Game, setInfo )
         var pickedCube = this.pickCube( Game, Event );
         if ( pickedCube != null )
         {
-            this.setBlock( pickedCube.getPuzzleLocation(), null );
+            this.setBlock( Game, pickedCube.getPuzzleLocation(), null );
             pickedCube.destroy( Game );
 
             mSolidBlocks--;
@@ -958,7 +951,7 @@ function Puzzle(Game, setInfo )
                     {
                         Test.destroy( Game );
                     }
-                    this.setBlock( [travX, travY, travZ], null );
+                    this.setBlock( Game, [travX, travY, travZ], null );
                 }
             }
         }
@@ -972,7 +965,7 @@ function Puzzle(Game, setInfo )
         return mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ];
     }
 
-    this.setBlock = function( PuzzleLocation, Value )
+    this.setBlock = function( Game, PuzzleLocation, Value )
     {
         if ( mBlocks[ PuzzleLocation[ 0 ] ] == undefined )
         {
@@ -983,6 +976,8 @@ function Puzzle(Game, setInfo )
             mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ] = [];
         }
         mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ] = Value;
+
+        mOctTree.set( Game, PuzzleLocation, Value );
     }
 
     this.getInfo = function()
@@ -1074,7 +1069,7 @@ function Puzzle(Game, setInfo )
         if ( Test != null )
         {
             Test.destroy( Game );
-            Puzzle.setBlock( Location, null);
+            Puzzle.setBlock( Game, Location, null);
         }
     }
 
@@ -1268,12 +1263,12 @@ function Puzzle(Game, setInfo )
 
     this.destroy = function( Game )
     {
+        mOctTree.destroy( Game );
         this.travBlocks( Game, this.destroyBlock );
 
         mPeeringArrow.destroy( Game );
 
         destroyTransform( Game, mHiddenTransform );
-        destroyTransform( Game, mTransform );
     }
 
     this.init( Game );
@@ -1287,7 +1282,143 @@ function PuzzleInfo()
 
     this.mDimensions = null;
     this.mBlockDefinition = null;
-    
+
     this.mPaintColor = [ 0, 0, 1, 1 ];
     this.mBackgroundColor = [ 1, 1, 1, 1 ];
+}
+
+function OctTreeNode( Game, ParentTransform, Offset, Dimensions  )
+{
+    var mTransform = null;
+    var mMyBlock = null;
+    var mChildren = null;
+
+    var mOffset = null;
+    var mHalfDimensions = null;
+
+    this.init = function( Game, ParentTransform, setOffset, Dimensions )
+    {
+        mTransform = Game.mPack.createObject('Transform');
+        mTransform.parent = ParentTransform;
+
+        mOffset = setOffset;
+        mHalfDimensions = [ Dimensions[0] / 2.0, Dimensions[1] / 2.0, Dimensions[2] / 2.0 ];
+    }
+
+    this.set = function( Game, Location, AddMe )
+    {
+        if ( AddMe == null )
+        {
+            if ( mChildren == null )
+            {
+                if ( mMyBlock != null )
+                {
+                    mMyBlock.setParentTransform( null );
+                    mMyBlock = null;
+                }
+                return;
+            }
+        }
+
+        if ( mChildren == null )
+        {
+            if ( mMyBlock == null )
+            {
+                mMyBlock = AddMe;
+                mMyBlock.setParentTransform( mTransform );
+                return;
+            }
+            mChildren = [];
+        }
+
+        if ( mMyBlock != null )
+        {
+            var Readd = mMyBlock;
+            mMyBlock = null;
+            this.set( Game, Readd.getPuzzleLocation(), Readd );
+        }
+
+        var Index = [];
+        if ( Location[ 0 ]  < mOffset[ 0 ] + mHalfDimensions[ 0 ] )
+        {
+            Index[ 0 ] = 0;
+        } else
+        {
+            Index[ 0 ] = 1;
+        }
+
+        if ( Location[ 1 ]  < mOffset[ 1 ] + mHalfDimensions[ 1 ] )
+        {
+            Index[ 1 ] = 0;
+        } else
+        {
+            Index[ 1 ] = 1;
+        }
+
+        if ( Location[ 2 ]  < mOffset[ 2 ] + mHalfDimensions[ 2 ] )
+        {
+            Index[ 2 ] = 0;
+        } else
+        {
+            Index[ 2 ] = 1;
+        }
+
+        if ( mChildren[ Index[ 0 ] ] == undefined )
+        {
+           mChildren[ Index[ 0 ] ] = [];
+        }
+        if ( mChildren[ Index[ 0 ] ][ Index[ 1 ] ] == undefined )
+        {
+            mChildren[ Index[ 0 ] ][ Index[ 1 ] ] = [];
+        }
+        if ( mChildren[ Index[ 0 ] ][ Index[ 1 ] ][ Index[ 2 ] ] == undefined )
+        {
+            mChildren[ Index[ 0 ] ][ Index[ 1 ] ][ Index[ 2 ] ] = new OctTreeNode(Game, mTransform,
+                    [ mOffset[ 0 ] + mHalfDimensions[ 0 ] * Index[ 0 ],
+                      mOffset[ 1 ] + mHalfDimensions[ 1 ] * Index[ 1 ],
+                      mOffset[ 2 ] + mHalfDimensions[ 2 ] * Index[ 2 ] ],
+                    mHalfDimensions
+                );
+        }
+        mChildren[ Index[ 0 ] ][ Index[ 1 ] ][ Index[ 2 ] ].set( Game, Location, AddMe );
+    }
+
+    this.getTransform = function()
+    {
+        return mTransform;
+    }
+
+    this.destroy = function( Game )
+    {
+        if ( mMyBlock != null )
+        {
+            mMyBlock.setParentTransform( null );
+            mMyBlock = null;            
+        }
+        if ( mChildren != null )
+        {
+            for( var trav0 = 0; trav0 < mChildren.length; trav0 ++ )
+            {
+                if ( mChildren[ trav0 ] != undefined )
+                {
+                    for( var trav1 = 0; trav1 < mChildren[ trav0 ].length; trav1 ++ )
+                    {
+                        if ( mChildren[ trav0 ][ trav1 ] != undefined )
+                        {
+                            for( var trav2 = 0; trav2 < mChildren[ trav0 ][ trav1 ].length; trav2 ++ )
+                            {
+                                if ( mChildren[ trav0 ][ trav1 ][ trav2 ] != undefined )
+                                {
+                                    mChildren[ trav0 ][ trav1 ][ trav2 ].destroy( Game );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        destroyTransform( mTransform );
+    }
+
+    this.init( Game, ParentTransform, Offset, Dimensions );
 }
