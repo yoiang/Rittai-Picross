@@ -93,7 +93,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
         if ( AssociateWithTransform )
         {
-            gTransformToCube[ gTransformToCube.length ] = [ mTransform, this ];
+            gTransformToCube[ gTransformToCube.length ] = [ mFaceTransforms, this ];
         }
 
         this.setParentTransform( mCubeInfo.mParentTransform );
@@ -289,6 +289,10 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         {
             mCubeInfo.destroy();
             mCubeInfo = null;
+        }
+        for( var travFaces = 0; travFaces < 6; travFaces ++ )
+        {
+            destroyTransform( Game, mFaceTransforms[ travFaces ] );
         }
         destroyTransform( Game, mTransform );
     }

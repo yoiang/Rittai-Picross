@@ -820,9 +820,12 @@ function Puzzle(Game, setInfo )
     {
         for( var travTransformToCube = 0; travTransformToCube < gTransformToCube.length; travTransformToCube ++)
         {
-            if ( gTransformToCube[ travTransformToCube ][ 0 ] == Transform )
+            for ( var travFacesTransforms = 0; travFacesTransforms < 6; travFacesTransforms ++ )
             {
-                return gTransformToCube[ travTransformToCube ][ 1 ];
+                if ( gTransformToCube[ travTransformToCube ][ 0 ][ travFacesTransforms ] == Transform )
+                {
+                    return gTransformToCube[ travTransformToCube ][ 1 ];
+                }
             }
         }
         return null;
@@ -834,7 +837,7 @@ function Puzzle(Game, setInfo )
         if ( PickInfo )
         {
             var Cube = this.findCubeFromTransform( PickInfo.shapeInfo.parent.transform );
-            if ( Game.mDebugOverlay )
+            if ( Cube != null && Game.mDebugOverlay )
             {
                 Game.mDebugOverlay.setPickedCube( Cube );
             }
