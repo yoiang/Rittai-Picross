@@ -99,7 +99,7 @@ function Game( ClientElements )
     this.createPuzzle = function( setPuzzleInfo )
     {
 
-        if ( this.mPuzzle )
+        if ( this.mPuzzle != null )
         {
             this.mPuzzle.destroy( this );
             this.mPuzzle = null;
@@ -413,4 +413,14 @@ function destroyTransform( Game, Transform )
         Transform.parent = null;
         Transform = null;
     }
+}
+
+function dupArray( Original )
+{
+    var Dup = [];
+    for( var trav = 0; trav < Original.length; trav++ )
+    {
+        Dup[ trav ] = Original[ trav ];
+    }
+    return Dup;
 }

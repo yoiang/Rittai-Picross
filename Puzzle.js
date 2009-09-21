@@ -113,19 +113,6 @@ function Puzzle(Game, setInfo )
         var SolidCountY = ExtraParams[ 1 ];
         var SolidCountZ = ExtraParams[ 2 ];
 
-        if ( SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] instanceof Array )
-        {
-            SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ] = new RowInfo( SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ], 0 );
-        }
-        if ( SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] instanceof Array )
-        {
-            SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ] = new RowInfo( SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ], 1 );
-        }
-        if ( SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] instanceof Array )
-        {
-            SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ] = new RowInfo( SolidCountZ[ Location[ 0 ] ][ Location[ 1 ] ], 2 );
-        }
-
         Puzzle.getBlock( Location ).setRows(
             [ SolidCountX[ Location[ 1 ] ][ Location[ 2 ] ],
               SolidCountY[ Location[ 0 ] ][ Location[ 2 ] ],
@@ -139,21 +126,43 @@ function Puzzle(Game, setInfo )
 
     this.setRowInfos = function( Game )
     {
-        if ( mBlocks )
+        var SolidCountX = [];
+        var SolidCountY = [];
+        var SolidCountZ = [];
+        this.travBlocks( Game, this.totalSolidCounts, [ SolidCountX, SolidCountY, SolidCountZ ] );
+
+        for( var trav1 = 0; trav1 < SolidCountX.length; trav1 ++ )
         {
-            var SolidCountX = [];
-            var SolidCountY = [];
-            var SolidCountZ = [];
-            this.travBlocks( Game, this.totalSolidCounts, [ SolidCountX, SolidCountY, SolidCountZ ] );
-            this.travBlocks( Game, this.setRowOnBlock, [ SolidCountX, SolidCountY, SolidCountZ ] );
+            for ( var trav2 = 0; trav2 < SolidCountX[ trav1 ].length; trav2 ++ )
+            {
+                SolidCountX[ trav1 ][ trav2 ] = new RowInfo( SolidCountX[ trav1 ][ trav2 ], 0 );
+            }
         }
+        for( trav1 = 0; trav1 < SolidCountY.length; trav1 ++ )
+        {
+            for ( trav2 = 0; trav2 < SolidCountY[ trav1 ].length; trav2 ++ )
+            {
+                SolidCountY[ trav1 ][ trav2 ] = new RowInfo( SolidCountY[ trav1 ][ trav2 ], 1 );
+            }
+        }
+        for( trav1 = 0; trav1 < SolidCountZ.length; trav1 ++ )
+        {
+            for ( trav2 = 0; trav2 < SolidCountZ[ trav1 ].length; trav2 ++ )
+            {
+                SolidCountZ[ trav1 ][ trav2 ] = new RowInfo( SolidCountZ[ trav1 ][ trav2 ], 2 );
+            }
+        }
+
+        this.travBlocks( Game, this.setRowOnBlock, [ SolidCountX, SolidCountY, SolidCountZ ] );
     }
 
     this.showRowFaces = function( UnguaranteedLoc, Dimension )
     {
+        var RowLocation = dupArray( UnguaranteedLoc );
         for( var trav = 0; trav < this.getDimension( Dimension ); trav ++)
         {
-            var updateCube = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
+            RowLocation[ Dimension ] = trav;
+            var updateCube = this.getBlock( RowLocation );
             var Hide = updateCube.getHideNumbers();
             if ( Hide != null && Hide[ Dimension ] != 0 )
             {
@@ -165,25 +174,29 @@ function Puzzle(Game, setInfo )
     
     this.guaranteeZeroRow = function( UnguaranteedLoc, Dimension )
     {
+        var RowLocation = dupArray( UnguaranteedLoc );
         for( var trav = 0; trav < this.getDimension( Dimension ); trav ++ )
         {
-            getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav, 1 ).setGuaranteed(true);
+            RowLocation[ Dimension ] = trav;
+            this.getBlock( RowLocation ).setGuaranteed(true);
         }
         return true;
     }
 
     this.findPossibleSolidSets = function( Location, Dimension )
     {
+        var RowLocation = dupArray( Location );
         var SolidSets = [];
         var NewSet = true;
-        for( var travBlocks = 0; travBlocks < this.getDimension( Dimension ); travBlocks ++ )
+        for( var travRow = 0; travRow < this.getDimension( Dimension ); travRow ++ )
         {
-            var Block = getByDimIterator3( mBlocks, Location, Dimension, travBlocks );
+            RowLocation[ Dimension ] = travRow;
+            var Block = this.getBlock(RowLocation);
             if ( Block.getSolid() )
             {
                 if ( NewSet )
                 {
-                    SolidSets[ SolidSets.length ] = [ travBlocks, 1 ];
+                    SolidSets[ SolidSets.length ] = [ travRow, 1 ];
                     NewSet = false;
                 } else
                 {
@@ -193,7 +206,7 @@ function Puzzle(Game, setInfo )
             {
                 if ( !NewSet )
                 {
-                    if ( getByDimIterator3( mBlocks, Location, Dimension, travBlocks ).getGuaranteed() )
+                    if ( Block.getGuaranteed() )
                     {
                         NewSet = true;
                     } else
@@ -218,9 +231,11 @@ function Puzzle(Game, setInfo )
                 PossibleSets[ PossibleSets.length ] = SolidSets[ travSolidSets ];
             } else
             {
+                var travLocation = dupArray( UnguaranteedLoc );
                 for( var trav = SolidSets[ travSolidSets ][ 0 ]; trav < SolidSets[ travSolidSets ][ 0 ] + SolidSets[ travSolidSets ][ 1 ]; trav ++ )
                 {
-                    getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav ).setGuaranteed(true);
+                    travLocation[ Dimension ] = trav;
+                    this.getBlock( travLocation ).setGuaranteed(true);
                 }
             }
         }
@@ -237,9 +252,11 @@ function Puzzle(Game, setInfo )
         }
 
         var ShowFaces = false;
+        travLocation = dupArray( UnguaranteedLoc );
         for( trav = PossibleSets[ 0 ][ 0 ] + Skip; trav < PossibleSets[ 0 ][ 0 ] + PossibleSets[ 0 ][ 1 ] - Skip; trav ++ )
         {
-            var Block = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, trav );
+            travLocation[ Dimension ] = trav;
+            var Block = this.getBlock( travLocation );
             if ( Block != null && !Block.getGuaranteed() )
             {
                 Block.setGuaranteed( true );
@@ -252,9 +269,9 @@ function Puzzle(Game, setInfo )
     this.attemptGuaranteeRow = function( UnguaranteedLoc, Dimension )
     {
         var ShowFaces = false;
-        
-        var firstCube = getByDimIterator3( mBlocks, UnguaranteedLoc, Dimension, 0 );
-        var Row = firstCube.getRows()[ Dimension ];
+
+        var ForRow = this.getBlock( UnguaranteedLoc );
+        var Row = ForRow.getRows()[ Dimension ];
 
         var RowNumber = Row.getNumber();
         if ( RowNumber == 0 )
@@ -437,9 +454,11 @@ function Puzzle(Game, setInfo )
             if ( Game.getOnlyDimIfPainted() )
             {
                 Painted = true;
+                var travLocation = dupArray( PuzzleLocation );
                 for( var travRow = 0; travRow < this.getDimension( Dimension ); travRow ++ )
                 {
-                    var Test = getByDimIterator3( mBlocks, PuzzleLocation, Dimension, travRow );
+                    travLocation[ Dimension ] = travRow;
+                    var Test = this.getBlock(travLocation);
 
                     if ( Test != null && !Test.getPainted() && !Test.getFailedBreak() )
                     {
@@ -449,9 +468,11 @@ function Puzzle(Game, setInfo )
                 }
             }
 
+            travLocation = dupArray( PuzzleLocation );
             for( travRow = 0; travRow < this.getDimension( Dimension ); travRow ++ )
             {
-                Set = getByDimIterator3( mBlocks, PuzzleLocation, Dimension, travRow );
+                travLocation[ Dimension ] = travRow;
+                Set = this.getBlock(travLocation);
                 
                 if ( Set != null )
                 {
@@ -473,7 +494,7 @@ function Puzzle(Game, setInfo )
 
     this.breakSpace = function( Game, breakMe, updateTreeInfo )
     {
-        if ( breakMe && mBlocks )
+        if ( breakMe )
         {
             var PuzzleLocation = breakMe.getPuzzleLocation();
 
@@ -762,7 +783,7 @@ function Puzzle(Game, setInfo )
     this.editRemove = function( Game, Event )
     {
         var pickedCube = this.pickCube( Game, Event );
-        if ( pickedCube != null && mBlocks != null)
+        if ( pickedCube != null )
         {
             this.setBlock( pickedCube.getPuzzleLocation(), null );
             pickedCube.destroy( Game );
