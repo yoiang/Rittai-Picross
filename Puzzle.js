@@ -366,9 +366,13 @@ function Puzzle(Game, setInfo )
         var SolidBlocks = ExtraParams[ 0 ];
 
         var Test = Puzzle.getBlock( Location );
-        if ( Test != null && Test.getSolid() )
+        if ( Test != null )
         {
-            SolidBlocks[ SolidBlocks.length ] = Location;
+            Test.setGuaranteed( false );
+            if ( Test.getSolid() )
+            {
+                SolidBlocks[ SolidBlocks.length ] = Location;
+            }
         }
     }
 
@@ -430,7 +434,9 @@ function Puzzle(Game, setInfo )
 
     this.showBlockFace = function( Game, Puzzle, Location )
     {
-        Puzzle.getBlock( Location ).setHideNumbers( [ 0, 0, 0 ] );
+        var showOn = Puzzle.getBlock( Location );
+        showOn.setHideNumbers( [ 0, 0, 0 ] );
+        showOn.setGuaranteed( true );
     }
 
     this.showFaces = function( Game )
