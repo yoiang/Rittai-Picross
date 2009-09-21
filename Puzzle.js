@@ -683,6 +683,7 @@ function Puzzle(Game, setInfo )
             document.getElementById("EditModeAllowedFails").value = this.getAllowedFails();
             document.getElementById("EditModeBackgroundColor").value = ComponentToWebColor( this.getBackgroundColor() );
             document.getElementById("EditModePaintColor").value = ComponentToWebColor( this.getPaintColor() );
+            this.hidePeeringArrow( false );
         } else
         {
             gShapeTemplate.getMaterial().setEditMode( false );
