@@ -248,7 +248,7 @@ function Game( ClientElements )
 
     this.savePuzzle = function()
     {
-        document.getElementById("EditModePuzzleFile").innerHTML = this.mPuzzle.save( this );
+        document.getElementById("EditModePuzzleFile").innerHTML = savePuzzle( this, this.mPuzzle );
     }
 
     this.doRender = function()
