@@ -11,10 +11,10 @@ bool EditMode;
 
 bool PeerThrough;
 
-float3 Numbers;
-float3 DimNumbers;
-float3 HideNumbers;
-float3 SpacesHints;
+float Number;
+bool DimNumber;
+bool HideNumber;
+float SpacesHint;
 
 bool FailedBreak;
 bool Painted;
@@ -59,7 +59,7 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     return output;
 }
 
-float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
+float4 getNumberColor( in float2 TexUV )
 {
     if ( Number < 0 || Number > 9 )
     {
@@ -76,7 +76,7 @@ float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
     return Color;
 }
 
-float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 TexUV )
+float4 getSpacesHintColor( in float2 TexUV )
 {
     float SymbolOffset = -1.0;
     if ( SpacesHint == 1 )
@@ -170,55 +170,12 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     {
         if ( !Finished && !EditMode )
         {
-            float Number = -1;
-            float SpacesHint = 0;
-            bool HideNumber = false;
-            bool DimNumber = false;
-
-            if ( input.normal.x != 0 )
-            {
-                Number = Numbers.x;
-                SpacesHint = SpacesHints.x;
-                if ( HideNumbers.x )
-                {
-                    HideNumber = true;
-                }
-                if ( DimNumbers.x )
-                {
-                    DimNumber = true;
-                }
-            } else if ( input.normal.y != 0 )
-            {
-                Number = Numbers.y;
-                SpacesHint = SpacesHints.y;
-                if ( HideNumbers.y )
-                {
-                    HideNumber = true;
-                }
-                if ( DimNumbers.y )
-                {
-                    DimNumber = true;
-                }
-            } else if ( input.normal.z != 0 )
-            {
-                Number = Numbers.z;
-                SpacesHint = SpacesHints.z;
-                if ( HideNumbers.z )
-                {
-                    HideNumber = true;
-                }
-                if ( DimNumbers.z )
-                {
-                    DimNumber = true;
-                }
-            }
-
             if ( !HideNumber )
             {
-                Color = Color * getNumberColor( Number, DimNumber, input.tex );
+                Color = Color * getNumberColor( input.tex );
                 if ( Color.x == 1 && Color.y == 1 && Color.z == 1 ) // junk so dimming doesn't over dim, fix this
                 {
-                    Color = Color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
+                    Color = Color * getSpacesHintColor( input.tex );
                 }
             }
 
