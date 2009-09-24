@@ -102,19 +102,22 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     }
 
     output.data = float4( 1, 1, 1, 1);
-    if ( Debug )
+    if ( !PeerThrough )
     {
-        output.data = output.data * getDebugColor();
-    }
-    if ( ShowGuaranteed && Guaranteed )
-    {
-        output.data = output.data * float4( 0.8, 0, 0.8, 1 );
-    }
-    if ( !IgnoreColorModifiers && ( Finished || EditMode ) )
-    {
-        output.data = output.data * getFinishedColor( Dimension );
-    }
 
+        if ( Debug )
+        {
+            output.data = output.data * getDebugColor();
+        }
+        if ( ShowGuaranteed && Guaranteed )
+        {
+            output.data = output.data * float4( 0.8, 0, 0.8, 1 );
+        }
+        if ( !IgnoreColorModifiers && ( Finished || EditMode ) )
+        {
+            output.data = output.data * getFinishedColor( Dimension );
+        }
+    }
     output.data.a = Dimension;
 
     return output;
@@ -130,7 +133,7 @@ float4 getNumberColor( in float2 TexUV )
     float2 NumberTexUV = float2( TexUV.x / 10.0 + float(Number) / 10.0, TexUV.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTexUV);
-    if ( Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 && DimNumber ) // junk for blocking overdimming, fix this
+    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0) // junk for blocking overdimming, fix this
     {
         return Color + 0.8;
     }
@@ -152,11 +155,12 @@ float4 getSpacesHintColor( in float2 TexUV )
     }
 
     float2 SymbolTexUV = float2( TexUV.x / 11.0 + SymbolOffset, TexUV.y );
-    if ( DimNumber )
+    float4 Color = tex2D( SymbolTexSampler, SymbolTexUV );
+    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0) // junk for blocking overdimming, fix this
     {
-        return tex2D(SymbolTexSampler, SymbolTexUV ) + 0.8;
+        return Color + 0.8;
     }
-    return tex2D(SymbolTexSampler, SymbolTexUV );
+    return Color;
 }
 
 float4 getBorderColor( in float2 TexUV )
@@ -183,7 +187,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     {
         if ( Color.x == 1 && Color.y == 1 && Color.z == 1 )
         {
-            Color.a = 0.0;
+            Color = 0.0;
         } else
         {
             Color.a = 0.2;
@@ -198,10 +202,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
             if ( !HideNumber )
             {
                 Color = Color * getNumberColor( input.tex );
-                if ( Color.x == 1 && Color.y == 1 && Color.z == 1 ) // junk so dimming doesn't over dim, fix this
-                {
-                    Color = Color * getSpacesHintColor( input.tex );
-                }
+                Color = Color * getSpacesHintColor( input.tex );
             }
 
             if ( Painted || FailedBreak )
