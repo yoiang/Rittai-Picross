@@ -25,8 +25,6 @@ bool Finished;
 float4 FinishedColor;
 
 bool Debug;
-float4 DebugSolidColor;
-float4 DebugSpaceColor;
 
 bool ShowGuaranteed;
 bool Guaranteed;
@@ -46,7 +44,30 @@ struct PixelShaderInput
     float4 position : POSITION;
     float2 tex : TEXCOORD0;
     float3 normal : TEXCOORD1;
+    float4 color : COLOR;
  };
+
+float4 getDebugColor()
+{
+    if ( Solid )
+    {
+        return float4( 0.8, 1.0, 0.8, 1.0 );
+    } else
+    {
+        return float4( 1.0, 0.8, 0.8, 1.0 );
+    }
+}
+
+float4 getGuaranteedColor()
+{
+    if ( Guaranteed )
+    {
+        return float4( 0.8, 0, 0.8, 1.0 );
+    } else
+    {
+        return float4( 1, 1, 1, 1 );
+    }
+}
 
 PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 {
@@ -56,6 +77,23 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 
     output.tex = input.tex;
     output.normal = input.normal;
+
+    float4 Color = float4( 1, 1, 1, 1 );
+
+    if ( !PeerThrough )
+    {
+        if ( Debug )
+        {
+            Color = Color * getDebugColor();
+        }
+
+        if ( ShowGuaranteed )
+        {
+            Color = Color * getGuaranteedColor();
+        }
+    }
+    output.color = Color;
+
     return output;
 }
 
@@ -69,7 +107,7 @@ float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
     float2 NumberTexUV = float2( TexUV.x / 10.0 + float(Number) / 10.0, TexUV.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTexUV);
-    if ( Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 && DimNumber ) // junk for blocking overdimming, fix this
+    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 ) // junk for blocking overdimming, fix this
     {
         return Color + 0.8;
     }
@@ -91,11 +129,12 @@ float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 Tex
     }
 
     float2 SymbolTexUV = float2( TexUV.x / 11.0 + SymbolOffset, TexUV.y );
-    if ( DimNumber )
+    float4 Color = tex2D(SymbolTexSampler, SymbolTexUV );
+    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 ) // junk for blocking overdimming, fix this
     {
-        return tex2D(SymbolTexSampler, SymbolTexUV ) + 0.8;
+        return Color + 0.8;
     }
-    return tex2D(SymbolTexSampler, SymbolTexUV );
+    return Color;
 }
 
 float4 getBorderColor( in float2 TexUV )
@@ -119,7 +158,7 @@ float4 getFinishedColor( in float3 Normal )
     } else if ( Normal.y != 0 )
     {
         Diffuse = 0.9;
-    } else if ( Normal.z != 0 )
+    } else
     {
         Diffuse = 0.8;
     }
@@ -132,39 +171,29 @@ float4 getFinishedColor( in float3 Normal )
     return Color;
 }
 
-float4 getDebugColor()
-{
-    if ( Solid )
-    {
-        return DebugSolidColor;
-    } else
-    {
-        return DebugSpaceColor;
-    }
-}
-
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
-    float4 Color;
+    float4 BorderColor;
     if ( !IgnoreColorModifiers && ( !Finished || EditMode ) || IgnoreColorModifiers )
     {
-        Color = getBorderColor( input.tex );
+        BorderColor = getBorderColor( input.tex );
     } else
     {
-        Color = float4( 1, 1, 1, 1 );
+        BorderColor = float4( 1.0, 1.0, 1.0, 1.0 );
     }
 
     if ( PeerThrough )
     {
-        if ( Color.x == 1 && Color.y == 1 && Color.z == 1 )
+        if ( BorderColor.x == 1 && BorderColor.y == 1 && BorderColor.z == 1 )
         {
-            Color.a = 0.0;
+            BorderColor.a = 0.0;
         } else
         {
-            Color.a = 0.2;
+            BorderColor.a = 0.2;
         }
-        return Color;
+        return BorderColor;
     }
+    input.color = input.color * BorderColor;
 
     if ( !IgnoreColorModifiers )
     {
@@ -199,7 +228,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
                 {
                     DimNumber = true;
                 }
-            } else if ( input.normal.z != 0 )
+            } else
             {
                 Number = Numbers.z;
                 SpacesHint = SpacesHints.z;
@@ -215,37 +244,24 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
 
             if ( !HideNumber )
             {
-                Color = Color * getNumberColor( Number, DimNumber, input.tex );
-                if ( Color.x == 1 && Color.y == 1 && Color.z == 1 ) // junk so dimming doesn't over dim, fix this
-                {
-                    Color = Color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
-                }
+                input.color = input.color * getNumberColor( Number, DimNumber, input.tex );
+                input.color = input.color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
             }
 
             if ( Painted || FailedBreak )
             {
-                Color = Color * PaintedColor;
+                input.color = input.color * PaintedColor;
             }
         } else
         {
-            Color = Color * getFinishedColor( input.normal );
+            input.color = input.color * getFinishedColor( input.normal );
         }
     }
 
     if ( FailedBreak )
     {
-        Color = Color * getFailedBreakColor( input.tex );
+        input.color = input.color * getFailedBreakColor( input.tex );
     }
 
-    if ( Debug )
-    {
-        Color = Color * getDebugColor();
-    }
-
-    if ( ShowGuaranteed && Guaranteed )
-    {
-        Color = Color * float4( 0.8, 0, 0.8, 1 );
-    }
-
-    return Color;
+    return input.color;
 }

@@ -547,8 +547,6 @@ function CubeMaterial( Game )
     var mSymbolTexSampler = null;
 
     var mPaintedColorParam = null;
-    var mDebugSolidColorParam = null;
-    var mDebugSpaceColorParam = null;
 
     var mShowGuaranteedParam = null;
 
@@ -610,11 +608,7 @@ function CubeMaterial( Game )
         mSymbolTexSampler.texture = gSymbolTexture;
 
         mPaintedColorParam = mMaterial.getParam('PaintedColor');
-        mPaintedColorParam.value = [ 0.0, 0.0, 1.0, 1.0 ]; // move to puzzle file
-        mDebugSolidColorParam = mMaterial.getParam('DebugSolidColor');
-        mDebugSolidColorParam.value = [ 0.8, 1.0, 0.8, 1.0 ]; // move to puzzle file?
-        mDebugSpaceColorParam = mMaterial.getParam('DebugSpaceColor');
-        mDebugSpaceColorParam.value = [ 1.0, 0.8, 0.8, 1.0 ]; // move to puzzle file?
+        mPaintedColorParam.value = [ 0.0, 0.0, 1.0, 1.0 ];
 
         mShowGuaranteedParam = mMaterial.getParam('ShowGuaranteed');
         mShowGuaranteedParam.value = false;
@@ -713,14 +707,6 @@ function CubeMaterial( Game )
     this.setPaintedColor = function( Value )
     {
         mPaintedColorParam.value = Value;
-    }
-    this.setDebugSolidColor = function( Value )
-    {
-        mDebugSolidColorParam.value = Value;
-    }
-    this.setDebugSpaceColor = function( Value )
-    {
-        mDebugSpaceColorParam.value = Value;
     }
 
     this.setShowGuaranteed = function( Value )
