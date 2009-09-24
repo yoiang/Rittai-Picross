@@ -45,8 +45,41 @@ struct PixelShaderInput
 {
     float4 position : POSITION;
     float2 tex : TEXCOORD0;
-    float3 normal : TEXCOORD1;
+    float4 data : TEXCOORD1;
  };
+
+float4 getFinishedColor( in int Dimension )
+{
+    float Diffuse = 1.0;
+    if ( Dimension == 0 )
+    {
+        Diffuse = 1.0;
+    } else if ( Dimension == 1 )
+    {
+        Diffuse = 0.9;
+    } else if ( Dimension == 2 )
+    {
+        Diffuse = 0.8;
+    }
+
+    float4 Color;
+    Color.x = FinishedColor.x * Diffuse;
+    Color.y = FinishedColor.y * Diffuse;
+    Color.z = FinishedColor.z * Diffuse;
+    Color.a = FinishedColor.a;
+    return Color;
+}
+
+float4 getDebugColor()
+{
+    if ( Solid )
+    {
+        return DebugSolidColor;
+    } else
+    {
+        return DebugSpaceColor;
+    }
+}
 
 PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 {
@@ -55,7 +88,35 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     output.position = mul(input.position, worldViewProjection);
 
     output.tex = input.tex;
-    output.normal = input.normal;
+
+    int Dimension;
+    if ( input.normal.x != 0 )
+    {
+        Dimension = 0;
+    } else if ( input.normal.y != 0 )
+    {
+        Dimension = 1;
+    } else
+    {
+        Dimension = 2;
+    }
+
+    output.data = float4( 1, 1, 1, 1);
+    if ( Debug )
+    {
+        output.data = output.data * getDebugColor();
+    }
+    if ( ShowGuaranteed && Guaranteed )
+    {
+        output.data = output.data * float4( 0.8, 0, 0.8, 1 );
+    }
+    if ( !IgnoreColorModifiers && ( Finished || EditMode ) )
+    {
+        output.data = output.data * getFinishedColor( Dimension );
+    }
+
+    output.data.a = Dimension;
+
     return output;
 }
 
@@ -110,48 +171,12 @@ float4 getFailedBreakColor( in float2 TexUV )
     return tex2D(SymbolTexSampler, BorderTex );
 }
 
-float4 getFinishedColor( in float3 Normal )
-{
-    float Diffuse = 1.0;
-    if ( Normal.x != 0 )
-    {
-        Diffuse = 1.0;
-    } else if ( Normal.y != 0 )
-    {
-        Diffuse = 0.9;
-    } else if ( Normal.z != 0 )
-    {
-        Diffuse = 0.8;
-    }
-
-    float4 Color;
-    Color.x = FinishedColor.x * Diffuse;
-    Color.y = FinishedColor.y * Diffuse;
-    Color.z = FinishedColor.z * Diffuse;
-    Color.a = FinishedColor.a;
-    return Color;
-}
-
-float4 getDebugColor()
-{
-    if ( Solid )
-    {
-        return DebugSolidColor;
-    } else
-    {
-        return DebugSpaceColor;
-    }
-}
-
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
-    float4 Color;
+    float4 Color = float4( input.data.xyz, 1.0 );
     if ( !IgnoreColorModifiers && ( !Finished || EditMode ) || IgnoreColorModifiers )
     {
-        Color = getBorderColor( input.tex );
-    } else
-    {
-        Color = float4( 1, 1, 1, 1 );
+        Color = Color * getBorderColor( input.tex );
     }
 
     if ( PeerThrough )
@@ -183,25 +208,12 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
             {
                 Color = Color * PaintedColor;
             }
-        } else
-        {
-            Color = Color * getFinishedColor( input.normal );
         }
     }
 
     if ( FailedBreak )
     {
         Color = Color * getFailedBreakColor( input.tex );
-    }
-
-    if ( Debug )
-    {
-        Color = Color * getDebugColor();
-    }
-
-    if ( ShowGuaranteed && Guaranteed )
-    {
-        Color = Color * float4( 0.8, 0, 0.8, 1 );
     }
 
     return Color;
