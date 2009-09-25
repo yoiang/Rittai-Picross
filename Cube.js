@@ -8,6 +8,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     var mRows = null;
 
     var mTransform = null;
+    var mParentTransform = null;
 
     var mIgnoreColorModifiersParam = null;
 
@@ -72,6 +73,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         }
 
         this.setParentTransform( mCubeInfo.mParentTransform );
+        this.attachToParentTransform( true );
 
         mTransform.localMatrix = o3djs.math.matrix4.mul(mTransform.localMatrix, o3djs.math.matrix4.translation( mCubeInfo.mPuzzleLocation ));
     };
@@ -202,9 +204,22 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.setParentTransform = function( Value )
     {
-        if ( mTransform != null )
+        mParentTransform = Value;
+    }
+
+    this.getParentTransform = function()
+    {
+        return mParentTransform;
+    }
+
+    this.attachToParentTransform = function( Value )
+    {
+        if ( Value )
         {
-            mTransform.parent = Value;
+            mTransform.parent = mParentTransform;
+        } else
+        {
+            mTransform.parent = null;
         }
     }
 
@@ -219,6 +234,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.destroy = function( Game )
     {
+        mParentTransform = null;
         if ( mCubeInfo != null )
         {
             mCubeInfo.destroy();

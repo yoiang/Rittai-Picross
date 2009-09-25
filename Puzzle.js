@@ -31,6 +31,7 @@ function Puzzle(Game, setInfo )
         BlocksDefinition = mInfo.mBlockDefinition;
 
         this.travBlocks( Game, this.addBlockFromTrav, BlocksDefinition );
+        this.travBlocks( Game, this.detachNonvisibleBlockFromTrav );
 
         mTreeInfo = o3djs.picking.createTransformInfo(mTransform, null);
         mTreeInfo.update();
@@ -61,6 +62,59 @@ function Puzzle(Game, setInfo )
     this.addBlockFromTrav = function( Game, Puzzle, Location, ExtraParams )
     {
         Puzzle.addBlock( Game, ExtraParams[ Location[0] ][ Location[1] ][ Location[2] ] );
+    }
+    
+    this.isBlockVisible = function( Block )
+    {
+        if ( Block == null )
+        {
+            return false;
+        }
+        if ( Block.getParentTransform() == mHiddenTransform )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    this.detachNonvisibleBlock = function( Detach )
+    {
+        if ( Detach == null )
+        {
+            return;
+        }
+        var Location = Detach.getPuzzleLocation();
+        if ( !this.isBlockVisible( this.getBlock( [ Location[ 0 ] - 1, Location[ 1 ], Location[ 2 ] ] ) ) )
+        {
+            return;
+        }
+        if ( !this.isBlockVisible( this.getBlock( [ Location[ 0 ] + 1, Location[ 1 ], Location[ 2 ] ] ) ) )
+        {
+            return;
+        }
+        if ( !this.isBlockVisible( this.getBlock( [ Location[ 0 ], Location[ 1 ] - 1, Location[ 2 ] ] ) ) )
+        {
+            return;
+        }
+        if ( !this.isBlockVisible( this.getBlock( [ Location[ 0 ], Location[ 1 ] + 1, Location[ 2 ] ] ) ) )
+        {
+            return;
+        }
+        if ( !this.isBlockVisible( this.getBlock( [ Location[ 0 ], Location[ 1 ], Location[ 2 ] - 1 ] ) ) )
+        {
+            return;
+        }
+        if ( !this.isBlockVisible( this.getBlock( [ Location[ 0 ], Location[ 1 ], Location[ 2 ] + 1 ] ) ) )
+        {
+            return;
+        }
+
+        Detach.attachToParentTransform( false );
+    }
+
+    this.detachNonvisibleBlockFromTrav = function( Game, Puzzle, Location, ExtraParams )
+    {
+        Puzzle.detachNonvisibleBlock( Puzzle.getBlock( Location ) );
     }
 
     this.totalSolidCounts = function( Game, Puzzle, Location, ExtraParams )
@@ -498,6 +552,21 @@ function Puzzle(Game, setInfo )
         }
     }
 
+    this.setBlockVisible = function( Block, Value )
+    {
+        if ( !this.isBlockVisible( Block ) )
+        {
+            return;
+        }
+        if ( Value )
+        {
+            Block.attachToParentTransform( true );
+        } else
+        {
+            this.detachNonvisibleBlock( Block );
+        }
+    }
+
     this.breakSpace = function( Game, breakMe, updateTreeInfo )
     {
         if ( breakMe )
@@ -505,6 +574,13 @@ function Puzzle(Game, setInfo )
             var PuzzleLocation = breakMe.getPuzzleLocation();
 
             this.setBlock( PuzzleLocation, null );
+
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ] - 1, PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ] + 1, PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ] - 1, PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ] + 1, PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] - 1 ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] + 1 ] ), true );
 
             var mRows = breakMe.getRows();
             mRows[ 0 ].setSpaces( mRows[ 0 ].getSpaces() - 1 );
@@ -560,6 +636,11 @@ function Puzzle(Game, setInfo )
     this.getTransform = function()
     {
         return mTransform;
+    }
+
+    this.getTransformInfo = function()
+    {
+        return mTreeInfo;
     }
 
     this.tryPaint = function( Game, Event )
@@ -699,6 +780,7 @@ function Puzzle(Game, setInfo )
         mPeeringTrav = -1;
         if ( PassParams[ 1 ] )
         {
+            this.travBlocks( Game, this.detachNonvisibleBlockFromTrav );
             mTreeInfo.update();
         }
     }
@@ -782,6 +864,13 @@ function Puzzle(Game, setInfo )
 
             this.addBlock( Game, Info );
 
+            this.setBlockVisible( this.getBlock( [ addLoc[ 0 ] - 1, addLoc[ 1 ], addLoc[ 2 ] ] ), false );
+            this.setBlockVisible( this.getBlock( [ addLoc[ 0 ] + 1, addLoc[ 1 ], addLoc[ 2 ] ] ), false );
+            this.setBlockVisible( this.getBlock( [ addLoc[ 0 ], addLoc[ 1 ] - 1, addLoc[ 2 ] ] ), false );
+            this.setBlockVisible( this.getBlock( [ addLoc[ 0 ], addLoc[ 1 ] + 1, addLoc[ 2 ] ] ), false );
+            this.setBlockVisible( this.getBlock( [ addLoc[ 0 ], addLoc[ 1 ], addLoc[ 2 ] - 1 ] ), false );
+            this.setBlockVisible( this.getBlock( [ addLoc[ 0 ], addLoc[ 1 ], addLoc[ 2 ] + 1 ] ), false );
+
             mTreeInfo.update();
             Game.doRender();
         }
@@ -792,8 +881,16 @@ function Puzzle(Game, setInfo )
         var pickedCube = this.pickCube( Game, Event );
         if ( pickedCube != null )
         {
-            this.setBlock( pickedCube.getPuzzleLocation(), null );
+            var PuzzleLocation = pickedCube.getPuzzleLocation();
+            this.setBlock( PuzzleLocation, null );
             pickedCube.destroy( Game );
+
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ] - 1, PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ] + 1, PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ] - 1, PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ] + 1, PuzzleLocation[ 2 ] ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] - 1 ] ), true );
+            this.setBlockVisible( this.getBlock( [ PuzzleLocation[ 0 ], PuzzleLocation[ 1 ], PuzzleLocation[ 2 ] + 1 ] ), true );
 
             mSolidBlocks--;
 
@@ -969,6 +1066,12 @@ function Puzzle(Game, setInfo )
 
     this.getBlock = function( PuzzleLocation )
     {
+        if ( PuzzleLocation[ 0 ] < 0 || PuzzleLocation[ 0 ] >= this.getDimension( 0 ) ||
+             PuzzleLocation[ 1 ] < 0 || PuzzleLocation[ 1 ] >= this.getDimension( 1 ) ||
+             PuzzleLocation[ 2 ] < 0 || PuzzleLocation[ 2 ] >= this.getDimension( 2 ) )
+        {
+            return null;
+        }
         return mBlocks[ PuzzleLocation[ 0 ] ][ PuzzleLocation[ 1 ] ][ PuzzleLocation[ 2 ] ];
     }
 
@@ -1148,6 +1251,22 @@ function Puzzle(Game, setInfo )
                         {
                             this.hideBlock( HideBlock, Hide );
 
+                            MakeVisibleLoc = dupArray( Location );
+                            if ( mPeeringDirection == 1 )
+                            {
+                                MakeVisibleLoc[ mPeeringDimension ] = mPeeringTrav + 1;
+                            } else
+                            {
+                                MakeVisibleLoc[ mPeeringDimension ] = this.getDimension( mPeeringDimension ) - 1 - (mPeeringTrav + 1);
+                            }
+                            if ( Hide )
+                            {
+                                this.setBlockVisible( this.getBlock( MakeVisibleLoc ), true );
+                            } else
+                            {
+                                this.setBlockVisible( this.getBlock( MakeVisibleLoc ), false );
+                            }
+
                             UpdateTree = true;
                         }
                     }
@@ -1174,10 +1293,12 @@ function Puzzle(Game, setInfo )
         {
             Block.setPeerThrough( true );
             Block.setParentTransform( mHiddenTransform );
+            Block.attachToParentTransform( true );
         } else
         {
             Block.setPeerThrough( false );
             Block.setParentTransform( mTransform );
+            Block.attachToParentTransform( true );
         }
     }
 
