@@ -198,11 +198,15 @@ function Game( ClientElements )
             document.getElementById("Subtitle").innerHTML = "Edit Mode";
 
             var ControlsString = "<table class=\"Controls\">\n";
-            ControlsString += generateControlEntry( "Drag Mouse", "Rotate puzzle" );
+            ControlsString += generateControlEntry( "Click and Drag Mouse", "Rotate puzzle" );
             ControlsString += generateControlEntry( "Hold W, Click Mouse", "Add block" );
             ControlsString += generateControlEntry( "Hold X, Click Mouse", "Remove block" );
+            ControlsString += generateControlEntry( "Click Arrow and Drag Mouse", "Peer into puzzle" );
+            ControlsString += "<br/>";
             ControlsString += generateControlEntry( "Press S", "Save puzzle to textarea" );
             ControlsString += generateControlEntry( "Press E", "Toggle Edit Mode" );
+            ControlsString += generateControlEntry( "Press D", "Toggle Debug Mode" );
+            ControlsString += generateControlEntry( "Press G", "Toggle Show Guaranteed" );
             ControlsString += "</table>";
             document.getElementById("ControlsBody").innerHTML = ControlsString;
 
@@ -229,11 +233,15 @@ function Game( ClientElements )
             }
 
             ControlsString = "<table class=\"Controls\">\n";
-            ControlsString += generateControlEntry( "Drag Mouse", "Rotate puzzle" );
+            ControlsString += generateControlEntry( "Click and Drag Mouse", "Rotate puzzle" );
             ControlsString += generateControlEntry( "Hold W, Click Mouse", "<span class=\"bold\">PAINT</span> block" );
             ControlsString += generateControlEntry( "Hold X, Click Mouse", "<span class=\"bold\">BREAK</span> block" );
+            ControlsString += generateControlEntry( "Click Arrow and Drag Mouse", "Peer into puzzle" );
             ControlsString += generateControlEntry( "Press Z", "<span class=\"bold\">BREAK</span> all blocks with a 0 face" );
+            ControlsString += "<br/>";
             ControlsString += generateControlEntry( "Press E", "Toggle Edit Mode" );
+            ControlsString += generateControlEntry( "Press D", "Toggle Debug Mode" );
+            ControlsString += generateControlEntry( "Press G", "Toggle Show Guaranteed" );
             ControlsString += "</table>";
             document.getElementById("ControlsBody").innerHTML = ControlsString;
 
