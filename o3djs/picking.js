@@ -379,6 +379,8 @@ o3djs.picking.TransformInfo = function(transform, parent) {
    */
   this.parent = parent;
   this.boundingBox = null;
+
+  this.transformCount = 1;
 };
 
 /**
@@ -396,6 +398,7 @@ o3djs.picking.TransformInfo.prototype.getBoundingBox = function() {
 o3djs.picking.TransformInfo.prototype.update = function() {
   var newChildTransformInfos = {};
   var newShapeInfos = {};
+  this.transformCount = 1;
   var children = this.transform.children;
   for (var c = 0; c < children.length; c++) {
     var child = children[c];
@@ -406,7 +409,7 @@ o3djs.picking.TransformInfo.prototype.update = function() {
       // clear the boundingBox so we'll regenerate it.
       transformInfo.boundingBox = null;
     }
-    transformInfo.update();
+    this.transformCount = this.transformCount + transformInfo.update();
     newChildTransformInfos[child.clientId] = transformInfo;
   }
   var shapes = this.transform.shapes;
@@ -457,6 +460,7 @@ o3djs.picking.TransformInfo.prototype.update = function() {
   }
 
   this.boundingBox = boundingBox;
+  return this.transformCount;
 };
 
 /**

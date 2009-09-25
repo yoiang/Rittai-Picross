@@ -64,6 +64,7 @@ function DebugOverlay( Game )
                 this.drawText('Peering', 10, Y += 13, this.mCanvasPaint);
                 this.drawText('Arrow Grabbed: ' + PeeringArrow.getGrabbed(), 20, Y += 13);
                 this.drawText('Peering - Dimension: ' + Game.mPuzzle.getPeeringDimension() + '   Direction: ' + Game.mPuzzle.getPeeringDirection() + '   Trav: ' + Game.mPuzzle.getPeeringTrav(), 20, Y += 13 );
+                this.drawText('Attached Transforms: ' + Game.mPuzzle.getTransformInfo().transformCount, 20, Y += 13 );
             }
 
             if ( mPickedCubePuzzleLocation != null )
@@ -96,4 +97,15 @@ function DebugOverlay( Game )
     }
     
     this.init( Game );
+}
+
+function getTransformCount( Start )
+{
+    var Count = 1;
+    for (var key in Start.childTransformInfos)
+    {
+        var transformInfo = Start.childTransformInfos[key];
+        Count = Count + getTransformCount( transformInfo );
+    }
+    return Count;
 }
