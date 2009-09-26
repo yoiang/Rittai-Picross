@@ -43,19 +43,20 @@ struct PixelShaderInput
 {
     float4 position : POSITION;
     float2 tex : TEXCOORD0;
+    float3 normal : TEXCOORD1;
     float4 color : COLOR;
  };
 
-float4 getFinishedColor( in int Dimension )
+float4 getFinishedColor( in float3 Normal )
 {
     float Diffuse = 1.0;
-    if ( Dimension == 0 )
+    if ( Normal.x != 0 )
     {
         Diffuse = 1.0;
-    } else if ( Dimension == 1 )
+    } else if ( Normal.y != 0 )
     {
         Diffuse = 0.9;
-    } else if ( Dimension == 2 )
+    } else if ( Normal.z != 0 )
     {
         Diffuse = 0.8;
     }
@@ -66,17 +67,6 @@ float4 getFinishedColor( in int Dimension )
     Color.z = FinishedColor.z * Diffuse;
     Color.a = FinishedColor.a;
     return Color;
-}
-
-float4 getGuaranteedColor()
-{
-    if ( Guaranteed )
-    {
-        return float4( 0.8, 0, 0.8, 1 );
-    } else
-    {
-        return float4( 1.0, 1.0, 1.0, 1.0 );
-    }
 }
 
 float4 getDebugColor()
@@ -90,6 +80,17 @@ float4 getDebugColor()
     }
 }
 
+float4 getGuaranteedColor()
+{
+    if ( Guaranteed )
+    {
+        return float4( 0.8, 0, 0.8, 1 );
+    } else
+    {
+        return float4( 1.0, 1.0, 1.0, 1.0 );
+    }
+}
+
 PixelShaderInput vertexShaderFunction(VertexShaderInput input)
 {
     PixelShaderInput output;
@@ -97,18 +98,7 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     output.position = mul(input.position, worldViewProjection);
 
     output.tex = input.tex;
-
-    int Dimension;
-    if ( input.normal.x != 0 )
-    {
-        Dimension = 0;
-    } else if ( input.normal.y != 0 )
-    {
-        Dimension = 1;
-    } else
-    {
-        Dimension = 2;
-    }
+    output.normal = input.normal;
 
     output.color = float4( 1, 1, 1, 1);
     if ( !PeerThrough )
@@ -123,10 +113,9 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
         }
         if ( !IgnoreColorModifiers && ( Finished || EditMode ) )
         {
-            output.color = output.color * getFinishedColor( Dimension );
+            output.color = output.color * getFinishedColor( input.normal );
         }
     }
-    output.color.a = Dimension;
 
     return output;
 }
@@ -141,7 +130,7 @@ float4 getNumberColor( in float2 TexUV )
     float2 NumberTexUV = float2( TexUV.x / 10.0 + float(Number) / 10.0, TexUV.y );
 
     float4 Color = tex2D(NumberTexSampler, NumberTexUV);
-    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0) // junk for blocking overdimming, fix this
+    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 ) // junk for blocking overdimming, fix this
     {
         return Color + 0.8;
     }
@@ -163,8 +152,8 @@ float4 getSpacesHintColor( in float2 TexUV )
     }
 
     float2 SymbolTexUV = float2( TexUV.x / 11.0 + SymbolOffset, TexUV.y );
-    float4 Color = tex2D( SymbolTexSampler, SymbolTexUV );
-    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0) // junk for blocking overdimming, fix this
+    float4 Color = tex2D(SymbolTexSampler, SymbolTexUV );
+    if ( DimNumber && Color.x < 1.0 && Color.y < 1.0 && Color.z < 1.0 ) // junk for blocking overdimming, fix this
     {
         return Color + 0.8;
     }
@@ -185,7 +174,6 @@ float4 getFailedBreakColor( in float2 TexUV )
 
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
-    input.color.a = 1.0;
     if ( !IgnoreColorModifiers && ( !Finished || EditMode ) || IgnoreColorModifiers )
     {
         input.color = input.color * getBorderColor( input.tex );
@@ -195,7 +183,7 @@ float4 pixelShaderFunction(PixelShaderInput input): COLOR
     {
         if ( input.color.x == 1 && input.color.y == 1 && input.color.z == 1 )
         {
-            input.color.a = 0.0;
+            return float4( 0, 0, 0, 0 );
         } else
         {
             input.color.a = 0.2;
