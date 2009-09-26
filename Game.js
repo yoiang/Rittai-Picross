@@ -54,9 +54,9 @@ function Game( ClientElements )
             this.mCamera.getViewInfo().clearBuffer.clearColor = [0.5, 0.5, 1, 1];
             this.mPuzzle.unhideAllBlocks();
             this.mPuzzle.hidePeeringArrow( true );
-            if ( gShapeTemplate )
+            if ( gShapeTemplateMaterial )
             {
-                gShapeTemplate.getMaterial().setFinished( true );
+                gShapeTemplateMaterial.setFinished( true );
             }
         }
     }
@@ -90,9 +90,9 @@ function Game( ClientElements )
             this.mCamera.getViewInfo().clearBuffer.clearColor = [1, 1, 1, 1];
         }
 
-        if ( gShapeTemplate )
+        if ( gShapeTemplateMaterial )
         {
-            gShapeTemplate.getMaterial().setFinished( false );
+            gShapeTemplateMaterial.setFinished( false );
         }
     }
 

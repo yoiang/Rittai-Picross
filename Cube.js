@@ -1,4 +1,5 @@
 var gTransformToCube = []; // associate a transform with a cube
+var gShapeTemplateMaterial = null;
 var gShapeTemplate = null;
 
 function Cube( Game, setCubeInfo, AssociateWithTransform )
@@ -9,6 +10,7 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     var mTransform = null;
     var mParentTransform = null;
+    var mFaceTransforms = null;
 
     var mIgnoreColorModifiersParam = null;
 
@@ -31,45 +33,68 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
     {
         if ( gShapeTemplate == null )
         {
-            gShapeTemplate = new CubeShape( Game );
+            gShapeTemplateMaterial = new CubeMaterial( Game );
+            gShapeTemplate = [];
+            for( var travFaces = 0; travFaces < 6; travFaces ++ )
+            {
+                gShapeTemplate[ travFaces ] = new CubeShape( Game, travFaces );
+            }
         }
 
         // Create a new transform and parent the Shape under it.
         mTransform = Game.mPack.createObject('Transform');
-        mTransform.addShape(gShapeTemplate.getShape());
+        mFaceTransforms = [];
+        mIgnoreColorModifiersParam = [];
+        mNumbersParam = [];
+        mHideNumbersParam = [];
+        mSpacesHintsParam = [];
+        mDimNumbersParam = [];
+        mSolidParam = [];
+        mFailedBreakParam = [];
+        mPaintedParam = [];
+        mFinishedColorParam = [];
+        mPeerThroughParam = [];
+        mGuaranteedParam = [];
+        for( travFaces = 0; travFaces < 6 ; travFaces ++ )
+        {
+            mFaceTransforms[ travFaces ] = Game.mPack.createObject('Transform');
+            mFaceTransforms[ travFaces ].addShape(gShapeTemplate[ travFaces ].getShape());
+            mFaceTransforms[ travFaces ].parent = mTransform;
 
-        mIgnoreColorModifiersParam = mTransform.createParam( 'IgnoreColorModifiers', 'ParamBoolean' );
+            mIgnoreColorModifiersParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam( 'IgnoreColorModifiers', 'ParamBoolean' );
+
+            mNumbersParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('Number', 'ParamFloat');
+            mHideNumbersParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('HideNumber', 'ParamBoolean');
+            mSpacesHintsParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('SpacesHint', 'ParamFloat');
+
+            mDimNumbersParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('DimNumber', 'ParamBoolean');
+
+            mSolidParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('Solid', 'ParamBoolean');
+            mFailedBreakParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('FailedBreak', 'ParamBoolean');
+            mPaintedParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('Painted', 'ParamBoolean');
+
+            mFinishedColorParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam('FinishedColor', 'ParamFloat4' );
+
+            mPeerThroughParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam( 'PeerThrough', 'ParamBoolean' );
+
+            mGuaranteedParam[ travFaces ] = mFaceTransforms[ travFaces ].createParam( 'Guaranteed', 'ParamBoolean' );
+        }
+
         this.setIgnoreColorModifiers( false );
-
-        mNumbersParam = mTransform.createParam('Numbers', 'ParamFloat3');
         this.setNumbers( -1, -1, -1 );
-        mHideNumbersParam = mTransform.createParam('HideNumbers', 'ParamFloat3');
         this.setHideNumbers( [ 1, 1, 1 ] );
-        mSpacesHintsParam = mTransform.createParam('SpacesHints', 'ParamFloat3');
         this.setSpacesHints( 0, 0, 0 );
-
-        mDimNumbersParam = mTransform.createParam('DimNumbers', 'ParamFloat3');
         this.setDimNumbers( [ 0, 0, 0 ] );
-
-        mSolidParam = mTransform.createParam('Solid', 'ParamBoolean');
         this.setSolid( mCubeInfo.mSolid );
-        mFailedBreakParam = mTransform.createParam('FailedBreak', 'ParamBoolean');
         this.setFailedBreak( false );
-        mPaintedParam = mTransform.createParam('Painted', 'ParamBoolean');
         this.setPainted( false );
-
-        mFinishedColorParam = mTransform.createParam('FinishedColor', 'ParamFloat4' );
         this.setFinishedColor( mCubeInfo.mFinishedColor );
-
-        mPeerThroughParam = mTransform.createParam( 'PeerThrough', 'ParamBoolean' );
         this.setPeerThrough( false );
-
-        mGuaranteedParam = mTransform.createParam( 'Guaranteed', 'ParamBoolean' );
         this.setGuaranteed( false );
 
         if ( AssociateWithTransform )
         {
-            gTransformToCube[ gTransformToCube.length ] = [ mTransform, this ];
+            gTransformToCube[ gTransformToCube.length ] = [ mFaceTransforms, this ];
         }
 
         this.setParentTransform( mCubeInfo.mParentTransform );
@@ -80,12 +105,12 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.setNumbersTexture = function( Value )
     {
-        gShapeTemplate.getMaterial().setNumbersTexture( Value );
+        gShapeTemplateMaterial.setNumbersTexture( Value );
     }
 
     this.setSymbolsTexture = function( Value )
     {
-        gShapeTemplate.getMaterial().setSymbolsTexture( Value );
+        gShapeTemplateMaterial.setSymbolsTexture( Value );
     }
 
     this.setRows = function( setRows )
@@ -102,63 +127,92 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.setIgnoreColorModifiers = function( Value )
     {
-        mIgnoreColorModifiersParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mIgnoreColorModifiersParam[ travFaces ].value = Value;
+        }
     }
 
     this.getIgnoreColorModifiers = function()
     {
-        return mIgnoreColorModifiersParam.value;
+        return mIgnoreColorModifiersParam[ 0 ].value;
     }
 
     this.setNumbers = function( X, Y, Z )
     {
-        mNumbersParam.value = [ X, Y, Z ];
+        mNumbersParam[ 4 ].value = X;
+        mNumbersParam[ 5 ].value = X;
+        mNumbersParam[ 1 ].value = Y;
+        mNumbersParam[ 3 ].value = Y;
+        mNumbersParam[ 0 ].value = Z;
+        mNumbersParam[ 2 ].value = Z;
     }
     this.getNumbers = function()
     {
-        return mNumbersParam.value;
+        return [ mNumbersParam[ 4 ].value, mNumbersParam[ 1 ].value, mNumbersParam[ 0 ].value ];
     }
     this.setHideNumbers = function( Value )
     {
-        mHideNumbersParam.value = Value;
+        mHideNumbersParam[ 4 ].value = Value[ 0 ] == 1;
+        mHideNumbersParam[ 5 ].value = Value[ 0 ] == 1;
+        mHideNumbersParam[ 1 ].value = Value[ 1 ] == 1;
+        mHideNumbersParam[ 3 ].value = Value[ 1 ] == 1;
+        mHideNumbersParam[ 0 ].value = Value[ 2 ] == 1;
+        mHideNumbersParam[ 2 ].value = Value[ 2 ] == 1;
     }
     this.getHideNumbers = function()
     {
-        return mHideNumbersParam.value;
+        return [ mHideNumbersParam[ 4 ].value?1:0, mHideNumbersParam[ 1 ].value?1:0, mHideNumbersParam[ 0 ].value?1:0 ];
     }
     this.setSpacesHints = function( X, Y, Z )
     {
-        mSpacesHintsParam.value = [ X, Y, Z ];
+        mSpacesHintsParam[ 4 ].value = X;
+        mSpacesHintsParam[ 5 ].value = X;
+        mSpacesHintsParam[ 1 ].value = Y;
+        mSpacesHintsParam[ 3 ].value = Y;
+        mSpacesHintsParam[ 0 ].value = Z;
+        mSpacesHintsParam[ 2 ].value = Z;
     }
     this.getSpacesHints = function()
     {
-        return mSpacesHintsParam.value;
+        return [ mSpacesHintsParam[ 4 ].value, mSpacesHintsParam[ 1 ].value, mSpacesHintsParam[ 0 ].value ];
     }
 
     this.setDimNumbers = function( Value )
     {
-        mDimNumbersParam.value = Value;
+        mDimNumbersParam[ 4 ].value = Value[ 0 ] == 1;
+        mDimNumbersParam[ 5 ].value = Value[ 0 ] == 1;
+        mDimNumbersParam[ 1 ].value = Value[ 1 ] == 1;
+        mDimNumbersParam[ 3 ].value = Value[ 1 ] == 1;
+        mDimNumbersParam[ 0 ].value = Value[ 2 ] == 1;
+        mDimNumbersParam[ 2 ].value = Value[ 2 ] == 1;
     }
     this.getDimNumbers = function()
     {
-        return mDimNumbersParam.value;
+        return [ mDimNumbersParam[ 4 ].value?1:0, mDimNumbersParam[ 1 ].value?1:0, mDimNumbersParam[ 0 ].value?1:0 ];
     }
     this.setFailedBreak = function( Value)
     {
-        mFailedBreakParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mFailedBreakParam[ travFaces ].value = Value;
+        }
     }
     this.getFailedBreak = function()
     {
-        return mFailedBreakParam.value;
+        return mFailedBreakParam[ 0 ].value;
     }
     
-    this.getSolid = function()
-    {
-        return mSolidParam.value;
-    }
     this.setSolid = function( Value )
     {
-        mSolidParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mSolidParam[ travFaces ].value = Value;
+        }
+    }
+    this.getSolid = function()
+    {
+        return mSolidParam[ 0 ].value;
     }
 
     this.togglePainted = function( )
@@ -166,18 +220,24 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         this.setPainted( !this.getPainted() );
     }
 
-    this.getPainted = function()
-    {
-        return mPaintedParam.value;
-    }
     this.setPainted = function( Value )
     {
-        mPaintedParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mPaintedParam[ travFaces ].value = Value;
+        }
+    }
+    this.getPainted = function()
+    {
+        return mPaintedParam[ 0 ].value;
     }
 
     this.setFinishedColor = function( Value )
     {
-        mFinishedColorParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mFinishedColorParam[ travFaces ].value = Value;
+        }
     }
 
     this.getInfo = function()
@@ -199,7 +259,10 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.setPeerThrough = function( Value )
     {
-        mPeerThroughParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mPeerThroughParam[ travFaces ].value = Value;
+        }
     }
 
     this.setParentTransform = function( Value )
@@ -225,11 +288,14 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
 
     this.setGuaranteed = function( Value )
     {
-        mGuaranteedParam.value = Value;
+        for( var travFaces = 0; travFaces < 6; travFaces ++)
+        {
+            mGuaranteedParam[ travFaces ].value = Value;
+        }
     }
     this.getGuaranteed = function()
     {
-        return mGuaranteedParam.value;
+        return mGuaranteedParam[ 0 ].value;
     }
 
     this.destroy = function( Game )
@@ -239,6 +305,10 @@ function Cube( Game, setCubeInfo, AssociateWithTransform )
         {
             mCubeInfo.destroy();
             mCubeInfo = null;
+        }
+        for( var travFaces = 0; travFaces < 6; travFaces ++ )
+        {
+            destroyTransform( Game, mFaceTransforms[ travFaces ] );
         }
         destroyTransform( Game, mTransform );
     }
@@ -262,7 +332,7 @@ function CubeInfo( )
     }
 }
 
-function CubeShape( Game )
+function CubeShape( Game, FaceIndex )
 {
     var mShape = null;
     var mMaterial = null;
@@ -270,10 +340,10 @@ function CubeShape( Game )
     var mDrawElement = null;
     var mStreamBank = null;
 
-    this.init = function( Game )
+    this.init = function( Game, FaceIndex )
     {
         mShape = Game.mPack.createObject('Shape');
-        mMaterial = new CubeMaterial( Game );
+        mMaterial = gShapeTemplateMaterial;
 
         mPrimitive = Game.mPack.createObject('Primitive');
         mPrimitive.owner = mShape;
@@ -283,157 +353,149 @@ function CubeShape( Game )
         mDrawElement = mPrimitive.createDrawElement(Game.mPack, null);
 
         mPrimitive.primitiveType = Game.mO3d.Primitive.TRIANGLELIST;
-        mPrimitive.numberPrimitives = 12;
+        mPrimitive.numberPrimitives = 2;
 
         mStreamBank = Game.mPack.createObject('StreamBank');
 
-        mPrimitive.numberVertices = 24;
-        mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game ), 0);
-        mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game ), 0);
-        mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game ), 0 );
-        mPrimitive.indexBuffer = this.getIndicesBuffer( Game );
+        mPrimitive.numberVertices = 4;
+        mStreamBank.setVertexStream( Game.mO3d.Stream.POSITION, 0, this.getVerticesArray( Game, FaceIndex ), 0);
+        mStreamBank.setVertexStream( Game.mO3d.Stream.TEXCOORD, 0, this.getTexCoordBuffer( Game, FaceIndex ), 0);
+        mStreamBank.setVertexStream( Game.mO3d.Stream.NORMAL, 0, this.getNormalsBuffer( Game, FaceIndex ), 0 );
+        mPrimitive.indexBuffer = this.getIndicesBuffer( Game, FaceIndex );
 
         mPrimitive.streamBank = mStreamBank;
     }
 
-    this.getVerticesArray = function( Game )
+    this.getVerticesArray = function( Game, FaceIndex )
     {
         var VerticesBuffer = Game.mPack.createObject('VertexBuffer');
         var VertexArray = VerticesBuffer.createField('FloatField', 3);
+
+                switch( FaceIndex )
+        {
+            case 0:
         VerticesBuffer.set([
                 1, 1, 1,
                 0, 1, 1,
                 0, 0, 1,
-                1, 0, 1
-                ,
+                1, 0, 1 ] );
+                break;
+            case 1:
+        VerticesBuffer.set([
                 0, 1, 1,
                 1, 1, 1,
                 1, 1, 0,
-                0, 1, 0
-                ,
+                0, 1, 0 ] );
+                break;
+            case 2:
+        VerticesBuffer.set([
                 0, 1, 0,
                 1, 1, 0,
                 1, 0, 0,
-                0, 0, 0
-                ,
+                0, 0, 0 ] );
+                break;
+            case 3:
+        VerticesBuffer.set([
                 0, 0, 0,
                 1, 0, 0,
                 1, 0, 1,
-                0, 0, 1
-                ,
+                0, 0, 1 ] );
+                break;
+            case 4:
+        VerticesBuffer.set([
                 1, 1, 0,
                 1, 1, 1,
                 1, 0, 1,
-                1, 0, 0
-                ,
+                1, 0, 0 ] );
+                break;
+            case 5:
+        VerticesBuffer.set([
                 0, 1, 1,
                 0, 1, 0,
                 0, 0, 0,
                 0, 0, 1
                  ]);
+                break;
+        }
 
         return VertexArray;
     }
 
-    this.getIndicesBuffer = function( Game )
+    this.getIndicesBuffer = function( Game, FaceIndex )
     {
         var IndicesBuffer = Game.mPack.createObject('IndexBuffer');
+
         IndicesBuffer.set([
             0, 1, 2,
-            0, 2, 3
-            ,
-            4, 5, 6,
-            4, 6, 7
-            ,
-            8, 9, 10,
-            8, 10, 11
-            ,
-            12, 13, 14,
-            12, 14, 15
-            ,
-            16, 17, 18,
-            16, 18, 19
-            ,
-            20, 21, 22,
-            20, 22, 23
-        ]);
+            0, 2, 3 ] );
+
         return IndicesBuffer;
     }
 
-    this.getTexCoordBuffer = function( Game )
+    this.getTexCoordBuffer = function( Game, FaceIndex )
     {
         var texCoordsBuffer = Game.mPack.createObject('VertexBuffer');
         var texCoordsField = texCoordsBuffer.createField('FloatField', 2);
+
         texCoordsBuffer.set([
             0, 0,
             1, 0,
             1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-            ,
-            0, 0,
-            1, 0,
-            1, 1,
-            0, 1
-        ]);
+            0, 1 ] );
         return texCoordsField;
     }
 
-    this.getNormalsBuffer = function( Game )
+    this.getNormalsBuffer = function( Game, FaceIndex )
     {
         var NormalsBuffer = Game.mPack.createObject('VertexBuffer');
         var NormalsField = NormalsBuffer.createField('FloatField', 3);
-        
+
+        switch ( FaceIndex )
+        {
+            case 0:
+                NormalsBuffer.set( [
+                    0, 0, 1,
+                    0, 0, 1,
+                    0, 0, 1,
+                    0, 0, 1 ] );
+                break;
+            case 1:
         NormalsBuffer.set( [
-            0, 0, 1,
-            0, 0, 1,
-            0, 0, 1,
-            0, 0, 1
-            ,
             0, 1, 0,
             0, 1, 0,
             0, 1, 0,
-            0, 1, 0
-            ,
+            0, 1, 0 ] );
+                break;
+            case 2:
+        NormalsBuffer.set( [
             0, 0, -1,
             0, 0, -1,
             0, 0, -1,
-            0, 0, -1
-            ,
+            0, 0, -1 ] );
+                break;
+            case 3:
+        NormalsBuffer.set( [
             0, -1, 0,
             0, -1, 0,
             0, -1, 0,
-            0, -1, 0
-            ,
+            0, -1, 0 ] );
+                break;
+            case 4:
+        NormalsBuffer.set( [
             1, 0, 0,
             1, 0, 0,
             1, 0, 0,
-            1, 0, 0
-            ,
+            1, 0, 0 ] );
+                break;
+            case 5:
+        NormalsBuffer.set( [
             -1, 0, 0,
             -1, 0, 0,
             -1, 0, 0,
             -1, 0, 0
         ] );
+                break;
+        }
         return NormalsField;
     }
 
@@ -447,7 +509,7 @@ function CubeShape( Game )
         return mMaterial;
     }
 
-    this.init( Game );
+    this.init( Game, FaceIndex );
 }
 
 function RowInfo( setRowDefinition, setDimension )
@@ -544,20 +606,9 @@ function CubeMaterial( Game )
 
     var mEditModeParam = null;
 
-    var mNumbersParam = null;
-    var mSpacesHintsParam = null;
-
-    var mDimNumbersParam = null;
-    var mHideNumbersParam = null;
-
-    var mFailedBreakParam = null;
-    var mPaintedParam = null;
-
-    var mSolidParam = null;
     var mDebugParam = null;
     
     var mFinishedParam = null;
-    var mFinishedColorParam = null;
 
     var mNumberTexSampler = null;
     var mSymbolTexSampler = null;
@@ -581,31 +632,11 @@ function CubeMaterial( Game )
         mEditModeParam = mMaterial.getParam('EditMode');
         mEditModeParam.value = false;
 
-        mNumbersParam = mMaterial.getParam('Numbers');
-        mNumbersParam.value = [ -1, -1, -1 ];
-        mSpacesHintsParam = mMaterial.getParam('SpacesHints');
-        mSpacesHintsParam.value = [ 0, 0, 0 ];
-
-        mDimNumbersParam = mMaterial.getParam('DimNumbers');
-        mDimNumbersParam.value = [ 0, 0, 0 ];
-
-        mHideNumbersParam = mMaterial.getParam('HideNumbers');
-        mHideNumbersParam.value = [ 0, 0, 0 ];
-
-        mFailedBreakParam = mMaterial.getParam('FailedBreak');
-        mFailedBreakParam.value = false;
-        mPaintedParam = mMaterial.getParam('Painted');
-        mPaintedParam.value = false;
-
-        mSolidParam = mMaterial.getParam('Solid');
-        mSolidParam.value = false;
         mDebugParam = mMaterial.getParam('Debug');
         mDebugParam.value = false;
 
         mFinishedParam = mMaterial.getParam('Finished');
         mFinishedParam.value = false;
-        mFinishedColorParam = mMaterial.getParam('FinishedColor');
-        mFinishedColorParam.value = [ 0, 0, 0, 1 ];
 
         var NumberSamplerParam = mMaterial.getParam('NumberTexSampler');
         mNumberTexSampler = Game.mPack.createObject('Sampler');
@@ -624,7 +655,7 @@ function CubeMaterial( Game )
         mSymbolTexSampler.texture = gSymbolTexture;
 
         mPaintedColorParam = mMaterial.getParam('PaintedColor');
-        mPaintedColorParam.value = [ 0.0, 0.0, 1.0, 1.0 ];
+        mPaintedColorParam.value = [ 0.0, 0.0, 1.0, 1.0 ]; // move to puzzle file
 
         mShowGuaranteedParam = mMaterial.getParam('ShowGuaranteed');
         mShowGuaranteedParam.value = false;
@@ -640,46 +671,12 @@ function CubeMaterial( Game )
         mEditModeParam.value = Value;
     }
 
-    this.setNumbers = function( Value )
-    {
-        mNumbersParam.value = Value;
-    }
-    this.setSpacesHints = function( Value )
-    {
-        mSpacesHintsParam.value = Value;
-    }
-
-    this.setDimNumbers = function( Value )
-    {
-        mDimNumbersParam.value = Value;
-    }
-
-    this.setHideNumbers = function( Value )
-    {
-        mHideNumbersParam.value = Value;
-    }
-
-    this.setFailedBreak = function( Value )
-    {
-        mFailedBreakParam.value = Value;
-    }
-    this.setPainted = function( Value )
-    {
-        mPaintedParam.value = Value;
-    }
-    this.getPainted = function()
-    {
-        return mPaintedParam.value;
-    }
     this.togglePainted = function()
     {
         this.setPainted( !this.getPainted() );
     }
 
-    this.setSolid = function( Value )
-    {
-        mSolidParam.value = Value;
-    }
+
     this.setDebug = function( Value )
     {
         mDebugParam.value = Value;
@@ -700,15 +697,6 @@ function CubeMaterial( Game )
     this.getFinished = function()
     {
         return mFinishedParam.value;
-    }
-
-    this.setFinishedColor = function( Value )
-    {
-        mFinishedColorParam.value = Value;
-    }
-    this.getFinishedColor = function()
-    {
-        return mFinishedColorParam.value;
     }
 
     this.setNumbersTexture = function( Value )

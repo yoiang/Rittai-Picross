@@ -11,10 +11,10 @@ bool EditMode;
 
 bool PeerThrough;
 
-float3 Numbers;
-float3 DimNumbers;
-float3 HideNumbers;
-float3 SpacesHints;
+float Number;
+bool DimNumber;
+bool HideNumber;
+float SpacesHint;
 
 bool FailedBreak;
 bool Painted;
@@ -47,6 +47,28 @@ struct PixelShaderInput
     float4 color : COLOR;
  };
 
+float4 getFinishedColor( in float3 Normal )
+{
+    float Diffuse = 1.0;
+    if ( Normal.x != 0 )
+    {
+        Diffuse = 1.0;
+    } else if ( Normal.y != 0 )
+    {
+        Diffuse = 0.9;
+    } else if ( Normal.z != 0 )
+    {
+        Diffuse = 0.8;
+    }
+
+    float4 Color;
+    Color.x = FinishedColor.x * Diffuse;
+    Color.y = FinishedColor.y * Diffuse;
+    Color.z = FinishedColor.z * Diffuse;
+    Color.a = FinishedColor.a;
+    return Color;
+}
+
 float4 getDebugColor()
 {
     if ( Solid )
@@ -62,10 +84,10 @@ float4 getGuaranteedColor()
 {
     if ( Guaranteed )
     {
-        return float4( 0.8, 0, 0.8, 1.0 );
+        return float4( 0.8, 0, 0.8, 1 );
     } else
     {
-        return float4( 1, 1, 1, 1 );
+        return float4( 1.0, 1.0, 1.0, 1.0 );
     }
 }
 
@@ -78,26 +100,27 @@ PixelShaderInput vertexShaderFunction(VertexShaderInput input)
     output.tex = input.tex;
     output.normal = input.normal;
 
-    float4 Color = float4( 1, 1, 1, 1 );
-
+    output.color = float4( 1, 1, 1, 1);
     if ( !PeerThrough )
     {
         if ( Debug )
         {
-            Color = Color * getDebugColor();
+            output.color = output.color * getDebugColor();
         }
-
         if ( ShowGuaranteed )
         {
-            Color = Color * getGuaranteedColor();
+            output.color = output.color * getGuaranteedColor();
+        }
+        if ( !IgnoreColorModifiers && ( Finished || EditMode ) )
+        {
+            output.color = output.color * getFinishedColor( input.normal );
         }
     }
-    output.color = Color;
 
     return output;
 }
 
-float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
+float4 getNumberColor( in float2 TexUV )
 {
     if ( Number < 0 || Number > 9 )
     {
@@ -114,7 +137,7 @@ float4 getNumberColor( in float Number, in bool DimNumber, in float2 TexUV )
     return Color;
 }
 
-float4 getSpacesHintColor( in float SpacesHint, in bool DimNumber, in float2 TexUV )
+float4 getSpacesHintColor( in float2 TexUV )
 {
     float SymbolOffset = -1.0;
     if ( SpacesHint == 1 )
@@ -149,112 +172,39 @@ float4 getFailedBreakColor( in float2 TexUV )
     return tex2D(SymbolTexSampler, BorderTex );
 }
 
-float4 getFinishedColor( in float3 Normal )
-{
-    float Diffuse = 1.0;
-    if ( Normal.x != 0 )
-    {
-        Diffuse = 1.0;
-    } else if ( Normal.y != 0 )
-    {
-        Diffuse = 0.9;
-    } else
-    {
-        Diffuse = 0.8;
-    }
-
-    float4 Color;
-    Color.x = FinishedColor.x * Diffuse;
-    Color.y = FinishedColor.y * Diffuse;
-    Color.z = FinishedColor.z * Diffuse;
-    Color.a = FinishedColor.a;
-    return Color;
-}
-
 float4 pixelShaderFunction(PixelShaderInput input): COLOR
 {
-    float4 BorderColor;
     if ( !IgnoreColorModifiers && ( !Finished || EditMode ) || IgnoreColorModifiers )
     {
-        BorderColor = getBorderColor( input.tex );
-    } else
-    {
-        BorderColor = float4( 1.0, 1.0, 1.0, 1.0 );
+        input.color = input.color * getBorderColor( input.tex );
     }
 
     if ( PeerThrough )
     {
-        if ( BorderColor.x == 1 && BorderColor.y == 1 && BorderColor.z == 1 )
+        if ( input.color.x == 1 && input.color.y == 1 && input.color.z == 1 )
         {
-            BorderColor.a = 0.0;
+            return float4( 0, 0, 0, 0 );
         } else
         {
-            BorderColor.a = 0.2;
+            input.color.a = 0.2;
         }
-        return BorderColor;
+        return input.color;
     }
-    input.color = input.color * BorderColor;
 
     if ( !IgnoreColorModifiers )
     {
         if ( !Finished && !EditMode )
         {
-            float Number = -1;
-            float SpacesHint = 0;
-            bool HideNumber = false;
-            bool DimNumber = false;
-
-            if ( input.normal.x != 0 )
-            {
-                Number = Numbers.x;
-                SpacesHint = SpacesHints.x;
-                if ( HideNumbers.x )
-                {
-                    HideNumber = true;
-                }
-                if ( DimNumbers.x )
-                {
-                    DimNumber = true;
-                }
-            } else if ( input.normal.y != 0 )
-            {
-                Number = Numbers.y;
-                SpacesHint = SpacesHints.y;
-                if ( HideNumbers.y )
-                {
-                    HideNumber = true;
-                }
-                if ( DimNumbers.y )
-                {
-                    DimNumber = true;
-                }
-            } else
-            {
-                Number = Numbers.z;
-                SpacesHint = SpacesHints.z;
-                if ( HideNumbers.z )
-                {
-                    HideNumber = true;
-                }
-                if ( DimNumbers.z )
-                {
-                    DimNumber = true;
-                }
-            }
-
             if ( !HideNumber )
             {
-                input.color = input.color * getNumberColor( Number, DimNumber, input.tex );
-                input.color = input.color * getSpacesHintColor( SpacesHint, DimNumber, input.tex );
+                input.color = input.color * getNumberColor( input.tex );
+                input.color = input.color * getSpacesHintColor( input.tex );
             }
 
             if ( Painted || FailedBreak )
             {
                 input.color = input.color * PaintedColor;
             }
-        } else
-        {
-            input.color = input.color * getFinishedColor( input.normal );
         }
     }
 

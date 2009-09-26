@@ -483,7 +483,8 @@ function Puzzle(Game, setInfo )
 
     this.toggleShowGuaranteed = function()
     {
-        gShapeTemplate.getMaterial().toggleShowGuaranteed();
+        if ( gShapeTemplateMaterial )
+            gShapeTemplateMaterial.toggleShowGuaranteed();
     }
 
     this.showBlockFace = function( Game, Puzzle, Location )
@@ -759,7 +760,7 @@ function Puzzle(Game, setInfo )
         this.travBlocks( Game, this.setEditModeBlock, PassParams );
         if ( Value )
         {
-            gShapeTemplate.getMaterial().setEditMode( true );
+            gShapeTemplateMaterial.setEditMode( true );
             document.getElementById("EditModePuzzleTitle").value = this.getTitle();
             document.getElementById("EditModeAllowedFails").value = this.getAllowedFails();
             document.getElementById("EditModeBackgroundColor").value = ComponentToWebColor( this.getBackgroundColor() );
@@ -767,7 +768,7 @@ function Puzzle(Game, setInfo )
             this.hidePeeringArrow( false );
         } else
         {
-            gShapeTemplate.getMaterial().setEditMode( false );
+            gShapeTemplateMaterial.setEditMode( false );
             this.setTitle( document.getElementById("EditModePuzzleTitle").value );
             this.setAllowedFails( parseInt( document.getElementById("EditModeAllowedFails").value ) );
             this.setBackgroundColor( WebColorToComponent( document.getElementById("EditModeBackgroundColor").value ) );
@@ -916,9 +917,12 @@ function Puzzle(Game, setInfo )
     {
         for( var travTransformToCube = 0; travTransformToCube < gTransformToCube.length; travTransformToCube ++)
         {
-            if ( gTransformToCube[ travTransformToCube ][ 0 ] == Transform )
+            for ( var travFacesTransforms = 0; travFacesTransforms < 6; travFacesTransforms ++ )
             {
-                return gTransformToCube[ travTransformToCube ][ 1 ];
+                if ( gTransformToCube[ travTransformToCube ][ 0 ][ travFacesTransforms ] == Transform )
+                {
+                    return gTransformToCube[ travTransformToCube ][ 1 ];
+                }
             }
         }
         return null;
@@ -930,7 +934,7 @@ function Puzzle(Game, setInfo )
         if ( PickInfo )
         {
             var Cube = this.findCubeFromTransform( PickInfo.shapeInfo.parent.transform );
-            if ( Game.mDebugOverlay )
+            if ( Cube != null && Game.mDebugOverlay )
             {
                 Game.mDebugOverlay.setPickedCube( Cube );
             }
@@ -1125,9 +1129,9 @@ function Puzzle(Game, setInfo )
 
     this.setDebug = function( Value )
     {
-        if ( gShapeTemplate != null )
+        if ( gShapeTemplateMaterial != null )
         {
-            gShapeTemplate.getMaterial().setDebug( Value );
+            gShapeTemplateMaterial.setDebug( Value );
         }
     }
 
