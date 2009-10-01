@@ -376,23 +376,23 @@ function Puzzle(Game, setInfo )
             StartFromLoc = [ 0, 0, 0 ];
         } else
         {
-            StartFromLoc = Last;
-            StartFromLoc[0]++;
-            if ( StartFromLoc[0] >= this.getDimension( 0 ) )
+            StartFromLoc = dupArray( Last );
+            StartFromLoc[2] = StartFromLoc[2] + 1;
+            if ( StartFromLoc[2] >= this.getDimension( 2 ) )
             {
-                StartFromLoc[0] = 0;
-                StartFromLoc[1] ++;
+                StartFromLoc[2] = 0;
+                StartFromLoc[1] = StartFromLoc[1] + 1;
                 if( StartFromLoc[1] >= this.getDimension(1) )
                 {
                     StartFromLoc[1] = 0;
-                    StartFromLoc[2] ++;
-                    if ( StartFromLoc[2] >= this.getDimension(2) )
+                    StartFromLoc[0] = StartFromLoc[0] + 1;
+                    if ( StartFromLoc[0] >= this.getDimension(0) )
                     {
-                        StartFromLoc[2] = 0;
+                        return null;
                     }
                 }
             }
-        }
+          }
         
         var travX = StartFromLoc[0];
         var travY = StartFromLoc[1];
