@@ -464,18 +464,28 @@ function Puzzle(Game, setInfo )
 
         document.getElementById("DebugLog").innerHTML += "showNeededFaces Iterated: " + ItCount;
 
+        // for now show all faces on any unguaranteed blocks in the hopes that it'll guaranteed 'em ;)
         var ExtraParams = [ 0 ];
-        this.travBlocks( Game, this.countUnguaranteed, ExtraParams );
+        this.travBlocks( Game, this.showUnguaranteed, ExtraParams );
 
         if ( ExtraParams[ 0 ] > 0 )
             document.getElementById("DebugLog").innerHTML += " Remaining: " + ExtraParams[ 0 ];
     }
 
-    this.countUnguaranteed = function( Game, Puzzle, Location, ExtraParams )
+    this.showUnguaranteed = function( Game, Puzzle, Location, ExtraParams )
     {
         var Count = ExtraParams[ 0 ];
-        if ( !Puzzle.getBlock( Location ).getGuaranteed() )
+        var Check = Puzzle.getBlock( Location );
+        if ( !Check.getGuaranteed() )
         {
+            var Hidden = Check.getHideNumbers();
+            for( var Dimension = 0; Dimension < 3; Dimension ++ )
+            {
+                if ( Hidden[ Dimension ] == 1 )
+                {
+                    Puzzle.showRowFaces( Location, Dimension );
+                }
+            }
             Count ++;
         }
         ExtraParams[ 0 ] = Count;
